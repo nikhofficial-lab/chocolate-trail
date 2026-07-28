@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#211008">
+<meta name="description" content="Chocolate Trail — imported &amp; premium chocolate, pre-order in Dhaka. Cash on delivery.">
+<title>Chocolate Trail — চকলেটের খোঁজে</title>
+
+<style>
+/* ============================================================
+   PALETTE — change a colour here, it changes everywhere
+   ============================================================ */
+:root{
+  --base:      #211008;   /* page background — deep cocoa      */
+  --base-2:    #2b1a12;   /* raised surfaces                   */
+  --card:      #352116;   /* product card                      */
+  --line:      #4a2f21;   /* borders, dividers                 */
+  --line-soft: #3b2418;
+  --cream:     #f7ebdc;   /* main text                         */
+  --cream-2:   #c9ae98;   /* secondary text                    */
+  --cream-3:   #937763;   /* faint text                        */
+  --gold:      #e5ac52;   /* accent, prices, buttons           */
+  --gold-2:    #f6cd83;   /* brighter gold                     */
+  --ok:        #7fc98a;
+  --warn:      #e8a93f;
+  --gone:      #cd7d6f;
+  --wa:        #25d366;
+
+  --r-sm: 10px; --r: 14px; --r-lg: 20px;
+  --bar: 78px;
+  --shadow: 0 6px 24px rgba(0,0,0,.34);
+  --maxw: 760px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+/* a class like .tline{display:flex} would otherwise beat the hidden attribute */
+[hidden]{ display:none !important; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  background:var(--base);
+  background-image:
+    radial-gradient(1100px 520px at 50% -220px, #55331f 0%, transparent 68%),
+    radial-gradient(700px 400px at 92% 22%, #3a2416 0%, transparent 60%);
+  background-attachment:fixed;
+  color:var(--cream);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+               "Noto Sans Bengali", "Nirmala UI", "Hind Siliguri",
+               "SolaimanLipi", "Kalpurush", sans-serif;
+  font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  padding-bottom: calc(var(--bar) + 30px + env(safe-area-inset-bottom));
+}
+.wrap{ max-width:var(--maxw); margin:0 auto; padding:0 16px; }
+img{ max-width:100%; }
+
+/* ---------- setup warning (auto-hides once CONFIG is filled) ---------- */
+#setupWarn{
+  display:none; margin:12px 0 0; padding:12px 14px;
+  background:#4a3210; border:1px solid var(--warn); border-radius:var(--r);
+  color:#ffe3b3; font-size:13px; line-height:1.5;
+}
+#setupWarn b{ color:var(--gold-2); }
+#setupWarn code{ background:rgba(0,0,0,.3); padding:1px 5px; border-radius:4px; font-size:12px; }
+
+/* ------------------------- sticky top bar ------------------------- */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  background:rgba(33,16,8,.86); backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid var(--line-soft);
+  padding-top:env(safe-area-inset-top);
+}
+.topbar .inner{
+  max-width:var(--maxw); margin:0 auto; padding:11px 16px;
+  display:flex; align-items:center; gap:10px;
+}
+.brand{ display:flex; align-items:center; gap:9px; font-weight:800; font-size:15.5px;
+        letter-spacing:-.2px; }
+.brand .mark{ font-size:19px; }
+.topbar .chip{
+  margin-left:auto; font-size:11px; font-weight:700; letter-spacing:.4px;
+  color:var(--gold-2); background:rgba(229,172,82,.11);
+  border:1px solid rgba(229,172,82,.3); padding:5px 11px; border-radius:999px;
+  white-space:nowrap;
+}
+
+/* ----------------------------- hero ----------------------------- */
+.hero{ text-align:center; padding:34px 0 6px; }
+.hero .emoji{ font-size:44px; line-height:1; filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+h1{ margin:14px 0 0; font-size:27px; font-weight:800; letter-spacing:-.5px; line-height:1.24; }
+h1 .bn{ display:block; color:var(--gold); font-size:23px; margin-top:3px; font-weight:700; }
+.hero p{ margin:12px auto 0; max-width:34ch; color:var(--cream-2); font-size:14.5px; }
+.trust{ display:flex; flex-wrap:wrap; justify-content:center; gap:7px; margin-top:18px; }
+.trust span{
+  font-size:11.5px; font-weight:600; color:var(--cream-2);
+  background:var(--base-2); border:1px solid var(--line);
+  padding:6px 11px; border-radius:999px;
+}
+
+/* -------------------------- how it works -------------------------- */
+.steps{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:26px 0 4px;
+  background:var(--base-2); border:1px solid var(--line-soft);
+  border-radius:var(--r-lg); padding:16px 10px;
+}
+.step{ text-align:center; padding:0 2px; }
+.step .n{
+  width:25px; height:25px; margin:0 auto 7px; border-radius:50%;
+  background:rgba(229,172,82,.13); border:1px solid rgba(229,172,82,.34);
+  color:var(--gold-2); font-size:12px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.step b{ display:block; font-size:12.5px; font-weight:700; }
+.step span{ display:block; font-size:11px; color:var(--cream-3); margin-top:2px; line-height:1.4; }
+
+/* --------------------------- section head --------------------------- */
+.sec{ display:flex; align-items:baseline; gap:10px; margin:34px 0 15px; }
+.sec h2{ margin:0; font-size:12px; font-weight:800; letter-spacing:1.7px;
+         text-transform:uppercase; color:var(--cream-2); white-space:nowrap; }
+.sec .rule{ flex:1; height:1px; background:var(--line); }
+.sec .cnt{ font-size:11.5px; color:var(--cream-3); white-space:nowrap; }
+
+/* ----------------------------- catalog ----------------------------- */
+.grid{ display:grid; grid-template-columns:1fr; gap:14px; }
+@media(min-width:600px){ .grid{ grid-template-columns:1fr 1fr; gap:16px; } }
+
+.card{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-lg); overflow:hidden;
+  display:flex; flex-direction:column;
+  box-shadow:var(--shadow);
+  transition:border-color .2s ease, transform .2s ease;
+}
+@media(hover:hover){ .card:hover{ transform:translateY(-2px); border-color:#5d3c2a; } }
+.card.active{ border-color:var(--gold); }
+.card.out{ opacity:.5; }
+
+/* photo area — the gradient "wrapper" art shows if no photo file exists */
+/* 1/1 because Anik's product photos are square — a 4/3 frame would crop 25% off
+   them. If you ever switch to wide photos, change this to 4/3 and they'll fit. */
+.photo{ position:relative; width:100%; aspect-ratio:1/1; overflow:hidden; }
+.art{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:5px; text-align:center; padding:14px;
+}
+.art::after{                       /* soft sheen, makes it read as packaging */
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(118deg, rgba(255,255,255,.16) 0%, transparent 42%),
+             repeating-linear-gradient(90deg, rgba(0,0,0,.09) 0 2px, transparent 2px 26px);
+}
+.art .g{ font-size:40px; line-height:1; position:relative; z-index:1;
+         filter:drop-shadow(0 3px 8px rgba(0,0,0,.4)); }
+.art .t{ font-size:10.5px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
+         position:relative; z-index:1; opacity:.9; }
+.photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+
+.badge{
+  position:absolute; top:11px; left:11px; z-index:3;
+  padding:5px 10px; border-radius:999px; font-size:10.5px; font-weight:800;
+  letter-spacing:.45px; background:rgba(15,8,4,.8); backdrop-filter:blur(8px);
+  border:1px solid currentColor;
+}
+.badge.in{ color:var(--ok); } .badge.low{ color:var(--warn); } .badge.out{ color:var(--gone); }
+.wt{
+  position:absolute; top:11px; right:11px; z-index:3;
+  padding:5px 9px; border-radius:999px; font-size:10.5px; font-weight:700;
+  background:rgba(15,8,4,.72); backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.14); color:var(--cream);
+}
+
+.body{ padding:15px; display:flex; flex-direction:column; flex:1; }
+.name{ margin:0; font-size:16.5px; font-weight:700; line-height:1.3; letter-spacing:-.2px; }
+.sub{ margin:2px 0 0; font-size:11.5px; color:var(--gold); font-weight:600; letter-spacing:.3px; }
+.desc{ margin:8px 0 0; font-size:13px; color:var(--cream-2); line-height:1.5; flex:1; }
+.priceline{ display:flex; align-items:baseline; gap:7px; margin-top:13px; }
+.price{ font-size:21px; font-weight:800; color:var(--gold); letter-spacing:-.4px;
+        font-variant-numeric:tabular-nums; }
+.per{ font-size:11.5px; color:var(--cream-3); }
+
+.actions{ margin-top:12px; }
+.btn-add{
+  width:100%; min-height:46px; border:0; border-radius:var(--r); cursor:pointer;
+  background:var(--gold); color:#241206; font-size:15px; font-weight:800;
+  font-family:inherit; letter-spacing:.2px; transition:background .15s ease;
+}
+.btn-add:active{ background:var(--gold-2); transform:scale(.99); }
+.btn-add[disabled]{ background:var(--line); color:var(--cream-3); cursor:not-allowed; }
+.qty{
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--base); border:1.5px solid var(--gold); border-radius:var(--r);
+  overflow:hidden; min-height:46px;
+}
+.qty button{
+  width:54px; min-height:44px; border:0; background:transparent; cursor:pointer;
+  color:var(--gold); font-size:23px; font-weight:700; font-family:inherit; line-height:1;
+}
+.qty button:active{ background:rgba(229,172,82,.18); }
+.qty button[disabled]{ color:var(--cream-3); cursor:not-allowed; }
+.qty .v{ font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; }
+.maxhint{ font-size:10.5px; color:var(--warn); text-align:center; margin-top:6px; font-weight:600; }
+
+/* -------------------------- floating cart -------------------------- */
+#cartBar{
+  position:fixed; left:0; right:0; bottom:0; z-index:40;
+  transform:translateY(135%); transition:transform .3s cubic-bezier(.2,.85,.3,1);
+  background:rgba(28,14,7,.95); backdrop-filter:blur(18px) saturate(150%);
+  border-top:1px solid var(--line);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  box-shadow:0 -8px 28px rgba(0,0,0,.4);
+}
+#cartBar.show{ transform:translateY(0); }
+#cartBar .inner{ max-width:var(--maxw); margin:0 auto; display:flex; align-items:center; gap:12px; }
+.cinfo{ flex:1; min-width:0; }
+.ccount{ font-size:12px; color:var(--cream-2); font-weight:600; }
+.ctotal{ font-size:22px; font-weight:800; color:var(--gold); line-height:1.15;
+         letter-spacing:-.5px; font-variant-numeric:tabular-nums; }
+.btn-primary{
+  border:0; border-radius:var(--r); cursor:pointer; font-family:inherit;
+  background:var(--gold); color:#241206; font-weight:800; font-size:15.5px;
+  padding:14px 24px; min-height:52px; white-space:nowrap; letter-spacing:.2px;
+}
+.btn-primary:active{ background:var(--gold-2); }
+.btn-primary[disabled]{ opacity:.6; cursor:wait; }
+
+/* ---------------------------- overlays ---------------------------- */
+.screen{ position:fixed; inset:0; z-index:60; background:var(--base);
+         overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:46px; }
+.screen[hidden]{ display:none; }
+.stop{
+  position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:12px;
+  padding:calc(13px + env(safe-area-inset-top)) 16px 13px;
+  background:rgba(33,16,8,.93); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line-soft);
+}
+.stop h2{ margin:0; font-size:17px; font-weight:800; letter-spacing:-.2px; }
+.btn-back{
+  border:1px solid var(--line); background:var(--base-2); color:var(--cream);
+  width:40px; height:40px; border-radius:var(--r-sm); font-size:18px;
+  cursor:pointer; font-family:inherit; line-height:1; flex-shrink:0;
+}
+
+/* summary */
+.panel{ background:var(--base-2); border:1px solid var(--line);
+        border-radius:var(--r-lg); padding:16px; margin:18px 0; }
+.srow{ display:flex; justify-content:space-between; gap:14px; padding:9px 0;
+       font-size:14px; border-bottom:1px dashed var(--line-soft); }
+.srow:last-child{ border-bottom:0; }
+.srow .q{ color:var(--cream-3); font-weight:600; }
+.srow .v{ color:var(--cream); font-weight:700; white-space:nowrap;
+          font-variant-numeric:tabular-nums; }
+.tot{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+.tline{ display:flex; justify-content:space-between; font-size:13.5px; padding:4px 0;
+        color:var(--cream-2); font-variant-numeric:tabular-nums; }
+.tline.save{ color:var(--ok); font-weight:700; }
+.tline.grand{ font-size:20px; font-weight:800; color:var(--cream); margin-top:9px;
+              padding-top:11px; border-top:1px solid var(--line); }
+.tline.grand .v{ color:var(--gold); letter-spacing:-.5px; }
+.roundnote{ font-size:11px; color:var(--cream-3); text-align:right; margin-top:3px; }
+
+/* delivery options */
+.dopts{ display:grid; gap:10px; }
+.dopt{
+  display:flex; gap:12px; padding:14px; cursor:pointer;
+  background:var(--card); border:1.5px solid var(--line); border-radius:var(--r);
+  transition:border-color .16s ease, background .16s ease;
+}
+.dopt.on{ border-color:var(--gold); background:rgba(229,172,82,.06); }
+.dopt .dot{
+  width:20px; height:20px; border-radius:50%; border:2px solid var(--line);
+  flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center;
+  transition:border-color .16s ease;
+}
+.dopt.on .dot{ border-color:var(--gold); }
+.dopt.on .dot::after{ content:""; width:10px; height:10px; border-radius:50%; background:var(--gold); }
+.dopt .dtext{ flex:1; }
+.dopt b{ display:block; font-size:14.5px; font-weight:700; }
+.dopt em{ font-style:normal; font-size:11px; font-weight:800; letter-spacing:.5px;
+          padding:3px 8px; border-radius:999px; margin-left:7px; vertical-align:1px; }
+.dopt em.free{ color:var(--ok); background:rgba(127,201,138,.13); }
+.dopt em.chg{ color:var(--warn); background:rgba(232,169,63,.13); }
+.dopt .dtext > span{ display:block; font-size:12.5px; color:var(--cream-2);
+                     line-height:1.55; margin-top:5px; }
+.dopt .warnt{ display:inline; color:var(--gold-2); font-weight:700; }
+.dopt .zones{ color:var(--cream-3); font-size:12px; }
+.dopt .zones i{ font-style:normal; color:var(--ok); }
+.roundnote.courier{ color:var(--warn); }
+
+/* coupon */
+.coupon{ display:flex; gap:8px; }
+.coupon input{ flex:1; text-transform:uppercase; letter-spacing:1.2px; font-weight:700; }
+.coupon button{
+  flex-shrink:0; padding:0 20px; min-height:50px; border-radius:var(--r);
+  border:1px solid var(--gold); background:transparent; color:var(--gold);
+  font-family:inherit; font-size:14.5px; font-weight:800; cursor:pointer;
+}
+.coupon button:active{ background:rgba(229,172,82,.14); }
+.cmsg{ font-size:12.5px; margin-top:9px; font-weight:600; display:none; }
+.cmsg.show{ display:block; }
+.cmsg.good{ color:var(--ok); } .cmsg.bad{ color:var(--gone); }
+
+/* form */
+label{ display:block; font-size:12px; font-weight:800; color:var(--cream-2);
+       margin:18px 0 8px; letter-spacing:.7px; text-transform:uppercase; }
+label .opt{ font-weight:600; text-transform:none; letter-spacing:0; color:var(--cream-3); }
+input,textarea{
+  width:100%; background:var(--card); color:var(--cream);
+  border:1px solid var(--line); border-radius:var(--r);
+  padding:14px; font-size:16px;          /* 16px keeps iOS from zooming */
+  font-family:inherit; -webkit-appearance:none; appearance:none;
+  transition:border-color .15s ease;
+}
+input:focus,textarea:focus{ outline:none; border-color:var(--gold);
+                            box-shadow:0 0 0 3px rgba(229,172,82,.13); }
+input::placeholder,textarea::placeholder{ color:#7d6353; }
+textarea{ min-height:82px; resize:vertical; }
+.err{ color:var(--gone); font-size:12.5px; margin-top:8px; display:none; font-weight:600; }
+.err.show{ display:block; }
+.fine{ color:var(--cream-3); font-size:12px; margin-top:16px; text-align:center; line-height:1.6; }
+
+.btn-submit{
+  width:100%; margin-top:24px; min-height:58px; border:0; border-radius:16px;
+  cursor:pointer; font-family:inherit; background:var(--gold); color:#241206;
+  font-size:17px; font-weight:800; letter-spacing:.2px;
+  box-shadow:0 6px 20px rgba(229,172,82,.2);
+}
+.btn-submit:active{ background:var(--gold-2); }
+.btn-submit[disabled]{ opacity:.6; cursor:wait; box-shadow:none; }
+
+/* confirmation */
+.done{ text-align:center; padding:56px 4px 10px; }
+.done .big{ font-size:64px; line-height:1; }
+.done h2{ font-size:25px; margin:22px 0 8px; font-weight:800; letter-spacing:-.4px; }
+.done p{ color:var(--cream-2); margin:0; font-size:15px; }
+.oid{ display:inline-block; margin-top:18px; padding:9px 17px; border-radius:999px;
+      background:rgba(229,172,82,.1); border:1px solid rgba(229,172,82,.32);
+      color:var(--gold-2); font-size:13px; font-weight:800; letter-spacing:.8px; }
+.recap{ text-align:left; margin-top:24px; }
+.btn-ghost{
+  display:block; width:100%; margin-top:12px; min-height:50px; background:transparent;
+  border:1px solid var(--line); color:var(--cream); border-radius:var(--r);
+  font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;
+}
+.btn-ghost:active{ background:var(--base-2); }
+
+#waPanel{ background:#452f10; border:1px solid var(--warn); border-radius:var(--r-lg);
+          padding:17px; margin:24px 0 0; text-align:left; }
+#waPanel h3{ margin:0 0 8px; font-size:15px; color:#ffe3b3; }
+#waPanel p{ margin:0 0 15px; font-size:13px; color:#e9d2ae; line-height:1.55; }
+.btn-wa{ display:flex; align-items:center; justify-content:center; gap:9px;
+         width:100%; min-height:54px; border-radius:var(--r); text-decoration:none;
+         background:var(--wa); color:#06331a; font-size:16.5px; font-weight:800; }
+
+footer{ text-align:center; color:var(--cream-3); font-size:12.5px;
+        padding:44px 16px 10px; line-height:2; }
+footer .b{ color:var(--cream-2); font-weight:700; }
+footer .heart{ color:var(--gold); }
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="inner">
+    <div class="brand"><span class="mark">🍫</span><span>Chocolate Trail</span></div>
+    <span class="chip">Cash on delivery</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div id="setupWarn">
+    <b>⚙️ Setup not finished.</b> Open <code>index.html</code> and fill in
+    <code>SHEET_WEBAPP_URL</code> and <code>WHATSAPP_NUMBER</code> in the CONFIG block.
+    Until then orders go to WhatsApp only. <b>Your customers see this message too.</b>
+  </div>
+
+  <div class="hero">
+    <div class="emoji">🍫</div>
+    <h1>Chocolate Trail<span class="bn">চকলেটের খোঁজে</span></h1>
+    <p>Imported &amp; premium chocolate, brought to your address in Dhaka.</p>
+    <div class="trust">
+      <span>💵 Pay on delivery</span>
+      <span>🚫 No account needed</span>
+      <span>📦 Limited weekly stock</span>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step"><div class="n">1</div><b>Pick</b><span>Tap to add</span></div>
+    <div class="step"><div class="n">2</div><b>Order</b><span>Name + address</span></div>
+    <div class="step"><div class="n">3</div><b>Pay</b><span>Cash on arrival</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>This week's stock</h2>
+    <div class="rule"></div>
+    <span class="cnt" id="secCount"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <span class="b">a tiny pilot by Anik &amp; Saptak</span> <span class="heart">🍫</span><br>
+    Order now · pay when it reaches you · Dhaka only
+  </footer>
+</div>
+
+<div id="cartBar">
+  <div class="inner">
+    <div class="cinfo">
+      <div class="ccount" id="cartCount">0 items</div>
+      <div class="ctotal" id="cartTotal">৳0</div>
+    </div>
+    <button class="btn-primary" id="btnCheckout">Checkout →</button>
+  </div>
+</div>
+
+<!-- ---------------------------- checkout ---------------------------- -->
+<div class="screen" id="checkout" hidden>
+  <div class="stop">
+    <button class="btn-back" id="btnBack" aria-label="Back to catalog">←</button>
+    <h2>Your order</h2>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div id="sumRows"></div>
+      <div class="tot">
+        <div class="tline"><span>Subtotal</span><span class="v" id="tSub">৳0</span></div>
+        <div class="tline save" id="tSaveRow" hidden>
+          <span id="tSaveLabel">Discount</span><span class="v" id="tSave">−৳0</span>
+        </div>
+        <div class="tline"><span>Delivery</span><span class="v" id="tShip">Free</span></div>
+        <div class="tline grand"><span>Total to pay</span><span class="v" id="tGrand">৳0</span></div>
+        <div class="roundnote" id="roundNote" hidden>Rounded up to the nearest ৳10</div>
+        <div class="roundnote courier" id="shipNote" hidden>+ courier charge, paid to the rider</div>
+      </div>
+    </div>
+
+    <label>How should we get it to you?</label>
+    <div class="dopts" id="dopts">
+      <div class="dopt on" data-mode="free">
+        <span class="dot"></span>
+        <span class="dtext">
+          <b>Free delivery <em class="free">৳0</em></b>
+          <span>We bring it ourselves, at a time and date that suits us — we'll
+                confirm with you on WhatsApp.</span>
+          <span class="zones" id="zoneList"></span>
+        </span>
+      </div>
+      <div class="dopt" data-mode="courier">
+        <span class="dot"></span>
+        <span class="dtext">
+          <b>Instant or courier delivery <em class="chg">charge applies</em></b>
+          <span>Anywhere else, or if you need it fast. Sent via a third-party
+                courier (<span id="courierList"></span>). <b class="warnt">The delivery charge is
+                set by the courier and paid separately by you</b> — it is not
+                included in the total below.</span>
+        </span>
+      </div>
+    </div>
+
+    <div id="couponWrap" hidden>
+      <label for="fCoupon">Coupon code <span class="opt">(if you have one)</span></label>
+      <div class="coupon">
+        <input id="fCoupon" type="text" placeholder="Enter code" autocapitalize="characters"
+               autocomplete="off" spellcheck="false" maxlength="20">
+        <button type="button" id="btnCoupon">Apply</button>
+      </div>
+    </div>
+    <div class="cmsg" id="couponMsg"></div>
+
+    <form id="orderForm" novalidate>
+      <label for="fName">Your name</label>
+      <input id="fName" type="text" autocomplete="name" placeholder="e.g. Chocolate Khan" maxlength="60">
+      <div class="err" id="eName">Please tell us your name.</div>
+
+      <label for="fPhone">Phone number</label>
+      <input id="fPhone" type="tel" inputmode="numeric" autocomplete="tel"
+             placeholder="01XXXXXXXXX" maxlength="20">
+      <div class="err" id="ePhone">Enter an 11-digit number starting with 01.</div>
+
+      <label for="fAddr">Delivery address</label>
+      <textarea id="fAddr" autocomplete="street-address"
+        placeholder="House / road / area — or your office desk &amp; floor"></textarea>
+      <div class="err" id="eAddr">We need an address to deliver to.</div>
+
+      <label for="fNote">Delivery note <span class="opt">(optional)</span></label>
+      <textarea id="fNote" maxlength="300"
+        placeholder="e.g. Call when you reach reception. Or: not in office Thursday."></textarea>
+
+      <button class="btn-submit" id="btnSubmit" type="submit">Place order · Pay on delivery</button>
+      <p class="fine">No payment now. No account.<br>We'll message you to confirm delivery time.</p>
+    </form>
+  </div>
+</div>
+
+<!-- -------------------------- confirmation -------------------------- -->
+<div class="screen" id="thanks" hidden>
+  <div class="wrap">
+    <div class="done">
+      <div class="big" id="doneEmoji">🍫</div>
+      <h2 id="doneTitle">Order received!</h2>
+      <p id="doneSub">Pay on delivery. 🍫</p>
+      <div class="oid" id="doneId"></div>
+
+      <div class="panel recap" id="recap"></div>
+
+      <div id="waPanel" hidden>
+        <h3>⚠️ Couldn't reach our order sheet</h3>
+        <p>Your order is <b>not saved yet</b>. Tap below — WhatsApp opens with your order
+           already typed out. Press send and you're done.</p>
+        <a class="btn-wa" id="waLink" href="#" target="_blank" rel="noopener">
+          <span>💬</span><span>Send order on WhatsApp</span></a>
+        <button class="btn-ghost" id="btnCopy" style="margin-top:10px">Copy order as text</button>
+      </div>
+
+      <button class="btn-ghost" id="btnAgain">Order something else</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   1. CONFIG — the two lines you MUST change
+   ================================================================== */
+const CONFIG = {
+
+  // Google Apps Script Web App URL (SETUP.md, Part A step 23).
+  // Looks like: https://script.google.com/macros/s/AKfycb...long.../exec
+  SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbw6D-Zjwi1htH7K-1lmGvaNYM3jRH0MXvC1J0OAFVjWvTeQUnLqaG155Q1yzZChBoPp4w/exec",
+
+  // Your WhatsApp number for the fallback: country code, digits only, no +.
+  // 01712345678  ->  "8801712345678"   (880 = Bangladesh, drop the leading 0)
+  WHATSAPP_NUMBER: "9190468 89546",
+
+  // Seconds to wait for the Sheet before offering WhatsApp instead.
+  TIMEOUT_MS: 12000,
+
+  // Should customers SEE a coupon box on the checkout page?
+  //   true  = the box shows (what you have now). It says only "Enter code" —
+  //           it never names a live code, so nobody learns TWINBIT by reading it.
+  //   false = the box is hidden entirely. Codes still work through a private
+  //           link:  https://your-site/?coupon=twinbit
+  // Either way the ?coupon= link works, so you can share it with whoever you like.
+  SHOW_COUPON_BOX: true
+};
+
+
+/* ==================================================================
+   DELIVERY — free areas and the courier rule
+   ==================================================================
+   Add or remove an area by copying a line. Keep the quotes and commas.
+   These are the places you deliver to yourself, at no charge.
+*/
+const FREE_ZONES = [
+  "Mirpur DOHS & nearby",
+  "Motijheel, Malibag, Khilgaon, Basabo & nearby"
+];
+
+/* Couriers you're willing to send through, shown to the customer. */
+const COURIERS = "Pathao, Steadfast, etc.";
+
+
+/* ==================================================================
+   2. COUPONS
+   ==================================================================
+   Add a coupon by copying a line. The code on the LEFT must be lowercase —
+   customers can type it in any case, we match it lowercase.
+
+     percent : how much off, as a number.  10 = 10% off
+     label   : what the customer sees when it works
+
+   The total is always ROUNDED UP to the next ৳10 after the discount,
+   so ৳440 with 10% off = ৳396 -> customer pays ৳400. Never awkward change.
+*/
+const COUPONS = {
+  "twinbit": { percent: 10, label: "TWINBIT — 10% off" }
+  // ,"office5": { percent: 5, label: "OFFICE5 — 5% off" }
+};
+
+
+/* ==================================================================
+   3. PRODUCTS — your catalog
+   ==================================================================
+
+   HOW TO EDIT (no coding — careful copy/paste is enough):
+
+   Each chocolate is one block between { curly braces }, ending with a comma.
+   TO ADD A NEW ONE: copy an entire block, paste it after the last one, put a
+   comma after the block before it, then change the words inside the "quotes".
+
+   FIELDS
+     id      "galaxy-cookie-crumble"
+             Short nickname. Letters/numbers/dashes only, NO spaces.
+             Must be DIFFERENT for every product. Never reuse an old one.
+     name    "Galaxy Cookie Crumble"    Shown big on the card.
+     bn      "গ্যালাক্সি কুকি ক্রাম্বল"      Bangla name under it. Use "" for none.
+     weight  "50g"                      Small chip on the photo.
+     photo   "images/galaxy-cookie-crumble.jpg"
+             Your photo file. If the file is missing the card shows a coloured
+             wrapper tile instead — the page never breaks.
+     emoji   "🍪"     Shown on that wrapper tile.
+     art     ["#8e1b3d","#d9536f","#ffe3ec"]
+             Wrapper tile colours: [dark, light, text]. Match the real pack.
+     desc    "..."    One or two short lines. Keep under ~85 characters.
+     price   210      Taka. NUMBERS ONLY — no ৳, no commas, no quotes.
+     stock   4        How many you have. NUMBERS ONLY.
+                        0     -> red "Sold out", Add button switched off
+                        1-3   -> amber "Only 3 left"
+                        4+    -> green "In stock"
+                      Customers cannot add more than this number to the cart.
+
+   RULES THAT BREAK THE PAGE IF YOU GET THEM WRONG
+     · Every line inside a block ends with a comma, except the last one.
+     · Text goes in "double quotes". price and stock never do.
+     · A " inside text must be written \"  — e.g. "the \"big\" one".
+     · Removing a product = delete its whole block from { to },
+     · To hide something for a week set stock to 0 instead of deleting it.
+
+   After editing: save, then refresh on your phone. Blank page = you broke a
+   comma or a quote. Undo your last change (Ctrl+Z) and save again.
+*/
+const PRODUCTS = [
+  {
+    id:     "galaxy-cookie-crumble",
+    name:   "Galaxy Cookie Crumble",
+    bn:     "",
+    weight: "50g",
+    photo:  "images/galaxy-cookie-crumble.jpg",
+    emoji:  "🍪",
+    art:    ["#7d1633","#d4607f","#ffe6ee"],
+    desc:   "Mars' silkiest milk chocolate, shot through with crumbled cookie pieces. Softer and creamier than Cadbury.",
+    price:  210,
+    stock:  4
+  },
+  {
+    id:     "dm-roast-almond",
+    name:   "Dairy Milk Roast Almond",
+    bn:     "ডেইরি মিল্ক রোস্ট আমন্ড",
+    weight: "75g",
+    photo:  "images/dm-roast-almond.jpg",
+    emoji:  "🌰",
+    art:    ["#3d1e78","#7a52b8","#f0e4ff"],
+    desc:   "Classic Cadbury milk chocolate loaded with whole roasted almonds. The crunchy one everyone fights over.",
+    price:  220,
+    stock:  1
+  },
+  {
+    id:     "dm-crackle",
+    name:   "Dairy Milk Crackle",
+    bn:     "ডেইরি মিল্ক ক্র্যাকল",
+    weight: "35g",
+    photo:  "images/dm-crackle.jpg",
+    emoji:  "✨",
+    art:    ["#3d1e78","#8a63c4","#ffe9a8"],
+    desc:   "Dairy Milk with crispy puffed rice folded in — light, snappy, gone in about four bites.",
+    price:  110,
+    stock:  2
+  },
+  {
+    id:     "dm-crispello",
+    name:   "Dairy Milk Crispello",
+    bn:     "ডেইরি মিল্ক ক্রিসপেলো",
+    weight: "35g",
+    photo:  "images/dm-crispello.jpg",
+    emoji:  "🥐",
+    art:    ["#4a2683","#e07a2a","#fff0dc"],
+    desc:   "Individually wrapped fingers — crisp wafer shell, soft cream centre, Dairy Milk all over.",
+    price:  120,
+    stock:  8
+  },
+  {
+    id:     "amul-sugarfree-dark",
+    name:   "Amul Sugar Free Dark",
+    bn:     "আমুল সুগার ফ্রি ডার্ক",
+    weight: "125g",
+    photo:  "images/amul-sugarfree-dark.jpg",
+    emoji:  "🖤",
+    art:    ["#0f0f0f","#3a3527","#f5c518"],
+    desc:   "55% cocoa, no added sugar. Genuinely bitter-rich — the one to send to your diabetic uncle.",
+    price:  440,
+    stock:  4
+  },
+  {
+    id:     "amul-dark",
+    name:   "Amul Dark Chocolate",
+    bn:     "আমুল ডার্ক চকলেট",
+    weight: "125g",
+    photo:  "images/amul-dark.jpg",
+    emoji:  "🍫",
+    art:    ["#25120a","#5c2c12","#ff6a13"],
+    desc:   "55% cocoa from fine cocoa beans. Big 125g slab, deep and slightly fruity. Best value dark here.",
+    price:  420,
+    stock:  4
+  }
+];
+
+
+/* ==================================================================
+   4. The app. Nothing below here needs editing.
+   ================================================================== */
+
+const $ = (id) => document.getElementById(id);
+
+const taka = (n) => "৳" + Number(n).toLocaleString("en-IN");
+const esc  = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+/* stock number -> badge */
+function badgeOf(n){
+  if (n <= 0) return { cls:"out", txt:"Sold out" };
+  if (n <= 3) return { cls:"low", txt:"Only " + n + " left" };
+  return { cls:"in", txt:"In stock" };
+}
+
+let cart = {};
+try { cart = JSON.parse(localStorage.getItem("ct_cart") || "{}") || {}; } catch(e){ cart = {}; }
+
+let coupon = null;                       // { code, percent, label }
+let delivery = "free";                   // "free" | "courier"
+let pendingOrder = null;
+
+const DELIVERY_LABEL = {
+  free:    "Free delivery (" + FREE_ZONES.join(" / ") + ")",
+  courier: "Instant / courier (" + COURIERS + ") — charge paid to courier"
+};
+
+const isConfigured = () => CONFIG.SHEET_WEBAPP_URL.indexOf("script.google.com") !== -1;
+const findP = (id) => PRODUCTS.find(p => p.id === id);
+
+/* ------------------------------ catalog ------------------------------ */
+function renderCatalog(){
+  $("secCount").textContent = PRODUCTS.length + " chocolates";
+
+  $("grid").innerHTML = PRODUCTS.map(p => {
+    const q = cart[p.id] || 0;
+    const b = badgeOf(p.stock);
+    const out = p.stock <= 0;
+    const atMax = q >= p.stock;
+    const [c1, c2, ct] = (p.art && p.art.length === 3) ? p.art : ["#3b2418","#5c3a24","#f7ebdc"];
+
+    return `
+    <article class="card ${q?"active":""} ${out?"out":""}">
+      <div class="photo">
+        <div class="art" style="background:linear-gradient(145deg,${esc(c2)} 0%,${esc(c1)} 78%);color:${esc(ct)}">
+          <span class="g">${esc(p.emoji || "🍫")}</span>
+          <span class="t">${esc(p.name)}</span>
+        </div>
+        <img src="${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy"
+             onerror="this.remove()">
+        <span class="badge ${b.cls}">${b.txt}</span>
+        <span class="wt">${esc(p.weight)}</span>
+      </div>
+      <div class="body">
+        <h3 class="name">${esc(p.name)}</h3>
+        ${p.bn ? `<p class="sub">${esc(p.bn)}</p>` : ""}
+        <p class="desc">${esc(p.desc)}</p>
+        <div class="priceline">
+          <span class="price">${taka(p.price)}</span><span class="per">per piece</span>
+        </div>
+        <div class="actions">${
+          out ? `<button class="btn-add" disabled>Sold out</button>`
+          : q === 0
+            ? `<button class="btn-add" data-add="${esc(p.id)}">Add to cart</button>`
+            : `<div class="qty">
+                 <button data-dec="${esc(p.id)}" aria-label="One less">−</button>
+                 <span class="v">${q}</span>
+                 <button data-inc="${esc(p.id)}" ${atMax?"disabled":""} aria-label="One more">+</button>
+               </div>
+               ${atMax ? `<div class="maxhint">That's all we have (${p.stock})</div>` : ""}`
+        }</div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+/* ------------------------------- maths ------------------------------- */
+function lines(){
+  return PRODUCTS.filter(p => cart[p.id] > 0).map(p => ({
+    id:p.id, name:p.name, weight:p.weight, qty:cart[p.id],
+    price:p.price, line:p.price * cart[p.id]
+  }));
+}
+const cartCount = () => lines().reduce((s,l) => s + l.qty, 0);
+const subtotal  = () => lines().reduce((s,l) => s + l.line, 0);
+
+/* Discount, then ALWAYS round the total UP to the next ৳10.
+   440 -10%  = 396  ->  400        555 -> 560
+   521 -> 530        112 -> 120    (a total already on a 10 stays put)   */
+function totals(){
+  const sub = subtotal();
+  if (!coupon || sub === 0) return { sub, discount:0, total:sub };
+  let total = Math.ceil((sub * (100 - coupon.percent) / 100) / 10) * 10;
+  if (total > sub) total = sub;          // never charge more than the subtotal
+  return { sub, discount: sub - total, total };
+}
+
+function saveCart(){ try{ localStorage.setItem("ct_cart", JSON.stringify(cart)); }catch(e){} }
+
+function refresh(){
+  renderCatalog();
+  const n = cartCount(), t = totals();
+  $("cartCount").textContent = (n === 1 ? "1 item" : n + " items")
+                             + (coupon ? " · " + coupon.code.toUpperCase() : "");
+  $("cartTotal").textContent = taka(t.total);
+  $("cartBar").classList.toggle("show", n > 0);
+  saveCart();
+}
+
+function setQty(id, q){
+  const p = findP(id); if (!p) return;
+  q = Math.max(0, Math.min(q, p.stock));
+  if (q === 0) delete cart[id]; else cart[id] = q;
+  refresh();
+}
+
+$("grid").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const { add, inc, dec } = b.dataset;
+  if (add) setQty(add, 1);
+  if (inc) setQty(inc, (cart[inc] || 0) + 1);
+  if (dec) setQty(dec, (cart[dec] || 0) - 1);
+});
+
+/* ------------------------------ screens ------------------------------ */
+function show(el){ el.hidden = false; document.body.style.overflow = "hidden"; el.scrollTop = 0; }
+function hide(el){ el.hidden = true;  document.body.style.overflow = ""; }
+
+function drawSummary(){
+  $("sumRows").innerHTML = lines().map(l => `
+    <div class="srow">
+      <span>${esc(l.name)} <span class="q">${esc(l.weight)} · ×${l.qty}</span></span>
+      <span class="v">${taka(l.line)}</span>
+    </div>`).join("");
+
+  const t = totals();
+  $("tSub").textContent   = taka(t.sub);
+  $("tGrand").textContent = taka(t.total);
+  $("tSaveRow").hidden    = !coupon || t.discount <= 0;
+  $("roundNote").hidden   = !coupon || t.discount <= 0;
+  if (coupon){
+    $("tSaveLabel").textContent = coupon.code.toUpperCase() + " · " + coupon.percent + "% off";
+    $("tSave").textContent = "−" + taka(t.discount);
+  }
+
+  $("tShip").textContent  = delivery === "free" ? "Free" : "At actual";
+  $("tShip").style.color  = delivery === "free" ? "var(--ok)" : "var(--warn)";
+  $("shipNote").hidden    = delivery !== "courier";
+}
+
+/* delivery picker */
+$("dopts").addEventListener("click", (ev) => {
+  const opt = ev.target.closest(".dopt"); if (!opt) return;
+  delivery = opt.dataset.mode;
+  document.querySelectorAll(".dopt").forEach(d => d.classList.toggle("on", d === opt));
+  drawSummary();
+});
+
+$("btnCheckout").addEventListener("click", () => {
+  if (cartCount() === 0) return;
+  drawSummary();
+  show($("checkout"));
+});
+$("btnBack").addEventListener("click", () => hide($("checkout")));
+
+/* ------------------------------ coupon ------------------------------ */
+/* Applies a code. `quiet` = came from the ?coupon= link, so a wrong code
+   says nothing at all — the customer never typed it and shouldn't see an error. */
+function setCoupon(raw, quiet){
+  const msg  = $("couponMsg");
+  const code = String(raw || "").trim().toLowerCase();
+
+  if (!code){
+    coupon = null; msg.className = "cmsg"; drawSummary(); refresh(); return;
+  }
+  if (COUPONS[code]){
+    coupon = { code, percent: COUPONS[code].percent, label: COUPONS[code].label };
+    const t = totals();
+    msg.className = "cmsg show good";
+    msg.textContent = "✓ " + COUPONS[code].label + " applied — you save " + taka(t.discount) + ".";
+    $("btnCoupon").textContent = "Remove";
+  } else if (quiet){
+    coupon = null; msg.className = "cmsg";
+  } else {
+    coupon = null;
+    msg.className = "cmsg show bad";
+    msg.textContent = "✕ \"" + raw + "\" isn't a valid code.";
+    $("btnCoupon").textContent = "Apply";
+  }
+  drawSummary(); refresh();
+}
+
+const applyCoupon = () => setCoupon($("fCoupon").value, false);
+
+$("btnCoupon").addEventListener("click", () => {
+  if (coupon){                                   // second tap removes it
+    coupon = null; $("fCoupon").value = "";
+    $("couponMsg").className = "cmsg"; $("couponMsg").textContent = "";
+    $("btnCoupon").textContent = "Apply";
+    drawSummary(); refresh(); return;
+  }
+  applyCoupon();
+});
+$("fCoupon").addEventListener("keydown", (e) => {
+  if (e.key === "Enter"){ e.preventDefault(); if (!coupon) applyCoupon(); }
+});
+
+/* ---------------------------- validation ---------------------------- */
+function validate(){
+  let ok = true;
+  const name  = $("fName").value.trim();
+  const phone = $("fPhone").value.replace(/[^0-9]/g, "");
+  const addr  = $("fAddr").value.trim();
+  const note  = $("fNote").value.trim();
+  const flag  = (id, bad) => { $(id).classList.toggle("show", bad); if (bad) ok = false; };
+
+  flag("eName",  name.length < 2);
+  flag("ePhone", !/^(01\d{9}|8801\d{9})$/.test(phone));   // 01... or 8801...
+  flag("eAddr",  addr.length < 5);
+
+  return ok ? { name, phone, addr, note } : null;
+}
+
+/* ------------------------- text for WhatsApp ------------------------- */
+function orderText(o){
+  return "🍫 *Chocolate Trail order*\n"
+    + "Order: " + o.orderId + "\n\n"
+    + o.items.map(l => "• " + l.name + " (" + l.weight + ") × " + l.qty + " = ৳" + l.line).join("\n")
+    + "\n\nSubtotal: ৳" + o.subtotal
+    + (o.coupon ? "\nCoupon " + o.coupon.toUpperCase() + ": −৳" + o.discount : "")
+    + "\n*Total to pay: ৳" + o.total + "*\n"
+    + "Delivery: " + o.deliveryLabel
+    + (o.delivery === "courier" ? "\n(courier charge extra, paid to the rider)" : "")
+    + "\n\nName: " + o.name + "\n"
+    + "Phone: " + o.phone + "\n"
+    + "Address: " + o.address + "\n"
+    + (o.note ? "Note: " + o.note + "\n" : "")
+    + "\n(Cash on delivery)";
+}
+
+/* --------------------------- send to Sheet ---------------------------
+   Content-Type is text/plain on purpose — that keeps it a "simple" request
+   so the browser skips the CORS preflight Apps Script can't answer.       */
+async function postToSheet(order){
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CONFIG.TIMEOUT_MS);
+  try{
+    const res = await fetch(CONFIG.SHEET_WEBAPP_URL, {
+      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify(order), signal: ctrl.signal, redirect:"follow"
+    });
+    if (!res.ok) return false;
+    const data = await res.json().catch(() => null);
+    return !!(data && data.ok);
+  } catch(e){ return false; }
+  finally { clearTimeout(timer); }
+}
+
+/* ------------------------------ submit ------------------------------ */
+$("orderForm").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const who = validate();
+  if (!who){
+    const first = document.querySelector(".err.show");
+    if (first) first.scrollIntoView({ behavior:"smooth", block:"center" });
+    return;
+  }
+
+  const btn = $("btnSubmit");
+  btn.disabled = true; btn.textContent = "Sending your order…";
+
+  const t = totals();
+  const order = {
+    orderId:  "CT-" + Date.now().toString(36).toUpperCase().slice(-6),
+    at:       new Date().toISOString(),
+    name:     who.name,
+    phone:    who.phone,
+    address:  who.addr,
+    note:     who.note,
+    delivery:      delivery,                    // "free" | "courier"
+    deliveryLabel: DELIVERY_LABEL[delivery],
+    items:    lines(),
+    subtotal: t.sub,
+    coupon:   coupon ? coupon.code.toUpperCase() : "",
+    discount: t.discount,
+    total:    t.total
+  };
+
+  try{                                     // local backup, whatever else happens
+    const log = JSON.parse(localStorage.getItem("ct_orders") || "[]");
+    log.push(order);
+    localStorage.setItem("ct_orders", JSON.stringify(log.slice(-25)));
+  }catch(e){}
+
+  const saved = isConfigured() ? await postToSheet(order) : false;
+
+  btn.disabled = false; btn.textContent = "Place order · Pay on delivery";
+  showThanks(order, saved);
+});
+
+/* --------------------------- confirmation --------------------------- */
+function showThanks(order, saved){
+  hide($("checkout"));
+  $("doneId").textContent = "Order " + order.orderId;
+
+  $("recap").innerHTML =
+    order.items.map(l => `
+      <div class="srow"><span>${esc(l.name)} <span class="q">×${l.qty}</span></span>
+      <span class="v">${taka(l.line)}</span></div>`).join("")
+    + `<div class="tot">
+         ${order.discount > 0
+           ? `<div class="tline"><span>Subtotal</span><span>${taka(order.subtotal)}</span></div>
+              <div class="tline save"><span>${esc(order.coupon)} discount</span>
+              <span>−${taka(order.discount)}</span></div>` : ""}
+         <div class="tline"><span>Delivery</span><span>${
+           order.delivery === "free" ? "Free" : "Courier — charge at actual"}</span></div>
+         <div class="tline grand"><span>Pay on delivery</span>
+         <span class="v">${taka(order.total)}</span></div>
+         ${order.delivery === "courier"
+           ? `<div class="roundnote courier">+ courier charge, paid to the rider</div>` : ""}
+       </div>`;
+
+  if (saved){
+    $("doneEmoji").textContent = "🍫";
+    $("doneTitle").textContent = "Order received, " + order.name + "!";
+    $("doneSub").textContent   = "Pay on delivery. 🍫";
+    $("waPanel").hidden = true;
+    cart = {}; coupon = null; saveCart(); refresh();
+  } else {
+    pendingOrder = order;
+    $("doneEmoji").textContent = "📩";
+    $("doneTitle").textContent = "One tap left, " + order.name + "!";
+    $("doneSub").textContent   = "Send it on WhatsApp and you're done. Pay on delivery. 🍫";
+    $("waLink").href = "https://wa.me/" + CONFIG.WHATSAPP_NUMBER
+                     + "?text=" + encodeURIComponent(orderText(order));
+    $("waPanel").hidden = false;           // cart kept until they actually send
+  }
+  show($("thanks"));
+}
+
+$("waLink").addEventListener("click", () => {
+  if (!pendingOrder) return;
+  const nm = pendingOrder.name;
+  setTimeout(() => {
+    $("doneEmoji").textContent = "🍫";
+    $("doneTitle").textContent = "Order received, " + nm + "!";
+    $("doneSub").textContent   = "Pay on delivery. 🍫";
+    $("waPanel").hidden = true;
+    pendingOrder = null;
+    cart = {}; coupon = null; saveCart(); refresh();
+  }, 900);
+});
+
+$("btnCopy").addEventListener("click", async () => {
+  if (!pendingOrder) return;
+  const txt = orderText(pendingOrder).replace(/\*/g, "");
+  try{
+    await navigator.clipboard.writeText(txt);
+    $("btnCopy").textContent = "Copied ✓ — paste it to us";
+  }catch(e){ window.prompt("Copy this and send it to us:", txt); }
+});
+
+$("btnAgain").addEventListener("click", () => {
+  hide($("thanks")); pendingOrder = null;
+  $("fCoupon").value = ""; $("couponMsg").className = "cmsg";
+  $("btnCoupon").textContent = "Apply";
+});
+
+/* ------------------------------- boot ------------------------------- */
+for (const id in cart){                    // drop stale items / over-stock
+  const p = findP(id);
+  if (!p || p.stock <= 0) delete cart[id];
+  else if (cart[id] > p.stock) cart[id] = p.stock;
+}
+/* fill the delivery text from FREE_ZONES / COURIERS so it's edited in one place */
+$("zoneList").innerHTML = "<i>✓</i> " + FREE_ZONES.map(esc).join("<br><i>✓</i> ");
+$("courierList").textContent = COURIERS;
+
+/* coupon box: hidden unless you switch it on in CONFIG */
+$("couponWrap").hidden = !CONFIG.SHOW_COUPON_BOX;
+
+/* a private link like  ?coupon=twinbit  applies the discount silently */
+const urlCoupon = new URLSearchParams(location.search).get("coupon");
+if (urlCoupon) setCoupon(urlCoupon, true);
+
+if (!isConfigured() || CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
+  $("setupWarn").style.display = "block";
+}
+refresh();
+</script>
+</body>
+</html>
