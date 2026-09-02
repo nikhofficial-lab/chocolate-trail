@@ -1808,6 +1808,9 @@ const CONFIG = {
   // Stop waiting for the read-only catalog instead of leaving the page hanging.
   CATALOG_TIMEOUT_MS: 30000,
 
+  // Allow a production Apps Script cold start before coupon checking stops.
+  COUPON_TIMEOUT_MS: 30000,
+
   // Your WhatsApp number for the fallback: country code, digits only, no +.
   // 01712345678  ->  "8801712345678"   (880 = Bangladesh, drop the leading 0)
   WHATSAPP_NUMBER: "9190468 89546",
@@ -1817,8 +1820,8 @@ const CONFIG = {
 
   CORPORATE_TIMEOUT_MS: 12000,
 
-  // Seconds to wait for the Sheet before offering WhatsApp instead.
-  TIMEOUT_MS: 12000,
+  // Last-resort wait for each same-token order confirmation attempt.
+  ORDER_TIMEOUT_MS: 45000,
 
   // Should customers SEE a coupon box on the checkout page?
   //   true  = the box shows (what you have now). It says only "Enter code" —
@@ -2483,7 +2486,7 @@ function refresh(){
   $("btnCheckout").disabled = n === 0 || !cartReviewAllowed();
   $("btnCheckout").textContent = cartReviewAllowed() ? "Review order →" : "Availability required";
   $("btnSubmit").disabled = orderSubmitting || n === 0 || !orderingAllowed();
-  $("btnSubmit").textContent = orderSubmitting ? "Submitting once…" :
+  $("btnSubmit").textContent = orderSubmitting ? "Securing your order…" :
     orderingAllowed() ? "Place order · Pay on delivery" : "Ordering currently paused";
   saveCart();
   if (!$("checkout").hidden){
@@ -2673,7 +2676,7 @@ async function validateOneCoupon(raw,source="typed"){
   if (couponValidationController) couponValidationController.abort();
   const controller = new AbortController();
   couponValidationController = controller;
-  const timer = setTimeout(() => controller.abort(),CONFIG.TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(),CONFIG.COUPON_TIMEOUT_MS);
   $("btnCoupon").disabled = true;
   $("btnCoupon").textContent = "Checking…";
   try{
@@ -2685,7 +2688,12 @@ async function validateOneCoupon(raw,source="typed"){
     const data = validateCouponResponse(await response.json(),source);
     if (!data.valid){
       if (source === "prefilled") $("fCoupon").value = "";
-      clearCoupon(data.message,source !== "prefilled" && !!data.message); return false;
+      const unavailable = data.ok === false;
+      const message = unavailable && source !== "prefilled"
+        ? "Coupon checking is temporarily unavailable. This code has not been applied. Retry Apply or clear the field before placing the order."
+        : data.message;
+      clearCoupon(message,!unavailable && source !== "prefilled" && !!message);
+      return false;
     }
     coupon = {code:data.normalized_code,customerDiscountPct:data.customer_discount_pct};
     $("fCoupon").value = data.normalized_code;
@@ -2696,7 +2704,8 @@ async function validateOneCoupon(raw,source="typed"){
     return true;
   }catch(error){
     if (source === "prefilled") $("fCoupon").value = "";
-    clearCoupon(source === "prefilled" ? "" : "Coupon validation is temporarily unavailable.",source !== "prefilled");
+    clearCoupon(source === "prefilled" ? "" :
+      "Coupon checking is temporarily unavailable. This code has not been applied. Retry Apply or clear the field before placing the order.",false);
     return false;
   }finally{
     clearTimeout(timer);
@@ -2752,11 +2761,17 @@ function validateOrderForm(){
     ok = false;
     showOrderStatus("changed_stock");
   }
+  const visibleCouponCode = $("fCoupon").value.trim().toUpperCase();
+  if (visibleCouponCode !== "" && (!coupon || coupon.code !== visibleCouponCode)) {
+    $("couponMsg").className = "cmsg show";
+    $("couponMsg").textContent = "This visible code has not been applied. Retry Apply or clear the field before placing the order.";
+    ok = false;
+  }
   if (!ok) return null;
   return {
     name,phone,address,delivery,note,
     items:basket.map(line => ({product_id:line.id,quantity:line.qty})),
-    coupon_code:coupon ? coupon.code : ""
+    coupon_code:visibleCouponCode === "" ? "" : coupon.code
   };
 }
 
@@ -2882,6 +2897,15 @@ function showOrderStatus(state){
   return state;
 }
 
+function showOrderProgress(title,message){
+  const node = $("orderStatus");
+  node.className = "order-status";
+  node.innerHTML = "";
+  const strong = document.createElement("strong"); strong.textContent = title;
+  const text = document.createElement("span"); text.textContent = message;
+  node.append(strong,text); node.hidden = false;
+}
+
 function generateOrderToken(){
   if (!window.crypto || typeof window.crypto.getRandomValues !== "function") throw orderFailure("ORDER_UNAVAILABLE");
   const bytes = new Uint8Array(16); window.crypto.getRandomValues(bytes);
@@ -2915,14 +2939,14 @@ async function orderNetworkTransport(url,options){
   return window.fetch.call(window,url,options);
 }
 
-async function submitV4Order(payload){
+async function submitV4Order(payload,body){
   if (!exactOwnKeys(payload,ORDER_REQUEST_FIELDS)) throw orderFailure("INVALID_REQUEST");
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(),CONFIG.TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(),CONFIG.ORDER_TIMEOUT_MS);
   try{
     const response = await orderNetworkTransport(orderRequestUrl(),{
       method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify(payload),signal:controller.signal,redirect:"follow",
+      body,signal:controller.signal,redirect:"follow",
       credentials:"omit",referrerPolicy:"no-referrer"
     });
     if (!response.ok) throw orderFailure("ORDER_UNAVAILABLE");
@@ -2935,6 +2959,31 @@ async function submitV4Order(payload){
     if (navigator.onLine === false) throw orderFailure("OFFLINE");
     throw orderFailure("ORDER_UNAVAILABLE");
   }finally{ clearTimeout(timer); }
+}
+
+async function submitOrderWithOneAutomaticReconciliation(payload){
+  const body = JSON.stringify(payload);
+  try{
+    return await submitV4Order(payload,body);
+  }catch(firstError){
+    const firstState = orderUiStateForCode(firstError && firstError.orderCode);
+    if (!["timeout","offline","malformed","unavailable"].includes(firstState)) throw firstError;
+    showOrderProgress("Confirming your order…",
+      "The same order reference is being checked once more. No second order will be created.");
+    return await submitV4Order(payload,body);
+  }
+}
+
+async function ensureVisibleCouponReady(){
+  const code = $("fCoupon").value.trim().toUpperCase();
+  if (code === "") {
+    if (coupon) clearCoupon();
+    return true;
+  }
+  if (coupon && coupon.code === code) return true;
+  const valid = await validateOneCoupon(code,"typed");
+  if (!valid) $("fCoupon").focus();
+  return valid;
 }
 
 function recoveryText(request){
@@ -2954,22 +3003,25 @@ function recoveryText(request){
 $("orderForm").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   if (orderSubmitting) return;
-  const fields = validateOrderForm();
-  if (!fields){
-    const first = document.querySelector(".err.show");
-    if (first){
-      const control = document.querySelector('[aria-describedby~="' + first.id + '"]');
-      if (control) control.focus();
-    }
-    return;
-  }
-  let payload;
-  try { payload = buildOrderPayload(fields); }
-  catch(error){ showOrderFailure("unavailable",fields); return; }
+  let payload = null;
   orderSubmitting = true; refresh();
   $("orderStatus").hidden = true;
   try{
-    const response = await submitV4Order(payload);
+    if (!(await ensureVisibleCouponReady())) return;
+    const fields = validateOrderForm();
+    if (!fields){
+      const first = document.querySelector(".err.show");
+      if (first){
+        const control = document.querySelector('[aria-describedby~="' + first.id + '"]');
+        if (control) control.focus();
+      }
+      return;
+    }
+    try { payload = buildOrderPayload(fields); }
+    catch(error){ showOrderFailure("unavailable",fields); return; }
+    showOrderProgress("Securing your order…",
+      "Please keep this page open while stock and the final payable are confirmed.");
+    const response = await submitOrderWithOneAutomaticReconciliation(payload);
     if (response.ok === true) showAuthoritativeOrder(response);
     else {
       const state = orderUiStateForCode(response.error);
@@ -2983,7 +3035,9 @@ $("orderForm").addEventListener("submit", async (ev) => {
       showOrderFailure(state,recoveryRequest);
     }
   }catch(error){
-    showOrderFailure(orderUiStateForCode(error && error.orderCode),payload);
+    showOrderFailure(
+      orderUiStateForCode(error && error.orderCode), payload
+    );
   }finally{
     orderSubmitting = false; refresh();
   }
