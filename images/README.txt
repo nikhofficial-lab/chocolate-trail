@@ -1,39 +1,52 @@
-Put your product photos in this folder.
+Chocolate Trail local image inventory
+=====================================
 
-YOU DO NOT NEED PHOTOS TO LAUNCH.
-Without them each card shows a coloured wrapper tile in that chocolate's real
-brand colours. The site looks finished either way -- add photos when you can.
+This folder contains the local image files used by the embedded preview /
+emergency-fallback catalog. Product image paths must stay local; do not put a
+remote image URL in the catalog or future Sheet data.
 
-USE YOUR OWN PHOTOS
--------------------
-You have the products in your hand, so shoot them yourself. Pictures pulled off
-Google belong to Mars / Cadbury / Amul, and a public order page using them is a
-copyright problem you don't need. Your own photo of the actual bar also builds
-more trust with colleagues -- it proves you really have the stock.
+11 PRODUCT IMAGES (CURRENT CONFIRMED WEIGHTS)
+---------------------------------------------
+    galaxy-cookie-crumble.jpg                 Galaxy Cookie Crumble — 50 g
+    dm-roast-almond.jpg                       Cadbury Dairy Milk Roast Almond — 75 g
+    dm-crackle.jpg                            Cadbury Dairy Milk Crackle — 36 g
+    dm-crispello.jpg                          Cadbury Dairy Milk Crispello — 35 g
+    amul-dark.jpg                             Amul Dark Chocolate 55% Cocoa — 150 g
+    amul-sugarfree-dark.jpg                   Amul Sugar Free Dark Chocolate 55% Cocoa — 150 g
+    amul-india-twilight-tryst-55-125.webp     Amul India Twilight Tryst 55% — 125 g
+    galaxy-fusions-dark-70-56.webp            Galaxy Fusions Dark Chocolate 70% — 56 g
+    kitkat-delights-rich-150.webp             Nestlé KitKat Delights Rich — 150 g
+    kitkat-delights-dark-50.webp              Nestlé KitKat Delights Dark — 50 g
+    kitkat-delights-dark-150.webp             Nestlé KitKat Delights Dark — 150 g
 
-Flat on a plain surface, good light, camera straight above.
+SAFE CASE-SENSITIVE NAMING RULE
+-------------------------------
+Use the exact lowercase filename shown above, including its extension. Use no
+spaces or capital letters. GitHub Pages is case-sensitive, so a case-only
+change that appears to work on Windows can fail after publication. A future
+Sheet-driven catalog must store the same safe local filename/path, never an
+arbitrary remote URL.
 
-EXACT FILENAMES THE SITE EXPECTS
---------------------------------
-    galaxy-cookie-crumble.jpg     Galaxy Cookie Crumble 50g
-    dm-roast-almond.jpg           Cadbury Dairy Milk Roast Almond 75g
-    dm-crackle.jpg                Cadbury Dairy Milk Crackle 35g
-    dm-crispello.jpg              Cadbury Dairy Milk Crispello 35g
-    amul-sugarfree-dark.jpg       Amul Sugar Free Dark 125g
-    amul-dark.jpg                 Amul Dark Chocolate 125g
-
-Lowercase, no spaces, no capital letters. GitHub Pages is case-sensitive:
-"Amul-Dark.JPG" will NOT load even though it works on your Windows laptop.
-
-SIZE
-----
-Roughly 800 x 600 pixels, under 200 KB each.
-Resize free at https://squoosh.app -- no signup, works in the browser.
-Six full-size phone photos will make the page crawl on mobile data.
-
-ADDING A NEW CHOCOLATE LATER
+PROVISIONAL PILOT PACK SHOTS
 ----------------------------
-Name the photo whatever you like, then write that same name in the new
-product's "photo" field in index.html:   photo: "images/your-file.jpg"
+The five WebP pack shots added on 2026-08-29 are provisional pilot assets. Anik
+accepted them for this pilot, but public reuse rights have not been established.
+Their exact source, fallback class, hashes and rights uncertainty remain in:
 
-You can delete this file once your photos are in.
+    test-artifacts/product-image-candidates-2026-08-29/SOURCE_MANIFEST.md
+
+If a source or rights problem is found, replace the affected pilot asset
+file-for-file only after manual review, retaining the exact approved filename so
+the catalog identity and local path remain stable. Pilot use does not establish
+permission or Chocolate Trail ownership of a sourced pack shot.
+
+IMAGE HANDLING
+--------------
+Keep product images square, clear and lightweight. Preserve the complete front
+of the exact pack and identifying weight/variant. Do not crop identifying text,
+recolour packaging, remove a watermark, or replace one size or variant with
+another. The page has restrained local fallback art if an image is missing, but
+all 11 listed files are expected to decode normally.
+
+The hero and repeating pattern files in this folder are presentation assets,
+not product entries. Do not rename or replace them as part of catalog upkeep.
