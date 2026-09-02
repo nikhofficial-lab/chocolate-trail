@@ -2518,8 +2518,178 @@ $("grid").addEventListener("click", (ev) => {
 });
 
 /* ------------------------------ screens ------------------------------ */
-function show(el){ el.hidden = false; document.body.style.overflow = "hidden"; el.scrollTop = 0; }
-function hide(el){ el.hidden = true;  document.body.style.overflow = ""; }
+const CT_HISTORY_MARKER = "chocolateTrailRouteV1";
+const CT_ROUTES = new Set(["catalog","checkout","corporate","order-result"]);
+let ctCurrentRoute = "catalog";
+let ctRouteRendered = false;
+let ctOpenerSequence = 0;
+
+function ctBaseUrl(){ return location.pathname + location.search; }
+function ctRouteUrl(route){
+  if (route === "corporate") return ctBaseUrl() + "#corporateView";
+  if (route === "checkout") return ctBaseUrl() + "#checkout";
+  if (route === "order-result") return ctBaseUrl() + "#orderResult";
+  return ctBaseUrl();
+}
+function ctValidState(state){
+  return !!state && state[CT_HISTORY_MARKER] === true && CT_ROUTES.has(state.route);
+}
+function ctState(route,details={}){
+  return {
+    [CT_HISTORY_MARKER]:true,
+    route,
+    catalogScrollY:Number.isFinite(details.catalogScrollY) ? details.catalogScrollY : window.scrollY,
+    focusId:typeof details.focusId === "string" ? details.focusId : "",
+    hasCatalogPredecessor:details.hasCatalogPredecessor === true
+  };
+}
+function ctOpenerId(trigger){
+  if (!trigger) return "";
+  if (!trigger.id) trigger.id = "ct-history-opener-" + (++ctOpenerSequence);
+  return trigger.id;
+}
+function ctCatalogHeading(){
+  const heading = document.querySelector("#chocolates h2");
+  if (heading) heading.setAttribute("tabindex","-1");
+  return heading;
+}
+function ctCanReviewOrder(){
+  return cartCount() > 0 && cartReviewAllowed();
+}
+function ctRenderRoute(nextState,options={}){
+  let state = ctValidState(nextState) ? nextState : ctState("catalog",{catalogScrollY:window.scrollY});
+  if (state.route === "checkout" && !ctCanReviewOrder()) {
+    state = ctState("catalog",{
+      catalogScrollY:state.catalogScrollY,
+      focusId:state.focusId
+    });
+    history.replaceState(state,"",ctRouteUrl("catalog"));
+  }
+
+  const previousRoute = ctCurrentRoute;
+  const routeChanged = !ctRouteRendered || previousRoute !== state.route;
+  ctCurrentRoute = state.route;
+  ctRouteRendered = true;
+
+  const checkoutOpen = state.route === "checkout";
+  const corporateOpen = state.route === "corporate";
+  const resultOpen = state.route === "order-result";
+  $("checkout").hidden = !checkoutOpen;
+  $("thanks").hidden = !resultOpen;
+  $("corporateView").hidden = !corporateOpen;
+  document.body.classList.toggle("corporate-open",corporateOpen);
+  document.body.style.overflow = state.route === "catalog" ? "" : "hidden";
+
+  if (routeChanged && checkoutOpen) {
+    drawSummary();
+    $("orderStatus").hidden = true;
+    $("checkout").scrollTop = 0;
+  }
+  if (routeChanged && corporateOpen) {
+    prepareCorporateForm();
+    $("corporateView").scrollTop = 0;
+  }
+  if (routeChanged && resultOpen) $("thanks").scrollTop = 0;
+  if (options.initial === true) return;
+
+  setTimeout(() => {
+    if (state.route === "checkout") $("btnBack").focus();
+    else if (state.route === "corporate") $("corporateBack").focus();
+    else if (state.route === "order-result") $("doneTitle").focus();
+    else {
+      window.scrollTo({top:Math.max(0,state.catalogScrollY || 0),behavior:"auto"});
+      const returnTarget = state.focusId ? document.getElementById(state.focusId) : null;
+      const usableReturnTarget = returnTarget && document.contains(returnTarget) &&
+        !(returnTarget.id === "btnCheckout" && !ctCanReviewOrder());
+      (usableReturnTarget ? returnTarget : ctCatalogHeading())?.focus({preventScroll:true});
+    }
+  },0);
+}
+function ctOpenRoute(route,trigger){
+  if (!CT_ROUTES.has(route) || route === "catalog" || ctCurrentRoute === route) return;
+  if (route === "checkout" && !ctCanReviewOrder()) return;
+  const current = ctValidState(history.state) ? history.state : ctState("catalog");
+  const focusId = ctOpenerId(trigger);
+  const catalogState = ctState("catalog",{
+    catalogScrollY:ctCurrentRoute === "catalog" ? window.scrollY : current.catalogScrollY,
+    focusId:focusId || current.focusId
+  });
+  if (ctCurrentRoute === "catalog") {
+    history.replaceState(catalogState,"",ctRouteUrl("catalog"));
+    const overlayState = ctState(route,{
+      catalogScrollY:catalogState.catalogScrollY,
+      focusId:catalogState.focusId,
+      hasCatalogPredecessor:true
+    });
+    history.pushState(overlayState,"",ctRouteUrl(route));
+    ctRenderRoute(overlayState);
+    return;
+  }
+  const replacement = ctState(route,{
+    catalogScrollY:current.catalogScrollY,
+    focusId:focusId || current.focusId,
+    hasCatalogPredecessor:current.hasCatalogPredecessor
+  });
+  history.replaceState(replacement,"",ctRouteUrl(route));
+  ctRenderRoute(replacement);
+}
+function ctReplaceRoute(route){
+  const current = ctValidState(history.state) ? history.state : ctState("catalog");
+  const replacement = ctState(route,{
+    catalogScrollY:current.catalogScrollY,
+    focusId:current.focusId,
+    hasCatalogPredecessor:current.hasCatalogPredecessor
+  });
+  history.replaceState(replacement,"",ctRouteUrl(route));
+  ctRenderRoute(replacement);
+}
+function ctReturnToCatalog(){
+  const current = ctValidState(history.state) ? history.state : null;
+  if (current && current.route !== "catalog" && current.hasCatalogPredecessor) {
+    history.back();
+    return;
+  }
+  const catalogState = ctState("catalog",{
+    catalogScrollY:current ? current.catalogScrollY : window.scrollY,
+    focusId:current ? current.focusId : ""
+  });
+  history.replaceState(catalogState,"",ctRouteUrl("catalog"));
+  ctRenderRoute(catalogState);
+}
+function ctInitializeHistory(){
+  const existing = ctValidState(history.state) ? history.state : null;
+  if (location.hash === "#corporateView") {
+    if (existing && existing.route === "corporate") {
+      ctRenderRoute(existing,{initial:true});
+      return;
+    }
+    const catalogState = ctState("catalog",{catalogScrollY:0});
+    history.replaceState(catalogState,"",ctRouteUrl("catalog"));
+    const corporateState = ctState("corporate",{catalogScrollY:0,hasCatalogPredecessor:true});
+    history.pushState(corporateState,"",ctRouteUrl("corporate"));
+    ctRenderRoute(corporateState,{initial:true});
+    return;
+  }
+  if (existing && existing.route === "checkout" && ctCanReviewOrder()) {
+    ctRenderRoute(existing,{initial:true});
+    return;
+  }
+  const catalogState = ctState("catalog",{
+    catalogScrollY:existing ? existing.catalogScrollY : window.scrollY,
+    focusId:existing ? existing.focusId : ""
+  });
+  history.replaceState(catalogState,"",ctRouteUrl("catalog"));
+  ctRenderRoute(catalogState,{initial:true});
+}
+
+window.addEventListener("popstate",event => {
+  let state = ctValidState(event.state) ? event.state : null;
+  if (!state && location.hash === "#corporateView") {
+    state = ctState("corporate",{catalogScrollY:window.scrollY,hasCatalogPredecessor:true});
+    history.replaceState(state,"",ctRouteUrl("corporate"));
+  }
+  ctRenderRoute(state || ctState("catalog",{catalogScrollY:window.scrollY}));
+});
 
 function drawSummary(){
   $("sumRows").innerHTML = lines().map(l => `
@@ -2551,11 +2721,7 @@ function drawSummary(){
 }
 
 function closeEmptyCheckout(){
-  hide($("checkout"));
-  const catalogHeading = document.querySelector("#chocolates h2");
-  catalogHeading.setAttribute("tabindex","-1");
-  catalogHeading.scrollIntoView({block:"start"});
-  catalogHeading.focus({preventScroll:true});
+  ctReturnToCatalog();
 }
 
 function focusSummaryControl(id,action){
@@ -2600,12 +2766,9 @@ $("dopts").addEventListener("change", (ev) => {
 
 $("btnCheckout").addEventListener("click", () => {
   if (cartCount() === 0 || !cartReviewAllowed()) return;
-  drawSummary();
-  $("orderStatus").hidden = true;
-  show($("checkout"));
-  $("btnBack").focus();
+  ctOpenRoute("checkout",$("btnCheckout"));
 });
-$("btnBack").addEventListener("click", () => { hide($("checkout")); $("btnCheckout").focus(); });
+$("btnBack").addEventListener("click",ctReturnToCatalog);
 
 /* ------------------------------ coupon ------------------------------
    The browser asks about one submitted code only. It never contains or
@@ -3046,7 +3209,6 @@ $("orderForm").addEventListener("submit", async (ev) => {
 /* --------------------------- confirmation --------------------------- */
 function showAuthoritativeOrder(rawResponse){
   const response = validateOrderResponse(rawResponse);
-  hide($("checkout"));
   $("thanks").querySelector(".done").classList.remove("is-failure");
   $("doneEmoji").textContent = "✓";
   $("doneTitle").textContent = "Order received";
@@ -3079,9 +3241,8 @@ function showAuthoritativeOrder(rawResponse){
   pendingRecovery = null;
   lastOrderFailureState = "";
   currentOrderAttempt = null;
+  ctReplaceRoute("order-result");
   cart = {}; coupon = null; saveCart(); refresh();
-  show($("thanks"));
-  $("doneTitle").focus?.();
   return response;
 }
 
@@ -3089,7 +3250,6 @@ function showOrderFailure(state,request){
   const safe = ORDER_FAILURE_STATES[state] || ORDER_FAILURE_STATES.unavailable;
   pendingRecovery = request && Array.isArray(request.items) ? request : null;
   lastOrderFailureState = state;
-  hide($("checkout"));
   $("thanks").querySelector(".done").classList.add("is-failure");
   $("doneEmoji").textContent = state === "offline" ? "⌁" : "!";
   $("doneTitle").textContent = safe.title;
@@ -3101,8 +3261,7 @@ function showOrderFailure(state,request){
   $("btnRetryOrder").hidden = !pendingRecovery || !["timeout","offline","malformed","unavailable"].includes(state);
   $("btnAgain").textContent = state === "idempotency_conflict" ? "Start a new logical order" : "Back to chocolates";
   $("btnCopy").textContent = "Copy recovery summary";
-  show($("thanks"));
-  $("doneTitle").focus();
+  ctReplaceRoute("order-result");
   return state;
 }
 
@@ -3125,17 +3284,16 @@ $("btnCopy").addEventListener("click", async () => {
 
 $("btnRetryOrder").addEventListener("click",() => {
   if (!pendingRecovery) return;
-  hide($("thanks")); show($("checkout"));
+  ctReplaceRoute("checkout");
   $("orderForm").requestSubmit();
 });
 
 $("btnAgain").addEventListener("click", () => {
-  hide($("thanks")); pendingRecovery = null;
+  pendingRecovery = null;
   if (lastOrderFailureState === "idempotency_conflict") currentOrderAttempt = null;
   lastOrderFailureState = "";
   $("btnAgain").textContent = "Back to chocolates";
-  document.body.style.overflow = "";
-  document.querySelector("#chocolates").scrollIntoView({block:"start"});
+  ctReturnToCatalog();
 });
 
 /* ----------------------- corporate inquiry view -----------------------
@@ -3198,43 +3356,24 @@ function prepareCorporateForm(){
   else $("corporateEmailLink").removeAttribute("href");
 }
 
-function openCorporate(trigger,moveFocus=true){
-  if (trigger) corporateReturnFocus = trigger;
-  prepareCorporateForm();
-  document.body.classList.add("corporate-open");
-  document.body.style.overflow = "hidden";
-  $("corporateView").scrollTop = 0;
-  if (moveFocus) setTimeout(() => $("corporateBack").focus(),0);
-}
-
-function closeCorporate(moveFocus=true,cleanHash=true){
-  document.body.classList.remove("corporate-open");
-  document.body.style.overflow = "";
-  if (cleanHash && location.hash === "#corporateView") {
-    history.replaceState(null,"",location.pathname + location.search);
-  }
-  if (moveFocus && corporateReturnFocus && document.contains(corporateReturnFocus)) {
-    corporateReturnFocus.focus();
-  }
-}
-
 document.querySelectorAll("[data-corporate-open]").forEach(link => {
   link.addEventListener("click",event => {
     event.preventDefault();
-    openCorporate(event.currentTarget);
+    corporateReturnFocus = event.currentTarget;
+    ctOpenRoute("corporate",event.currentTarget);
   });
 });
 document.querySelectorAll("[data-corporate-close]").forEach(link => {
   link.addEventListener("click",event => {
     event.preventDefault();
-    closeCorporate();
+    ctReturnToCatalog();
   });
 });
 
 $("corporateView").addEventListener("keydown",event => {
   if (!document.body.classList.contains("corporate-open")) return;
   if (event.key === "Escape") {
-    event.preventDefault(); closeCorporate(); return;
+    event.preventDefault(); ctReturnToCatalog(); return;
   }
   if (event.key !== "Tab") return;
   const focusable = [...$("corporateView").querySelectorAll(
@@ -3244,11 +3383,6 @@ $("corporateView").addEventListener("keydown",event => {
   const first = focusable[0], last = focusable[focusable.length - 1];
   if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
   else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-});
-
-window.addEventListener("hashchange",() => {
-  if (location.hash === "#corporateView") openCorporate(null);
-  else if (document.body.classList.contains("corporate-open")) closeCorporate(false,false);
 });
 
 function corporateSafeText(value,minimum,maximum){
@@ -3520,8 +3654,8 @@ if (urlCoupon){
 if (CONFIG.WEBAPP_URL.indexOf("script.google.com") === -1 || CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
   $("setupWarn").style.display = "block";
 }
-if (location.hash === "#corporateView") openCorporate(null,false);
 refresh();
+ctInitializeHistory();
 setTimeout(loadCatalog,0);
 </script>
 </body>
