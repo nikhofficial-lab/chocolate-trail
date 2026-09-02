@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#211008">
+<meta name="theme-color" content="#180c10">
 <meta name="description" content="Chocolate Trail — imported &amp; premium chocolate, pre-order in Dhaka. Cash on delivery.">
 <title>Chocolate Trail — চকলেটের খোঁজে</title>
 
@@ -39,25 +39,28 @@
    PALETTE — change a colour here, it changes everywhere
    ============================================================ */
 :root{
-  --base:      #211008;   /* page background — deep cocoa      */
-  --base-2:    #2b1a12;   /* raised surfaces                   */
-  --card:      #352116;   /* product card                      */
-  --line:      #4a2f21;   /* borders, dividers                 */
-  --line-soft: #3b2418;
-  --cream:     #f7ebdc;   /* main text                         */
-  --cream-2:   #c9ae98;   /* secondary text                    */
-  --cream-3:   #937763;   /* faint text                        */
-  --gold:      #e5ac52;   /* accent, prices, buttons           */
-  --gold-2:    #f6cd83;   /* brighter gold                     */
-  --ok:        #7fc98a;
-  --warn:      #e8a93f;
-  --gone:      #cd7d6f;
+  --base:      #180c10;   /* page background — berry cocoa     */
+  --base-2:    #241319;   /* raised surfaces                   */
+  --card:      #2f1918;   /* product card                      */
+  --line:      #5b3a32;   /* borders, dividers                 */
+  --line-soft: #3d2424;
+  --cream:     #fff5df;   /* main text                         */
+  --cream-2:   #ddc7b2;   /* secondary text                    */
+  --cream-3:   #b89a84;   /* faint text                        */
+  --gold:      #e2ad52;   /* accent, prices, buttons           */
+  --gold-2:    #f2cf83;   /* brighter gold                     */
+  --caramel:   #c8783f;
+  --berry:     #8c3e56;
+  --violet:    #5b4a70;
+  --ok:        #8fd29a;
+  --warn:      #efb85d;
+  --gone:      #df9588;
   --wa:        #25d366;
 
-  --r-sm: 10px; --r: 14px; --r-lg: 20px;
+  --r-sm: 10px; --r: 14px; --r-lg: 24px;
   --bar: 78px;
-  --shadow: 0 6px 24px rgba(0,0,0,.34);
-  --maxw: 760px;
+  --shadow: 0 18px 50px rgba(8,3,1,.28);
+  --maxw: 1120px;
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
@@ -111,6 +114,13 @@ img{ max-width:100%; }
   color:var(--gold-2); background:rgba(229,172,82,.11);
   border:1px solid rgba(229,172,82,.3); padding:5px 11px; border-radius:999px;
   white-space:nowrap;
+}
+.top-actions{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+.top-actions .chip{ margin-left:0; }
+.top-corporate{
+  display:inline-flex; align-items:center; min-height:34px; padding:5px 11px;
+  border:1px solid rgba(242,207,131,.34); border-radius:999px; color:var(--gold-2);
+  text-decoration:none; font-size:11px; font-weight:800; white-space:nowrap;
 }
 
 /* ----------------------------- hero ----------------------------- */
@@ -169,7 +179,7 @@ h1 .bn{ display:block; color:var(--gold); font-size:23px; margin-top:3px; font-w
    them. If you ever switch to wide photos, change this to 4/3 and they'll fit. */
 .photo{ position:relative; width:100%; aspect-ratio:1/1; overflow:hidden; }
 .art{
-  position:absolute; inset:0; display:flex; flex-direction:column;
+  position:absolute; inset:0; z-index:0; display:flex; flex-direction:column;
   align-items:center; justify-content:center; gap:5px; text-align:center; padding:14px;
 }
 .art::after{                       /* soft sheen, makes it read as packaging */
@@ -181,7 +191,7 @@ h1 .bn{ display:block; color:var(--gold); font-size:23px; margin-top:3px; font-w
          filter:drop-shadow(0 3px 8px rgba(0,0,0,.4)); }
 .art .t{ font-size:10.5px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
          position:relative; z-index:1; opacity:.9; }
-.photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.photo img{ position:absolute; inset:0; z-index:1; width:100%; height:100%; object-fit:cover; display:block; }
 
 .badge{
   position:absolute; top:11px; left:11px; z-index:3;
@@ -271,12 +281,27 @@ h1 .bn{ display:block; color:var(--gold); font-size:23px; margin-top:3px; font-w
 /* summary */
 .panel{ background:var(--base-2); border:1px solid var(--line);
         border-radius:var(--r-lg); padding:16px; margin:18px 0; }
-.srow{ display:flex; justify-content:space-between; gap:14px; padding:9px 0;
+.srow{ display:grid; gap:9px; padding:11px 0;
        font-size:14px; border-bottom:1px dashed var(--line-soft); }
 .srow:last-child{ border-bottom:0; }
+.srow-main{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+.srow-name{ min-width:0; }
 .srow .q{ color:var(--cream-3); font-weight:600; }
 .srow .v{ color:var(--cream); font-weight:700; white-space:nowrap;
           font-variant-numeric:tabular-nums; }
+.srow-actions{ display:flex; align-items:center; gap:8px; }
+.srow-actions button{
+  min-width:44px; min-height:44px; padding:0 12px; border:1px solid var(--line);
+  border-radius:10px; background:var(--card); color:var(--cream); font:700 16px/1 inherit;
+  cursor:pointer;
+}
+.srow-actions button:disabled{ cursor:not-allowed; opacity:.42; }
+.srow-actions .srow-remove{ margin-left:auto; color:var(--cream-2); font-size:12px; }
+.srow-qty{ min-width:28px; color:var(--cream); font-weight:800; text-align:center;
+           font-variant-numeric:tabular-nums; }
+.sr-only{ position:absolute!important; width:1px!important; height:1px!important; padding:0!important;
+          margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important;
+          white-space:nowrap!important; border:0!important; }
 .tot{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
 .tline{ display:flex; justify-content:space-between; font-size:13.5px; padding:4px 0;
         color:var(--cream-2); font-variant-numeric:tabular-nums; }
@@ -331,14 +356,14 @@ h1 .bn{ display:block; color:var(--gold); font-size:23px; margin-top:3px; font-w
 label{ display:block; font-size:12px; font-weight:800; color:var(--cream-2);
        margin:18px 0 8px; letter-spacing:.7px; text-transform:uppercase; }
 label .opt{ font-weight:600; text-transform:none; letter-spacing:0; color:var(--cream-3); }
-input,textarea{
+input,textarea,select{
   width:100%; background:var(--card); color:var(--cream);
   border:1px solid var(--line); border-radius:var(--r);
   padding:14px; font-size:16px;          /* 16px keeps iOS from zooming */
   font-family:inherit; -webkit-appearance:none; appearance:none;
   transition:border-color .15s ease;
 }
-input:focus,textarea:focus{ outline:none; border-color:var(--gold);
+input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--gold);
                             box-shadow:0 0 0 3px rgba(229,172,82,.13); }
 input::placeholder,textarea::placeholder{ color:#7d6353; }
 textarea{ min-height:82px; resize:vertical; }
@@ -383,6 +408,728 @@ footer{ text-align:center; color:var(--cream-3); font-size:12.5px;
         padding:44px 16px 10px; line-height:2; }
 footer .b{ color:var(--cream-2); font-weight:700; }
 footer .heart{ color:var(--gold); }
+
+/* ============================================================
+   PREMIUM VISUAL REFRESH — presentation only; order logic is unchanged
+   ============================================================ */
+body{
+  min-width:320px;
+  background-color:var(--base);
+  background-image:
+    radial-gradient(900px 520px at 50% -170px, rgba(119,70,39,.38), transparent 72%),
+    radial-gradient(720px 540px at 100% 36%, rgba(91,52,29,.16), transparent 72%),
+    linear-gradient(180deg, #1a0e09 0%, #160b07 100%);
+}
+.wrap{ padding-inline:clamp(16px,4vw,28px); }
+
+.topbar{
+  background:rgba(20,10,6,.84);
+  border-bottom-color:rgba(240,204,134,.12);
+  box-shadow:0 1px 0 rgba(255,255,255,.015);
+}
+.topbar .inner{ padding-block:13px; padding-inline:clamp(16px,4vw,28px); }
+.brand{ gap:11px; font-size:15px; letter-spacing:.2px; }
+.brand .mark{
+  position:relative; display:inline-block; width:24px; height:24px;
+  border:1px solid rgba(240,204,134,.55); border-radius:7px;
+  background:linear-gradient(145deg, #e0ad54, #8a5429); transform:rotate(-5deg);
+  box-shadow:inset 0 0 0 3px rgba(33,17,9,.32), 0 5px 14px rgba(0,0,0,.28);
+}
+.brand .mark::before,.brand .mark::after{
+  content:""; position:absolute; background:rgba(33,17,9,.55); border-radius:1px;
+}
+.brand .mark::before{ width:1px; top:4px; bottom:4px; left:50%; }
+.brand .mark::after{ height:1px; left:4px; right:4px; top:50%; }
+.topbar .chip{
+  position:relative; padding:6px 11px 6px 25px; color:var(--gold-2);
+  background:rgba(217,166,79,.08); border-color:rgba(217,166,79,.28);
+}
+.topbar .chip::before{
+  content:""; position:absolute; left:11px; top:50%; width:6px; height:6px;
+  transform:translateY(-50%); border-radius:50%; background:var(--ok);
+  box-shadow:0 0 0 3px rgba(143,210,154,.1);
+}
+
+.hero{ padding:clamp(50px,9vw,92px) 0 22px; }
+.hero .emoji{ display:none; }
+.hero .kicker{
+  margin:0; color:var(--gold-2); font-size:10.5px; font-weight:800;
+  letter-spacing:2.5px; text-transform:uppercase;
+}
+h1{ margin-top:15px; font-size:clamp(34px,6.6vw,64px); letter-spacing:-1.8px; line-height:1.03; }
+h1 .bn{ margin-top:9px; font-size:clamp(21px,3.2vw,31px); letter-spacing:0; }
+.hero > p:not(.kicker){ max-width:48ch; margin-top:18px; font-size:clamp(14.5px,1.8vw,17px); line-height:1.65; }
+.hero::after{
+  content:""; display:block; width:62px; height:1px; margin:27px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.trust{ margin-top:22px; gap:8px; }
+.trust span{
+  position:relative; padding:7px 12px 7px 27px; font-size:11.5px;
+  background:rgba(44,26,18,.62); border-color:rgba(240,204,134,.13);
+}
+.trust span::before{
+  content:""; position:absolute; left:12px; top:50%; width:5px; height:5px;
+  transform:translateY(-50%); border-radius:50%; background:var(--gold);
+}
+
+.steps{
+  position:relative; margin:32px 0 8px; padding:20px 10px;
+  background:linear-gradient(135deg,rgba(54,32,22,.78),rgba(36,20,14,.88));
+  border-color:rgba(240,204,134,.12); box-shadow:inset 0 1px rgba(255,255,255,.02);
+}
+.step{ position:relative; }
+.step:not(:last-child)::after{
+  content:""; position:absolute; top:13px; left:calc(50% + 20px); width:calc(100% - 40px);
+  height:1px; background:linear-gradient(90deg,rgba(217,166,79,.36),rgba(217,166,79,.08));
+}
+.step .n{ position:relative; z-index:1; width:28px; height:28px; background:#2f1d14; }
+.step b{ margin-top:1px; font-size:12px; }
+.step span{ margin-top:4px; color:var(--cream-3); }
+
+.sec{ margin:clamp(42px,7vw,66px) 0 19px; }
+.sec h2{ color:var(--cream); font-size:11px; letter-spacing:2.1px; }
+.sec .rule{ background:linear-gradient(90deg,var(--line),transparent); }
+.sec .cnt{ color:var(--cream-3); }
+
+.grid{ gap:18px; }
+@media(min-width:700px){ .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; } }
+@media(min-width:1040px){ .grid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; } }
+
+/* Catalog source and freshness. Kept deliberately compact so the
+   accepted product cards and page composition remain the visual focus. */
+.catalog-status{
+  display:flex; align-items:flex-start; gap:12px; margin:-2px 0 18px; padding:13px 15px;
+  border:1px solid rgba(242,207,131,.2); border-radius:16px;
+  background:linear-gradient(135deg,rgba(91,74,112,.12),rgba(58,28,32,.72));
+  color:var(--cream-2); box-shadow:inset 0 1px rgba(255,255,255,.025);
+}
+.catalog-status .status-mark{
+  width:10px; height:10px; flex:0 0 10px; margin-top:5px; border-radius:50%;
+  background:var(--gold); box-shadow:0 0 0 5px rgba(226,173,82,.11);
+}
+.catalog-status .status-copy{ min-width:0; }
+.catalog-status strong{ display:block; color:var(--cream); font-size:13px; letter-spacing:.1px; }
+.catalog-status span{ display:block; margin-top:2px; font-size:11.5px; line-height:1.5; color:var(--cream-3); }
+.catalog-status.is-loading .status-mark{ animation:catalogPulse 1.25s ease-in-out infinite; }
+.catalog-status.is-fresh .status-mark{ background:var(--ok); box-shadow:0 0 0 5px rgba(127,201,138,.1); }
+.catalog-status.is-stale .status-mark,
+.catalog-status.is-emergency .status-mark{ background:var(--warn); box-shadow:0 0 0 5px rgba(232,169,63,.1); }
+.catalog-status.is-error .status-mark{ background:var(--gone); box-shadow:0 0 0 5px rgba(224,107,107,.1); }
+.catalog-empty{
+  grid-column:1/-1; min-height:220px; display:grid; place-items:center; text-align:center;
+  padding:42px clamp(22px,6vw,68px); border:1px solid rgba(242,207,131,.22);
+  border-radius:var(--r-lg); background:
+    radial-gradient(circle at 50% 0,rgba(226,173,82,.1),transparent 50%),
+    linear-gradient(145deg,rgba(58,28,32,.92),rgba(42,20,15,.96));
+}
+.catalog-empty .empty-mark{ display:block; color:var(--gold-2); font:32px/1 Georgia,serif; }
+.catalog-empty h3{ margin:13px 0 7px; color:var(--cream); font:600 clamp(21px,4vw,28px)/1.2 Georgia,serif; }
+.catalog-empty p{ max-width:560px; margin:0; color:var(--cream-2); font-size:13.5px; line-height:1.65; }
+.order-gate-note{
+  margin:18px 0 0; padding:11px 13px; border:1px solid rgba(232,169,63,.28);
+  border-radius:12px; color:var(--cream-2); background:rgba(232,169,63,.07);
+  font-size:12px; line-height:1.55; text-align:center;
+}
+@keyframes catalogPulse{ 50%{ opacity:.35; transform:scale(.72); } }
+@media(prefers-reduced-motion:reduce){ .catalog-status.is-loading .status-mark{ animation:none; } }
+.card{
+  position:relative; border-color:rgba(240,204,134,.14);
+  background:linear-gradient(180deg,#301d14 0%,#28170f 100%);
+  box-shadow:0 20px 60px rgba(5,2,1,.22), inset 0 1px rgba(255,255,255,.025);
+  transition:border-color .25s ease,transform .25s ease,box-shadow .25s ease;
+}
+@media(hover:hover){
+  .card:hover{ transform:translateY(-5px); border-color:rgba(240,204,134,.34); box-shadow:0 26px 70px rgba(5,2,1,.34); }
+}
+.card.active{ border-color:rgba(240,204,134,.78); box-shadow:0 22px 64px rgba(5,2,1,.3),0 0 0 1px rgba(217,166,79,.16); }
+.photo{ background:#f5efe7; }
+.photo::after{
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  box-shadow:inset 0 -42px 38px -40px rgba(34,15,7,.32);
+}
+.photo img{ object-fit:contain; }
+.art{ background-color:#3b2418; }
+.art .g{ font-size:32px; opacity:.82; }
+.badge,.wt{ top:13px; padding:6px 10px; background:rgba(24,13,8,.84); border-color:rgba(255,255,255,.12); }
+.badge{ left:13px; }
+.badge.pending{ color:#f2cf83; background:rgba(62,35,48,.9); border-color:rgba(242,207,131,.38); }
+.wt{ right:13px; color:var(--cream); }
+.body{ padding:19px; }
+.name{ font-size:17px; line-height:1.32; }
+.sub{ margin-top:4px; color:var(--gold-2); }
+.desc{ margin-top:10px; font-size:13px; color:var(--cream-2); line-height:1.58; }
+.priceline{ margin-top:17px; }
+.price{ font-size:23px; color:var(--gold-2); }
+.per{ color:var(--cream-3); }
+.actions{ margin-top:15px; }
+.btn-add,.btn-primary,.btn-submit{
+  color:#211109; background:linear-gradient(135deg,#edbd69,#d9a64f);
+  box-shadow:inset 0 1px rgba(255,255,255,.34),0 8px 22px rgba(112,67,27,.2);
+}
+.btn-add:hover,.btn-primary:hover,.btn-submit:hover{ background:linear-gradient(135deg,#f2ca82,#e0ac51); }
+.btn-add.preview-only[disabled]{
+  opacity:1; color:var(--gold-2); cursor:not-allowed;
+  border:1px solid rgba(242,207,131,.32);
+  background:linear-gradient(135deg,rgba(91,74,112,.2),rgba(58,28,32,.78));
+  box-shadow:inset 0 1px rgba(255,255,255,.04);
+}
+.qty{ background:rgba(18,9,6,.65); border-color:var(--gold); }
+
+#cartBar{
+  visibility:hidden; background:transparent; border:0;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom)); box-shadow:none; pointer-events:none;
+  transition:transform .3s cubic-bezier(.2,.85,.3,1),visibility 0s linear .3s;
+}
+#cartBar.show{ visibility:visible; transition-delay:0s; }
+#cartBar .inner{
+  pointer-events:auto; max-width:720px; padding:10px 11px 10px 17px; border:1px solid rgba(240,204,134,.2);
+  border-radius:20px; background:rgba(25,13,8,.94); backdrop-filter:blur(20px) saturate(145%);
+  box-shadow:0 16px 50px rgba(0,0,0,.44);
+}
+.ctotal{ color:var(--gold-2); }
+.btn-primary{ min-height:50px; border-radius:13px; }
+
+.screen{ background:var(--base); background-image:radial-gradient(760px 420px at 50% -180px,rgba(119,70,39,.3),transparent 72%); }
+.stop{ background:rgba(20,10,6,.9); border-bottom-color:rgba(240,204,134,.12); }
+.panel{ background:linear-gradient(145deg,rgba(47,28,19,.95),rgba(35,19,13,.96)); border-color:rgba(240,204,134,.14); }
+.dopt{ background:rgba(44,26,18,.7); border-color:rgba(240,204,134,.14); }
+.dopt.on{ background:rgba(217,166,79,.07); border-color:var(--gold); }
+input,textarea{ background:rgba(44,26,18,.78); border-color:rgba(240,204,134,.18); }
+.btn-back,.btn-ghost{ border-color:rgba(240,204,134,.18); }
+.done .big{
+  display:flex; align-items:center; justify-content:center; width:72px; height:72px; margin:0 auto;
+  border:1px solid rgba(240,204,134,.4); border-radius:22px; color:var(--gold-2);
+  background:rgba(217,166,79,.08); font-size:32px; font-family:system-ui,sans-serif;
+}
+
+.future-card{
+  position:relative; overflow:hidden; margin:clamp(54px,8vw,86px) 0 12px;
+  padding:clamp(24px,5vw,48px); border:1px solid rgba(240,204,134,.22); border-radius:28px;
+  background:linear-gradient(130deg,rgba(55,32,21,.94),rgba(31,17,11,.97));
+  box-shadow:0 26px 74px rgba(5,2,1,.3),inset 0 1px rgba(255,255,255,.035);
+}
+.future-card::before{
+  content:""; position:absolute; width:260px; height:260px; right:-105px; top:-125px;
+  border:1px solid rgba(240,204,134,.15); border-radius:50%; box-shadow:0 0 0 30px rgba(217,166,79,.025),0 0 0 62px rgba(217,166,79,.018);
+}
+.future-content{ position:relative; z-index:1; max-width:760px; }
+.future-eyebrow{ margin:0 0 11px; color:var(--gold-2); font-size:10px; font-weight:800; letter-spacing:2.4px; }
+.future-card h2{ max-width:23ch; margin:0; font-size:clamp(24px,4vw,39px); line-height:1.12; letter-spacing:-.8px; }
+.future-copy{ max-width:69ch; margin:16px 0 0; color:var(--cream-2); font-size:14px; line-height:1.7; }
+.future-actions{ display:flex; flex-direction:column; align-items:flex-start; gap:12px; margin-top:23px; }
+.future-link{
+  display:inline-flex; align-items:center; gap:12px; min-height:48px; padding:0 18px;
+  border:1px solid rgba(240,204,134,.46); border-radius:13px; color:var(--gold-2);
+  text-decoration:none; font-size:14px; font-weight:800; transition:background .2s ease,border-color .2s ease,transform .2s ease;
+}
+.future-link::after{ content:"↗"; font-size:17px; font-weight:500; }
+.future-link:hover{ background:rgba(217,166,79,.09); border-color:var(--gold-2); transform:translateY(-1px); }
+.future-disclosure{
+  max-width:70ch; margin:0; padding-left:13px; border-left:2px solid rgba(217,166,79,.38);
+  color:var(--cream-3); font-size:11.5px; line-height:1.6;
+}
+
+footer{ padding-top:52px; color:var(--cream-3); }
+footer .b{ color:var(--cream-2); letter-spacing:.15px; }
+
+button,a,input,textarea,select{ -webkit-tap-highlight-color:transparent; }
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--gold-2); outline-offset:3px;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
+@media(max-width:420px){
+  .topbar .chip{ font-size:10.5px; }
+  .hero{ padding-top:45px; }
+  .steps{ padding-inline:5px; }
+  .step span{ font-size:10.5px; }
+  .future-actions{ gap:15px; }
+}
+
+/* ============================================================
+   CHOCOLATE ATELIER PASS — original inline art, no external assets
+   ============================================================ */
+body{
+  position:relative; isolation:isolate;
+  background-attachment:scroll;
+  background-image:
+    linear-gradient(rgba(24,12,16,.46),rgba(20,9,12,.54)),
+    url("images/chocolate-trail-pattern.webp"),
+    radial-gradient(900px 620px at 8% 8%,rgba(140,62,86,.17),transparent 72%),
+    radial-gradient(760px 580px at 94% 26%,rgba(91,74,112,.15),transparent 70%),
+    radial-gradient(800px 640px at 50% 100%,rgba(200,120,63,.08),transparent 74%),
+    linear-gradient(180deg,#180c10 0%,#14090c 48%,#180d0b 100%);
+  background-repeat:no-repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-size:auto,512px 512px,auto,auto,auto,auto;
+}
+body::before{
+  content:""; position:absolute; z-index:-1; left:0; right:0; top:70px; height:720px;
+  pointer-events:none; opacity:.42;
+  background:
+    radial-gradient(ellipse 8px 15px at 8% 18%,transparent 42%,rgba(242,207,131,.18) 45% 49%,transparent 53%),
+    radial-gradient(ellipse 7px 13px at 91% 31%,transparent 42%,rgba(242,207,131,.14) 45% 49%,transparent 53%),
+    radial-gradient(circle at 77% 9%,rgba(242,207,131,.12) 0 1px,transparent 2px),
+    radial-gradient(circle at 21% 42%,rgba(255,245,223,.1) 0 1px,transparent 2px);
+}
+
+.topbar{ background:rgba(18,8,12,.88); border-bottom-color:rgba(242,207,131,.16); }
+.topbar::after{
+  content:""; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,173,82,.42),rgba(140,62,86,.42),transparent);
+}
+.brand{ font-family:Georgia,Cambria,"Times New Roman",serif; font-size:16px; letter-spacing:.1px; }
+.brand .mark{
+  width:30px; height:30px; border:0; border-radius:0; background:none; transform:none;
+  box-shadow:none; flex:0 0 30px; overflow:visible;
+}
+.brand .mark::before,.brand .mark::after{ display:none; }
+.topbar .chip{ background:rgba(226,173,82,.08); border-color:rgba(242,207,131,.28); }
+
+.hero{
+  display:grid; grid-template-columns:1fr; gap:28px; align-items:center;
+  padding:clamp(42px,7vw,78px) 0 18px; text-align:center;
+}
+.hero-copy{ position:relative; z-index:2; }
+.hero .kicker{ color:var(--gold-2); letter-spacing:2.8px; }
+.hero h1{
+  max-width:680px; margin-inline:auto; font-family:Georgia,Cambria,"Times New Roman",serif;
+  font-weight:700; font-size:clamp(40px,7vw,72px); line-height:.96; letter-spacing:-2.4px;
+  text-shadow:0 10px 34px rgba(5,1,3,.45);
+}
+.hero h1 .bn{
+  font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Bengali","Nirmala UI","Hind Siliguri",sans-serif;
+  font-size:clamp(21px,3vw,31px); line-height:1.25; letter-spacing:0; color:var(--gold-2);
+}
+.hero > p:not(.kicker),.hero-copy > p:not(.kicker){ color:var(--cream-2); }
+.hero::after{ display:none; }
+.trust span{
+  background:rgba(35,17,23,.72); border-color:rgba(242,207,131,.17);
+  box-shadow:inset 0 1px rgba(255,255,255,.02);
+}
+.trust span:nth-child(1)::before{ background:var(--gold); }
+.trust span:nth-child(2)::before{ background:#d77a8f; }
+.trust span:nth-child(3)::before{ background:#9b8ab7; }
+
+.hero-stage{
+  --motion-strength:1; --sequence-duration:7.2s; --trail-delay:2.15s; --tile-step:.29s;
+  appearance:none; position:relative; isolation:isolate; overflow:hidden; display:block; width:100%;
+  aspect-ratio:1200/896; min-height:270px; padding:0; color:inherit; text-align:initial; cursor:pointer;
+  touch-action:pan-y; border:1px solid rgba(242,207,131,.34); border-radius:38px 38px 54px 54px;
+  background:
+    radial-gradient(circle at 51% 32%,rgba(242,207,131,.46) 0 12%,transparent 25%),
+    linear-gradient(150deg,#6b3b52 0%,#432635 42%,#251317 100%);
+  box-shadow:0 32px 90px rgba(4,1,3,.42),inset 0 1px rgba(255,255,255,.1);
+}
+.hero-stage::before{
+  content:""; position:absolute; z-index:4; inset:8px; border:1px solid rgba(255,245,223,.13);
+  border-radius:30px 30px 47px 47px; pointer-events:none;
+}
+.hero-stage::after{
+  content:"Replay light"; position:absolute; z-index:5; right:18px; bottom:16px; padding:7px 10px;
+  border:1px solid rgba(255,245,223,.22); border-radius:999px; color:rgba(255,245,223,.86);
+  background:rgba(24,12,16,.58); backdrop-filter:blur(8px); pointer-events:none;
+  font:700 9px/1 system-ui,-apple-system,"Segoe UI",sans-serif; letter-spacing:.8px; text-transform:uppercase;
+  opacity:.72; transition:opacity .2s ease,background .2s ease;
+}
+.hero-stage:hover::after,.hero-stage:focus-visible::after{ opacity:1; background:rgba(24,12,16,.78); }
+.hero-stage:focus-visible{ outline:3px solid var(--gold-2); outline-offset:4px; }
+.hero-picture,.hero-base,.hero-motion{ position:absolute; inset:0; display:block; width:100%; height:100%; }
+.hero-picture{ z-index:1; }
+.hero-base{ object-fit:contain; }
+.hero-motion{ z-index:2; pointer-events:none; overflow:visible; }
+.hero-cloud,.sky-splash,.moon-halo,.celestial-sparkle{ transform-box:fill-box; transform-origin:center; }
+.moon-halo{ opacity:.35; }
+.celestial-sparkle{ opacity:.64; }
+.house-glow{ opacity:.5; }
+.trail-glint{ opacity:.12; }
+.visual-ready .house-glow,.visual-ready .trail-glint{ opacity:0; }
+.visual-ready.sequence-complete .house-glow{ opacity:.54; }
+.visual-ready.sequence-complete .trail-glint{ opacity:.1; }
+.cloud-motion.is-visible:not(.motion-paused) .cloud-a{ animation:cloudDriftA var(--cloud-a-duration,48s) ease-in-out infinite alternate; }
+.cloud-motion.is-visible:not(.motion-paused) .cloud-b{ animation:cloudDriftB var(--cloud-b-duration,61s) ease-in-out -17s infinite alternate; }
+.cloud-motion.is-visible:not(.motion-paused) .cloud-c{ animation:cloudDriftA var(--cloud-c-duration,73s) ease-in-out -31s infinite alternate-reverse; }
+.splash-motion.is-visible:not(.motion-paused) .splash-a{ animation:skyFloat var(--splash-a-duration,29s) ease-in-out -8s infinite alternate; }
+.splash-motion.is-visible:not(.motion-paused) .splash-b{ animation:skyFloat var(--splash-b-duration,37s) ease-in-out -21s infinite alternate-reverse; }
+.moon-motion.is-visible:not(.motion-paused) .moon-halo{ animation:haloBreathe var(--moon-duration,14s) ease-in-out -3s infinite; }
+.sparkle-motion.is-visible:not(.motion-paused) .sparkle-a{ animation:starTwinkle var(--sparkle-a-duration,10.7s) ease-in-out -1.6s infinite; }
+.sparkle-motion.is-visible:not(.motion-paused) .sparkle-b{ animation:starTwinkle var(--sparkle-b-duration,13.1s) ease-in-out -7.4s infinite; }
+.sparkle-motion.is-visible:not(.motion-paused) .sparkle-c{ animation:starTwinkle var(--sparkle-c-duration,16.3s) ease-in-out -4.2s infinite; }
+.sparkle-motion.is-visible:not(.motion-paused) .sparkle-d{ animation:starTwinkle var(--sparkle-d-duration,11.9s) ease-in-out -9.1s infinite; }
+.sparkle-motion.is-visible:not(.motion-paused) .sparkle-e{ animation:starTwinkle var(--sparkle-e-duration,18.2s) ease-in-out -2.7s infinite; }
+.sequence-running .house-glow{ animation:houseWarm var(--sequence-duration) ease-in-out 1 both; }
+.sequence-running .door-glow{ animation:doorWelcome var(--sequence-duration) ease-in-out 1 both; }
+.sequence-running .trail-glint{
+  animation:tileShine .92s ease-in-out 1 both;
+  animation-delay:calc(var(--trail-delay) + (var(--tile) * var(--tile-step)));
+}
+.motion-paused .hero-motion *{ animation-play-state:paused !important; }
+@keyframes cloudDriftA{ from{ transform:translate3d(calc(-9px * var(--motion-strength)),0,0); } to{ transform:translate3d(calc(15px * var(--motion-strength)),0,0); } }
+@keyframes cloudDriftB{ from{ transform:translate3d(calc(13px * var(--motion-strength)),0,0); } to{ transform:translate3d(calc(-11px * var(--motion-strength)),0,0); } }
+@keyframes skyFloat{ from{ transform:translate3d(0,calc(3px * var(--motion-strength)),0) rotate(-.5deg); } to{ transform:translate3d(calc(5px * var(--motion-strength)),calc(-5px * var(--motion-strength)),0) rotate(.7deg); } }
+@keyframes haloBreathe{ 0%,100%{ opacity:.24; transform:scale(.985); } 50%{ opacity:.48; transform:scale(1.02); } }
+@keyframes starTwinkle{ 0%,64%,100%{ opacity:.3; transform:scale(.84); } 76%{ opacity:.92; transform:scale(1.12); } }
+@keyframes houseWarm{ 0%,5%{ opacity:0; } 22%,78%{ opacity:.55; } 88%{ opacity:.9; } 100%{ opacity:.56; } }
+@keyframes doorWelcome{ 0%,5%{ opacity:0; } 22%,78%{ opacity:.62; } 88%{ opacity:1; } 100%{ opacity:.68; } }
+@keyframes tileShine{ 0%,100%{ opacity:0; } 38%,58%{ opacity:.86; } }
+
+.steps{
+  margin-top:36px; border-color:rgba(242,207,131,.18); border-radius:30px;
+  background:
+    radial-gradient(ellipse 8px 14px at 8% 50%,transparent 44%,rgba(226,173,82,.14) 47% 51%,transparent 54%),
+    linear-gradient(135deg,rgba(57,29,28,.9),rgba(35,18,24,.94));
+  box-shadow:0 18px 54px rgba(5,1,3,.18),inset 0 1px rgba(255,255,255,.025);
+}
+.step .n{ color:#241014; border-color:rgba(242,207,131,.65); background:linear-gradient(135deg,var(--gold-2),var(--caramel)); }
+.step b{ font-family:Georgia,Cambria,"Times New Roman",serif; font-size:13px; }
+
+.sec{ position:relative; align-items:center; padding-top:32px; }
+.sec::before{
+  content:""; position:absolute; left:3px; top:0; width:14px; height:22px;
+  border:1px solid rgba(226,173,82,.72); border-radius:58% 42% 60% 40%;
+  transform:rotate(28deg); opacity:.76;
+}
+.sec::after{
+  content:""; position:absolute; left:10px; top:4px; width:1px; height:14px;
+  background:rgba(226,173,82,.55); transform:rotate(28deg); transform-origin:center;
+}
+.sec h2{
+  font-family:Georgia,Cambria,"Times New Roman",serif; font-size:clamp(19px,2.5vw,25px);
+  font-weight:600; letter-spacing:.2px; text-transform:none; color:var(--cream);
+}
+.sec .rule{ background:linear-gradient(90deg,rgba(226,173,82,.55),rgba(140,62,86,.3),transparent); }
+
+.card{
+  overflow:hidden; border-color:rgba(242,207,131,.2); border-radius:28px 28px 22px 22px;
+  background:linear-gradient(155deg,#371f1c 0%,#291418 56%,#211016 100%);
+  box-shadow:0 26px 70px rgba(4,1,3,.3),inset 0 1px rgba(255,255,255,.05);
+}
+.card::before{
+  content:""; position:absolute; z-index:5; inset:7px; border:1px solid rgba(242,207,131,.12);
+  border-radius:21px 21px 16px 16px; pointer-events:none;
+}
+@media(hover:hover){
+  .card:hover{ transform:translateY(-4px); border-color:rgba(242,207,131,.42); box-shadow:0 30px 78px rgba(4,1,3,.4); }
+}
+.card.active{ border-color:var(--gold-2); box-shadow:0 25px 74px rgba(4,1,3,.36),0 0 0 2px rgba(140,62,86,.28); }
+.photo{
+  margin:9px 9px 0; width:calc(100% - 18px); border:1px solid rgba(105,67,53,.28);
+  border-radius:20px 20px 13px 13px; background-color:#faf1e2;
+  background-image:
+    linear-gradient(135deg,rgba(140,62,86,.035) 25%,transparent 25% 75%,rgba(91,74,112,.035) 75%),
+    linear-gradient(45deg,rgba(226,173,82,.035) 25%,transparent 25% 75%,rgba(226,173,82,.035) 75%);
+  background-size:24px 24px; box-shadow:inset 0 0 0 5px rgba(255,255,255,.36),0 12px 30px rgba(7,2,3,.15);
+}
+.photo::before{
+  content:""; position:absolute; z-index:2; inset:0; pointer-events:none;
+  background:linear-gradient(118deg,rgba(255,255,255,.24),transparent 24% 74%,rgba(140,62,86,.05));
+}
+.photo::after{ z-index:2; box-shadow:inset 0 -52px 45px -48px rgba(53,22,20,.42); }
+.badge,.wt{ z-index:4; top:14px; }
+.body{ padding:21px 22px 22px; }
+.name{ font-family:Georgia,Cambria,"Times New Roman",serif; font-size:18px; font-weight:600; letter-spacing:-.1px; }
+.sub{ font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Bengali","Nirmala UI",sans-serif; color:var(--gold-2); }
+.desc{ color:var(--cream-2); }
+.priceline{ position:relative; padding-top:15px; }
+.priceline::before{ content:""; position:absolute; left:0; top:0; width:42px; height:1px; background:linear-gradient(90deg,var(--berry),transparent); }
+.price{ color:var(--gold-2); }
+.btn-add,.btn-primary,.btn-submit{
+  background:linear-gradient(135deg,#f0c66f 0%,#e1a94e 58%,#c8793f 100%);
+  border:1px solid rgba(255,245,223,.24); color:#281016;
+  box-shadow:inset 0 1px rgba(255,255,255,.38),0 10px 26px rgba(87,40,22,.28);
+}
+.btn-add::before{ content:""; display:inline-block; width:6px; height:6px; margin-right:9px; border:1px solid currentColor; transform:rotate(45deg); vertical-align:1px; }
+.qty{ border-color:var(--gold-2); background:rgba(18,7,12,.78); }
+
+#cartBar .inner{
+  border-color:rgba(242,207,131,.28); border-radius:22px;
+  background:linear-gradient(135deg,rgba(43,21,23,.96),rgba(24,10,15,.97));
+  box-shadow:0 18px 60px rgba(3,1,2,.55),inset 0 1px rgba(255,255,255,.04);
+}
+.screen{
+  background-color:var(--base);
+  background-image:radial-gradient(680px 440px at 92% -90px,rgba(91,74,112,.22),transparent 72%),linear-gradient(180deg,#180c10,#14090c);
+}
+.panel{ background:linear-gradient(145deg,rgba(54,28,27,.95),rgba(31,14,20,.97)); border-color:rgba(242,207,131,.18); }
+.dopt{ background:rgba(47,25,24,.74); border-color:rgba(242,207,131,.17); }
+input,textarea{ background:rgba(47,25,24,.76); border-color:rgba(242,207,131,.2); }
+.btn-back{ width:44px; height:44px; }
+
+.future-card{
+  min-height:380px; display:flex; align-items:center; padding-right:clamp(24px,32vw,390px);
+  border-color:rgba(242,207,131,.28); border-radius:42px 42px 54px 26px;
+  background:
+    radial-gradient(circle at 88% 26%,rgba(242,207,131,.2) 0 12%,transparent 12.5%),
+    linear-gradient(135deg,rgba(68,34,40,.98),rgba(37,18,29,.98) 56%,rgba(30,17,37,.98));
+}
+.future-card::before{
+  width:330px; height:330px; right:-66px; top:-96px; border-color:rgba(242,207,131,.2);
+  box-shadow:0 0 0 34px rgba(226,173,82,.03),0 0 0 74px rgba(91,74,112,.035);
+}
+.future-card::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:84px; opacity:.44; pointer-events:none;
+  background:
+    radial-gradient(70% 100% at 22% 125%,transparent 63%,rgba(200,120,63,.4) 64% 67%,transparent 68%),
+    radial-gradient(75% 100% at 78% 135%,transparent 67%,rgba(242,207,131,.2) 68% 70%,transparent 71%);
+}
+.future-sigil{ position:absolute; z-index:1; right:clamp(28px,8vw,86px); top:50%; width:clamp(170px,20vw,250px); transform:translateY(-50%); opacity:.92; }
+.future-content{ max-width:700px; }
+.future-eyebrow{ color:var(--gold-2); }
+.future-card h2{ font-family:Georgia,Cambria,"Times New Roman",serif; font-weight:600; letter-spacing:-.6px; }
+.future-link{ border-color:rgba(242,207,131,.54); }
+.future-disclosure{ border-color:var(--berry); color:var(--cream-3); }
+
+footer{ position:relative; margin-top:36px; padding-top:68px; }
+footer::before{
+  content:""; position:absolute; left:50%; top:28px; width:72px; height:1px; transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,rgba(226,173,82,.7),transparent);
+}
+footer::after{
+  content:""; position:absolute; left:50%; top:23px; width:10px; height:10px;
+  transform:translateX(-50%) rotate(45deg); border:1px solid rgba(140,62,86,.8);
+  background:var(--base);
+}
+
+@media(min-width:820px){
+  .hero{ grid-template-columns:minmax(320px,.84fr) minmax(440px,1.16fr); gap:clamp(34px,5vw,72px); text-align:left; }
+  .hero h1{ margin-left:0; }
+  .hero-copy > p:not(.kicker){ margin-left:0; }
+  .trust{ justify-content:flex-start; }
+}
+@media(max-width:760px){
+  .hero-stage{ border-radius:28px 28px 40px 40px; min-height:265px; }
+  .future-card{ min-height:0; padding-right:clamp(24px,5vw,48px); padding-top:150px; }
+  .future-sigil{ top:34px; right:28px; width:128px; transform:none; opacity:.72; }
+}
+@media(max-width:420px){
+  .hero{ padding-top:38px; gap:24px; }
+  .hero h1{ letter-spacing:-1.5px; }
+  .hero-stage{ min-height:258px; }
+  .hero-stage::after{ right:12px; bottom:11px; padding:6px 8px; font-size:8px; }
+  .future-card{ padding-top:132px; border-radius:30px 30px 40px 22px; }
+  .future-sigil{ width:110px; }
+}
+
+/* ============================================================
+   CORPORATE GIFTING — focused view, still part of this one page
+   ============================================================ */
+.hero-actions{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:21px; }
+.corporate-link{
+  display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:9px 17px;
+  border:1px solid rgba(242,207,131,.46); border-radius:13px; color:var(--gold-2);
+  background:rgba(47,25,24,.58); text-decoration:none; font-size:13px; font-weight:800;
+}
+.corporate-link::after{ content:"→"; margin-left:10px; font-size:16px; }
+.hero-stage-wrap{ position:relative; min-width:0; }
+.hero-stage-wrap .hero-stage{ width:100%; }
+.corporate-plaque{
+  position:absolute; z-index:5; right:clamp(12px,3vw,28px); bottom:clamp(47px,7vw,70px);
+  display:inline-flex; align-items:center; min-height:34px; padding:6px 10px;
+  border:1px solid #fff0b7; border-radius:7px; color:#2b1510;
+  background:linear-gradient(145deg,#f4d486,#dca548); box-shadow:0 7px 18px rgba(14,5,6,.34);
+  text-decoration:none; font:800 9px/1.25 system-ui,-apple-system,"Segoe UI",sans-serif;
+  letter-spacing:.55px; text-transform:uppercase;
+}
+.corporate-teaser{
+  position:relative; overflow:hidden; display:grid; gap:18px; margin:clamp(45px,7vw,76px) 0 12px;
+  padding:clamp(23px,4vw,38px); border:1px solid rgba(242,207,131,.25); border-radius:28px;
+  background:linear-gradient(135deg,rgba(70,35,41,.97),rgba(34,17,26,.97));
+  box-shadow:0 24px 64px rgba(5,2,1,.26);
+}
+.corporate-teaser::after{
+  content:""; position:absolute; width:210px; height:210px; right:-96px; bottom:-108px;
+  border:1px solid rgba(242,207,131,.18); border-radius:50%; box-shadow:0 0 0 28px rgba(226,173,82,.025);
+}
+.corporate-teaser-copy{ position:relative; z-index:1; }
+.corporate-eyebrow{ margin:0 0 8px; color:var(--gold-2); font-size:10px; font-weight:800; letter-spacing:2.1px; text-transform:uppercase; }
+.corporate-teaser h2{ margin:0; font:600 clamp(24px,4vw,36px)/1.12 Georgia,Cambria,"Times New Roman",serif; }
+.corporate-teaser p:not(.corporate-eyebrow){ max-width:66ch; margin:13px 0 0; color:var(--cream-2); font-size:13.5px; line-height:1.68; }
+.corporate-teaser .corporate-link{ position:relative; z-index:1; margin-top:18px; }
+
+.corporate-flagship{ position:relative; z-index:1; min-width:0; margin:0; }
+.corporate-flagship-media{
+  position:relative; isolation:isolate; overflow:hidden; aspect-ratio:3/2;
+  border:1px solid rgba(242,207,131,.28); border-radius:21px;
+  background:radial-gradient(circle at 48% 34%,rgba(242,207,131,.16),transparent 42%),linear-gradient(145deg,#512630,#1d1017);
+  box-shadow:0 20px 42px rgba(8,3,5,.32);
+}
+.corporate-flagship-fallback{
+  position:absolute; inset:0; display:grid; place-items:center; overflow:hidden;
+  background:radial-gradient(circle at 50% 30%,rgba(242,207,131,.12),transparent 45%);
+}
+.corporate-fallback-box{
+  position:relative; width:58%; aspect-ratio:1.62; border:2px solid rgba(255,245,223,.46);
+  border-radius:12px; background:linear-gradient(145deg,#713541,#371b26);
+  box-shadow:0 20px 32px rgba(7,2,4,.38),inset 0 1px rgba(255,255,255,.1);
+  transform:perspective(420px) rotateX(5deg) rotateZ(-3deg);
+}
+.corporate-fallback-box::before{
+  content:""; position:absolute; top:-5%; bottom:-5%; left:36%; width:28%;
+  border-inline:1px solid rgba(214,158,68,.72); background:#f2e5ce;
+}
+.corporate-fallback-box::after{
+  content:"YOUR LOGO"; position:absolute; z-index:1; left:36%; top:50%; width:28%;
+  color:#432029; font:800 clamp(7px,1.2vw,12px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;
+  letter-spacing:.5px; text-align:center; transform:translateY(-50%);
+}
+.corporate-flagship-picture,.corporate-flagship-image{
+  position:absolute; inset:0; display:block; width:100%; height:100%;
+}
+.corporate-flagship-picture{ z-index:1; }
+.corporate-flagship-image{ object-fit:cover; }
+.corporate-flagship figcaption{
+  margin:10px 3px 0; color:var(--cream-3); font-size:11px; line-height:1.55;
+}
+.corporate-flagship--featured{ max-width:860px; margin:24px auto 0; }
+
+.corporate-screen{ display:none; z-index:80; }
+body.corporate-open .corporate-screen,.corporate-screen:target{ display:block; }
+.corporate-screen .stop{ justify-content:space-between; }
+.corporate-screen .stop h2{ flex:1; }
+.corporate-shell{ max-width:980px; margin:0 auto; padding:24px 16px 70px; }
+.corporate-intro{ max-width:760px; margin:8px auto 0; text-align:center; }
+.corporate-intro h1{ margin-top:7px; font-size:clamp(29px,5vw,48px); font-family:Georgia,Cambria,"Times New Roman",serif; font-weight:600; }
+.corporate-intro > p:not(.corporate-eyebrow){ max-width:64ch; margin:14px auto 0; color:var(--cream-2); }
+.corporate-scope{
+  margin:22px auto 0; padding:15px 17px; border:1px solid rgba(242,207,131,.25);
+  border-radius:15px; background:rgba(226,173,82,.07); color:var(--cream-2);
+  font-size:13px; line-height:1.65; text-align:left;
+}
+.corporate-scope strong{ color:var(--gold-2); }
+.corporate-section-title{ margin:42px 0 16px; font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--cream-2); }
+.concept-grid{ display:grid; gap:14px; }
+.concept-card{
+  min-width:0; overflow:hidden; border:1px solid rgba(242,207,131,.2); border-radius:22px;
+  background:linear-gradient(150deg,rgba(58,29,32,.96),rgba(31,16,24,.98));
+}
+.concept-art{
+  position:relative; min-height:158px; display:flex; align-items:center; justify-content:center;
+  overflow:hidden; background:
+    radial-gradient(circle at 25% 25%,rgba(242,207,131,.18),transparent 35%),
+    linear-gradient(145deg,rgba(91,74,112,.32),rgba(140,62,86,.18));
+}
+.concept-art::before{
+  content:""; width:112px; height:74px; border:2px solid rgba(255,245,223,.58); border-radius:10px;
+  background:linear-gradient(145deg,#6b3540,#351a25); box-shadow:0 18px 30px rgba(5,2,3,.34),inset 0 1px rgba(255,255,255,.1);
+  transform:perspective(260px) rotateX(5deg) rotateZ(-3deg);
+}
+.concept-art::after{
+  content:""; position:absolute; width:20px; height:95px; border-left:2px solid #efca75; border-right:2px solid #efca75;
+  background:rgba(226,173,82,.13); transform:rotate(-3deg);
+}
+.concept-card:nth-child(2) .concept-art{ background:radial-gradient(circle at 72% 25%,rgba(200,120,63,.19),transparent 36%),linear-gradient(145deg,#251422,#100b14); }
+.concept-card:nth-child(2) .concept-art::before{ width:124px; height:70px; background:linear-gradient(145deg,#301b22,#140d13); }
+.concept-card:nth-child(3) .concept-art::before{ width:96px; height:82px; background:linear-gradient(145deg,#8c3e56,#3a1c2b); }
+.concept-card:nth-child(3) .concept-art::after{ height:102px; }
+.concept-copy{ padding:18px; }
+.concept-labels{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:10px; }
+.concept-labels span{ padding:4px 8px; border:1px solid rgba(242,207,131,.27); border-radius:999px; color:var(--gold-2); font-size:9px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; }
+.concept-copy h3{ margin:0; font:600 20px/1.25 Georgia,Cambria,"Times New Roman",serif; }
+.concept-copy p{ margin:9px 0 0; color:var(--cream-2); font-size:12.5px; line-height:1.6; }
+
+.corporate-form-card{ margin-top:42px; padding:clamp(19px,4vw,34px); border:1px solid rgba(242,207,131,.22); border-radius:26px; background:linear-gradient(145deg,rgba(53,27,29,.97),rgba(28,14,22,.98)); }
+.corporate-form-card > h2{ margin:0; font:600 clamp(24px,4vw,34px)/1.18 Georgia,Cambria,"Times New Roman",serif; }
+.corporate-form-card > p{ margin:10px 0 0; max-width:72ch; color:var(--cream-2); font-size:13px; line-height:1.65; }
+.corporate-form-grid{ display:grid; gap:0 16px; }
+.corporate-field{ min-width:0; }
+.corporate-field label,.corporate-choices legend{ margin-bottom:7px; color:var(--cream-2); font-size:11px; font-weight:800; letter-spacing:.65px; text-transform:uppercase; }
+.corporate-field label{ display:block; }
+.corporate-field .field-hint{ margin:6px 0 0; color:var(--cream-3); font-size:11px; line-height:1.5; }
+.field-error{ margin:6px 0 0; color:var(--gone); font-size:12px; font-weight:700; }
+.corporate-field [aria-invalid="true"],.corporate-choices.has-error{ border-color:var(--gone); }
+.corporate-choices{ margin:20px 0 0; padding:0; border:0; }
+.corporate-choice-list{ display:grid; gap:9px; }
+.corporate-choice{
+  display:flex; gap:11px; align-items:flex-start; margin:0; padding:13px;
+  border:1px solid rgba(242,207,131,.18); border-radius:13px; background:rgba(32,16,24,.58);
+  color:var(--cream); font-size:13px; font-weight:650; letter-spacing:0; line-height:1.45; text-transform:none;
+}
+.corporate-choice input{
+  flex:0 0 auto; width:19px; height:19px; margin:1px 0 0; padding:0;
+  border:0; border-radius:50%; accent-color:var(--gold); appearance:auto; -webkit-appearance:radio;
+}
+.corporate-detail{ margin-top:12px; }
+.corporate-hp{ position:absolute !important; left:-10000px !important; width:1px !important; height:1px !important; overflow:hidden !important; }
+.corporate-submit{ margin-top:24px; }
+.corporate-submit-note{ margin:9px 0 0; color:var(--cream-3); font-size:11px; text-align:center; }
+.corporate-result{
+  margin-top:20px; padding:18px; border:1px solid rgba(242,207,131,.25); border-radius:17px;
+  background:rgba(24,12,18,.72); text-align:center;
+}
+.corporate-result.is-success{ border-color:rgba(143,210,154,.48); }
+.corporate-result.is-warning{ border-color:rgba(239,184,93,.5); }
+.corporate-result.is-error{ border-color:rgba(223,149,136,.5); }
+.corporate-result h3{ margin:0; font-size:19px; }
+.corporate-result p{ margin:8px auto 0; max-width:58ch; color:var(--cream-2); font-size:13px; line-height:1.6; }
+.corporate-reference{ display:block; max-width:100%; margin:13px auto 0; padding:7px 12px; border:1px solid rgba(242,207,131,.32); border-radius:15px; color:var(--gold-2); font-size:12px; font-weight:800; letter-spacing:.25px; overflow-wrap:anywhere; }
+.corporate-result-actions{ display:flex; flex-wrap:wrap; justify-content:center; gap:9px; margin-top:14px; }
+.corporate-result-actions button,.corporate-result-actions a{ width:auto; min-height:42px; margin:0; padding:8px 14px; text-decoration:none; }
+.corporate-email-fallback{ margin-top:12px; font-size:12px; color:var(--cream-3); }
+.corporate-email-fallback a{ color:var(--gold-2); }
+footer .footer-corporate{ display:inline-block; margin:11px 0 8px; color:var(--gold-2); font-weight:800; text-decoration:none; }
+
+@media(min-width:700px){
+  .corporate-teaser{ grid-template-columns:minmax(0,.92fr) minmax(310px,1.08fr); align-items:center; gap:clamp(24px,4vw,44px); }
+  .concept-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .corporate-form-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .corporate-field.full,.corporate-choices{ grid-column:1/-1; }
+}
+@media(min-width:820px){ .hero-actions{ justify-content:flex-start; } }
+@media(max-width:620px){
+  .top-actions .chip{ display:none; }
+  .top-corporate{ font-size:10px; padding-inline:9px; }
+  .corporate-plaque{ right:10px; bottom:46px; font-size:8px; max-width:130px; text-align:center; }
+  .corporate-screen .stop h2{ font-size:15px; }
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-motion *{ animation:none !important; transform:none !important; }
+  .moon-halo{ opacity:.38; }
+  .celestial-sparkle{ opacity:.72; }
+  .visual-ready .house-glow{ opacity:.56; }
+  .visual-ready .door-glow{ opacity:.68; }
+  .visual-ready .trail-glint{ opacity:.13; }
+}
+
+/* ---------------------- v4 order review surface ---------------------- */
+.promotion-banner{
+  margin:0 0 20px; padding:clamp(16px,3vw,22px); border:1px solid rgba(242,207,131,.42);
+  border-radius:20px; background:linear-gradient(135deg,rgba(140,62,86,.3),rgba(55,27,29,.94));
+  box-shadow:inset 0 1px rgba(255,255,255,.035); display:grid; gap:6px;
+}
+.promotion-banner .promotion-kicker{ margin:0; color:var(--gold-2); font-size:10px; font-weight:850; letter-spacing:1.5px; text-transform:uppercase; }
+.promotion-banner h2{ margin:0; font:600 clamp(21px,4vw,30px)/1.2 Georgia,Cambria,"Times New Roman",serif; }
+.promotion-banner .promotion-copy{ margin:0; color:var(--cream-2); font-size:13px; line-height:1.6; }
+.promotion-banner .promotion-time{ margin:2px 0 0; color:var(--cream-3); font-size:11.5px; }
+.priceline.has-promotion{ align-items:center; flex-wrap:wrap; }
+.regular-price{ color:var(--cream-3); font-size:13px; font-weight:700; text-decoration:line-through; text-decoration-thickness:1px; }
+.campaign-price-note{ color:var(--ok); font-size:10px; font-weight:800; letter-spacing:.55px; text-transform:uppercase; }
+.cart-notice{ margin-top:4px; color:var(--warn); font-size:11px; line-height:1.35; }
+.summary-authority{ margin:12px 0 0; color:var(--cream-3); font-size:11.5px; line-height:1.55; }
+.dopt{ position:relative; margin:0; color:inherit; font-size:inherit; font-weight:inherit; letter-spacing:normal; text-transform:none; }
+.dopt input[type="radio"]{ position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+.dopt:has(input:focus-visible){ outline:3px solid rgba(242,207,131,.42); outline-offset:2px; }
+.order-status{
+  margin:18px 0 0; padding:14px; border:1px solid rgba(242,207,131,.24);
+  border-radius:14px; background:rgba(27,13,18,.68); color:var(--cream-2); font-size:13px; line-height:1.55;
+}
+.order-status.is-error{ border-color:rgba(223,149,136,.48); }
+.order-status.is-warning{ border-color:rgba(239,184,93,.5); }
+.order-status strong{ display:block; margin-bottom:4px; color:var(--cream); font-size:15px; }
+.authoritative-pricing{ margin-top:16px; }
+.authoritative-pricing .tline{ gap:18px; }
+.authoritative-pricing .tline span:last-child{ text-align:right; }
+.tline.grand .v{ max-width:58%; font-size:15px; line-height:1.35; text-align:right; white-space:normal; }
+.benefit-copy{ margin:11px 0 0; padding-top:11px; border-top:1px solid var(--line-soft); color:var(--cream-2); font-size:12px; line-height:1.55; }
+.recovery-summary{ margin-top:14px; color:var(--cream-2); font-size:12.5px; line-height:1.65; white-space:pre-line; }
+.recovery-summary ul{ margin:8px 0 0; padding-left:20px; }
+.recovery-actions{ display:grid; gap:10px; margin-top:15px; }
+.recovery-actions .btn-wa{ border:0; cursor:pointer; font-family:inherit; }
+.done.is-failure{ padding-top:34px; }
+.done.is-failure .big{ font-size:46px; }
+@media(min-width:700px){ .recovery-actions{ grid-template-columns:1fr 1fr; } }
 </style>
 </head>
 
@@ -390,8 +1137,21 @@ footer .heart{ color:var(--gold); }
 
 <div class="topbar">
   <div class="inner">
-    <div class="brand"><span class="mark">🍫</span><span>Chocolate Trail</span></div>
-    <span class="chip">Cash on delivery</span>
+    <div class="brand">
+      <svg class="mark" data-art-asset="ct-trail-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <path d="M9 5h25l9 9v25l-4 4H14l-9-9V10z" fill="#e2ad52" stroke="#f2cf83" stroke-width="1.2"/>
+        <path d="M11 10h21l6 6v18l-4 4H16l-6-6V13z" fill="#3a1c20"/>
+        <path d="M13 25h22M24 12v24" stroke="#8c3e56" stroke-width="1" opacity=".7"/>
+        <path d="M13 34c5-1 5-8 10-9 5-2 7 4 13-6" fill="none" stroke="#f2cf83" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M32 13c4-3 8 0 7 4-1 3-5 4-8 2-2-2-1-4 1-6z" fill="#c8783f" stroke="#f2cf83" stroke-width=".8"/>
+        <path d="M33 14c1 2 1 3-1 5" fill="none" stroke="#3a1c20" stroke-width=".8"/>
+      </svg>
+      <span>Chocolate Trail</span>
+    </div>
+    <nav class="top-actions" aria-label="Chocolate Trail sections">
+      <a class="top-corporate" href="#corporateView" data-corporate-open>Corporate gifts</a>
+      <span class="chip">Cash on delivery</span>
+    </nav>
   </div>
 </div>
 
@@ -399,20 +1159,92 @@ footer .heart{ color:var(--gold); }
 
   <div id="setupWarn">
     <b>⚙️ Setup not finished.</b> Open <code>index.html</code> and fill in
-    <code>SHEET_WEBAPP_URL</code> and <code>WHATSAPP_NUMBER</code> in the CONFIG block.
+    <code>WEBAPP_URL</code> and <code>WHATSAPP_NUMBER</code> in the CONFIG block.
     Until then orders go to WhatsApp only. <b>Your customers see this message too.</b>
   </div>
 
-  <div class="hero">
-    <div class="emoji">🍫</div>
-    <h1>Chocolate Trail<span class="bn">চকলেটের খোঁজে</span></h1>
-    <p>Imported &amp; premium chocolate, brought to your address in Dhaka.</p>
-    <div class="trust">
-      <span>💵 Pay on delivery</span>
-      <span>🚫 No account needed</span>
-      <span>📦 Limited weekly stock</span>
+  <section class="hero" aria-labelledby="pageTitle">
+    <div class="hero-copy">
+      <p class="kicker">Small-batch chocolate · Dhaka</p>
+      <h1 id="pageTitle">Chocolate Trail<span class="bn">চকলেটের খোঁজে</span></h1>
+      <p>Imported &amp; premium chocolate, brought to your address in Dhaka.</p>
+      <div class="trust">
+        <span>Pay on delivery</span>
+        <span>No account needed</span>
+        <span>Limited weekly stock</span>
+      </div>
+      <div class="hero-actions">
+        <a class="corporate-link" href="#corporateView" data-corporate-open>Explore corporate gifting</a>
+      </div>
     </div>
-  </div>
+
+    <div class="hero-stage-wrap">
+      <button class="hero-stage" id="heroReplay" type="button"
+              aria-label="Replay the Chocolate Trail house-light and path-shine sequence"
+              data-art-fallback="layered-hero">
+      <picture class="hero-picture">
+        <source media="(max-width:600px)" srcset="images/chocolate-trail-hero-mobile.webp"
+                type="image/webp" width="780" height="582">
+        <img class="hero-base" src="images/chocolate-trail-hero-desktop.webp"
+             width="1200" height="896" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+      </picture>
+      <svg class="hero-motion" data-art-asset="layered-hero-motion" viewBox="0 0 1200 896"
+           preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="trailGold" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#fff5df" stop-opacity=".12"/>
+            <stop offset=".48" stop-color="#fff1b5"/>
+            <stop offset="1" stop-color="#e2ad52" stop-opacity=".2"/>
+          </linearGradient>
+        </defs>
+        <g class="hero-cloud cloud-a" fill="#32171f" stroke="#b56f54" stroke-width="2" opacity=".78">
+          <path d="M-95 165c42-43 94-54 139-22 26-49 102-58 135-4 40-26 94-7 106 36H-95z"/>
+        </g>
+        <g class="hero-cloud cloud-b" fill="#3a1a22" stroke="#c28a63" stroke-width="2" opacity=".72">
+          <path d="M823 157c34-41 83-44 117-17 31-55 102-58 137-12 46-36 109-20 139 29H823z"/>
+        </g>
+        <g class="hero-cloud cloud-c" fill="#6f354c" stroke="#d28a77" stroke-width="2" opacity=".7">
+          <path d="M50 221c31-35 75-40 106-12 30-50 97-49 126-3 39-24 89-7 103 29H50z"/>
+        </g>
+        <g class="sky-splash splash-a" fill="#4b2027" stroke="#e2ad52" stroke-width="1.4" opacity=".82">
+          <path d="M309 99c20-11 29-6 24 17-15 4-25-2-24-17zM351 123c14-4 20 2 15 16-12 2-18-4-15-16zM287 137c11-8 18-5 18 9-9 6-17 3-18-9z"/>
+        </g>
+        <g class="sky-splash splash-b" fill="#4b2027" stroke="#e2ad52" stroke-width="1.4" opacity=".78">
+          <path d="M988 205c16-13 28-9 28 13-15 7-26 1-28-13zM1040 231c12-7 20-2 18 13-11 4-19-1-18-13zM956 243c9-8 17-5 18 8-8 6-16 3-18-8z"/>
+        </g>
+        <g class="moon-halo" fill="none" stroke="#fff5df">
+          <circle cx="612" cy="294" r="122" stroke-width="3" opacity=".34"/>
+          <circle cx="612" cy="294" r="136" stroke="#f2cf83" stroke-width="1.5" stroke-dasharray="3 12" opacity=".46"/>
+        </g>
+        <g fill="#fff5df">
+          <path class="celestial-sparkle sparkle-a" d="M482 218l5 11 11 5-11 5-5 11-5-11-11-5 11-5z"/>
+          <path class="celestial-sparkle sparkle-b" d="M717 171l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/>
+          <path class="celestial-sparkle sparkle-c" d="M759 282l5 11 11 5-11 5-5 11-5-11-11-5 11-5z"/>
+          <path class="celestial-sparkle sparkle-d" d="M493 352l3.5 8 8 3.5-8 3.5-3.5 8-3.5-8-8-3.5 8-3.5z"/>
+          <path class="celestial-sparkle sparkle-e" d="M611 139l3.5 8 8 3.5-8 3.5-3.5 8-3.5-8-8-3.5 8-3.5z"/>
+        </g>
+        <g class="house-lights" fill="#fff1b5" stroke="#f2cf83" stroke-width="2">
+          <path class="house-glow" d="M692 367v-29c0-21 23-21 23 0v29z"/>
+          <path class="house-glow" d="M821 474v-42c0-23 24-23 24 0v42z"/>
+          <path class="house-glow" d="M875 474v-42c0-23 24-23 24 0v42z"/>
+          <path class="house-glow door-glow" d="M672 518v-54c0-38 38-38 38 0v54z"/>
+        </g>
+        <g class="trail-lights" fill="url(#trailGold)">
+          <path class="trail-glint" style="--tile:0" d="M309 862l126-60 18 7-126 62z"/>
+          <path class="trail-glint" style="--tile:1" d="M452 790l101-57 15 8-102 58z"/>
+          <path class="trail-glint" style="--tile:2" d="M574 716l61-45 12 7-60 47z"/>
+          <path class="trail-glint" style="--tile:3" d="M642 659l6-43 10 1-5 44z"/>
+          <path class="trail-glint" style="--tile:4" d="M648 598c-10-19-29-29-52-34l3-8c26 6 48 18 59 40z"/>
+          <path class="trail-glint" style="--tile:5" d="M586 544c-29-7-49-4-74 2l-2-7c29-7 52-10 78-3z"/>
+          <path class="trail-glint" style="--tile:6" d="M512 535c-18-6-23-12-10-18l6 4c-7 4-3 7 7 10z"/>
+          <path class="trail-glint" style="--tile:7" d="M512 511c32-10 70-13 109-6l-2 6c-38-6-73-4-104 5z"/>
+          <path class="trail-glint" style="--tile:8" d="M631 505l47-1v6l-47 1z"/>
+        </g>
+        </svg>
+      </button>
+      <a class="corporate-plaque" href="#corporateView" data-corporate-open>Corporate gifting</a>
+    </div>
+  </section>
 
   <div class="steps">
     <div class="step"><div class="n">1</div><b>Pick</b><span>Tap to add</span></div>
@@ -420,73 +1252,347 @@ footer .heart{ color:var(--gold); }
     <div class="step"><div class="n">3</div><b>Pay</b><span>Cash on arrival</span></div>
   </div>
 
-  <div class="sec">
+  <div class="sec" id="chocolates">
     <h2>This week's stock</h2>
     <div class="rule"></div>
     <span class="cnt" id="secCount"></span>
   </div>
 
-  <div class="grid" id="grid"></div>
+  <div class="catalog-status is-loading" id="catalogStatus" role="status"
+       aria-live="polite" aria-atomic="true">
+    <span class="status-mark" aria-hidden="true"></span>
+    <div class="status-copy">
+      <strong id="catalogStatusTitle">Checking live availability</strong>
+      <span id="catalogStatusDetail">The embedded catalog is ready now; stock remains unconfirmed until the background check completes.</span>
+    </div>
+  </div>
+
+  <section class="promotion-banner" id="promotionBanner" aria-labelledby="promotionTitle" hidden>
+    <p class="promotion-kicker">Current Chocolate Trail campaign</p>
+    <h2 id="promotionTitle"></h2>
+    <p class="promotion-copy" id="promotionCopy"></p>
+    <p class="promotion-time" id="promotionTime"></p>
+  </section>
+
+  <div class="grid" id="grid" aria-busy="true"></div>
+
+  <aside class="corporate-teaser" aria-labelledby="corporateTeaserTitle">
+    <div class="corporate-teaser-copy">
+      <p class="corporate-eyebrow">For teams, clients &amp; events</p>
+      <h2 id="corporateTeaserTitle">Corporate Gifting &amp; Bulk Orders</h2>
+      <p>Explore sample concepts and tell us what you need. This is a private inquiry for human
+         review—not an order, quotation, stock reservation or delivery promise.</p>
+      <a class="corporate-link" href="#corporateView" data-corporate-open>View corporate options</a>
+    </div>
+    <figure class="corporate-flagship corporate-flagship--teaser">
+      <div class="corporate-flagship-media">
+        <div class="corporate-flagship-fallback" aria-hidden="true"><span class="corporate-fallback-box"></span></div>
+        <picture class="corporate-flagship-picture">
+          <img class="corporate-flagship-image" data-corporate-flagship-img
+               src="images/corporate-happiness-box-768.webp"
+               srcset="images/corporate-happiness-box-768.webp 768w, images/corporate-happiness-box-1200.webp 1200w"
+               sizes="(min-width:1100px) 470px, (min-width:700px) 45vw, calc(100vw - 64px)"
+               width="1200" height="800" loading="lazy" decoding="async"
+               alt="Illustrative burgundy corporate gift box with a YOUR LOGO sleeve containing sealed, unbranded chocolate packets."
+               onerror="this.closest('picture').remove()">
+        </picture>
+      </div>
+      <figcaption>Illustrative concept — final box and contents are customized after quotation. Generic wrappers do not represent guaranteed brands or quantities.</figcaption>
+    </figure>
+  </aside>
+
+  <aside class="future-card" id="chocketPreview" aria-labelledby="chocketTitle">
+    <svg class="future-sigil" data-art-asset="chocket-cocoa-orbit" viewBox="0 0 220 220" aria-hidden="true" focusable="false">
+      <circle cx="110" cy="110" r="83" fill="none" stroke="#e2ad52" stroke-width="1.5" opacity=".42"/>
+      <circle cx="110" cy="110" r="62" fill="none" stroke="#8c3e56" stroke-width="1.3" stroke-dasharray="3 8" opacity=".72"/>
+      <path d="M92 58c31-18 68 7 64 44-3 33-35 67-68 46-31-20-29-69 4-90z" fill="#c8783f" stroke="#f2cf83" stroke-width="2"/>
+      <path d="M105 57c15 30 17 61-3 91M125 58c13 26 14 54-1 82M86 73c25 8 48 6 69-3M78 100c30 7 55 5 77-3M83 128c27 7 48 5 62-2" fill="none" stroke="#58252c" stroke-width="2" opacity=".88"/>
+      <path d="M57 162c28-6 45 3 56 30-28 7-49-5-56-30zM163 53c-25 3-42-8-49-34 27-3 44 10 49 34z" fill="#5a7655" stroke="#f2cf83" stroke-width="1.5"/>
+      <circle cx="178" cy="153" r="6" fill="#f2cf83"/><path d="M178 140v26M165 153h26" stroke="#f2cf83" stroke-width="1" opacity=".75"/>
+    </svg>
+    <div class="future-content">
+      <p class="future-eyebrow">A LOOK AHEAD</p>
+      <h2 id="chocketTitle">Meet Chocket — a platform we're helping shape.</h2>
+      <p class="future-copy">Built with our supplier partner, Chocket is an early development preview. We're sharing it so Chocolate Trail customers can become familiar with what we are exploring for the future. Chocolate Trail remains our current order site; any future connection or move is undecided.</p>
+      <div class="future-actions">
+        <a class="future-link" href="https://chocket.saptech.online/" target="_blank" rel="noopener noreferrer">Preview Chocket</a>
+        <p class="future-disclosure">Development preview only — its current products, prices, payments and delivery information are not Chocolate Trail's present offer. No launch date is promised.</p>
+      </div>
+    </div>
+  </aside>
 
   <footer>
-    <span class="b">a tiny pilot by Anik &amp; Saptak</span> <span class="heart">🍫</span><br>
+    <span class="b">a tiny pilot by Anik &amp; Saptak</span><br>
+    <a class="footer-corporate" href="#corporateView" data-corporate-open>Corporate Gifting &amp; Bulk Orders</a><br>
     Order now · pay when it reaches you · Dhaka only
   </footer>
 </div>
+
+<!-- Corporate is a focused view inside this same file. The :target CSS fallback keeps
+     its essential information readable even when JavaScript is unavailable. -->
+<section class="screen corporate-screen" id="corporateView" role="dialog" aria-modal="true"
+         aria-labelledby="corporateTitle">
+  <div class="stop">
+    <a class="btn-back" id="corporateBack" href="#chocolates" data-corporate-close
+       aria-label="Back to chocolates">←</a>
+    <h2>Corporate Gifting &amp; Bulk Orders</h2>
+  </div>
+
+  <div class="corporate-shell">
+    <header class="corporate-intro">
+      <p class="corporate-eyebrow">Thoughtful chocolate, shaped around your brief</p>
+      <h1 id="corporateTitle">Corporate Gifting &amp; Bulk Orders</h1>
+      <p>Share the occasion, quantity, destination and budget. Chocolate Trail will review the
+         inquiry and contact you using the details you submit.</p>
+      <div class="corporate-scope">
+        <strong>This form is an inquiry only.</strong> It is not an order, quotation, stock
+        reservation, supplier purchase or delivery promise. Concepts are illustrative; exact
+        contents, customization, availability and timing are confirmed only after human review.
+      </div>
+    </header>
+
+    <figure class="corporate-flagship corporate-flagship--featured">
+      <div class="corporate-flagship-media">
+        <div class="corporate-flagship-fallback" aria-hidden="true"><span class="corporate-fallback-box"></span></div>
+        <picture class="corporate-flagship-picture">
+          <img class="corporate-flagship-image" data-corporate-flagship-img
+               src="images/corporate-happiness-box-768.webp"
+               srcset="images/corporate-happiness-box-768.webp 768w, images/corporate-happiness-box-1200.webp 1200w"
+               sizes="(min-width:1000px) 860px, calc(100vw - 32px)"
+               width="1200" height="800" loading="lazy" decoding="async"
+               alt="Illustrative burgundy corporate gift box with a YOUR LOGO sleeve containing sealed, unbranded chocolate packets."
+               onerror="this.closest('picture').remove()">
+        </picture>
+      </div>
+      <figcaption>Illustrative concept — final box and contents are customized after quotation. Generic wrappers do not represent guaranteed brands or quantities.</figcaption>
+    </figure>
+
+    <h2 class="corporate-section-title">Illustrative gifting concepts</h2>
+    <div class="concept-grid" id="corporateConcepts">
+      <article class="concept-card">
+        <div class="concept-art" data-concept-art aria-hidden="true"></div>
+        <div class="concept-copy">
+          <div class="concept-labels"><span>Sample concept</span><span>Custom quote</span></div>
+          <h3>Corporate Happiness Box</h3>
+          <p>A warm, shareable direction for team moments, thanks and celebrations.</p>
+        </div>
+      </article>
+      <article class="concept-card">
+        <div class="concept-art" data-concept-art aria-hidden="true"></div>
+        <div class="concept-copy">
+          <div class="concept-labels"><span>Sample concept</span><span>Custom quote</span></div>
+          <h3>Executive Dark Collection</h3>
+          <p>A restrained dark-chocolate direction for clients, leaders and formal occasions.</p>
+        </div>
+      </article>
+      <article class="concept-card">
+        <div class="concept-art" data-concept-art aria-hidden="true"></div>
+        <div class="concept-copy">
+          <div class="concept-labels"><span>Sample concept</span><span>Custom quote</span></div>
+          <h3>Event Mini Packs</h3>
+          <p>A flexible small-format direction for events, guest tables and group distribution.</p>
+        </div>
+      </article>
+    </div>
+
+    <section class="corporate-form-card" aria-labelledby="corporateFormTitle">
+      <h2 id="corporateFormTitle">Tell us what you have in mind</h2>
+      <p>Quantity 1–100,000 is an inquiry range, not a minimum order or packaging commitment.
+         Chocolate Trail reviews each request before discussing any next step.</p>
+
+      <noscript>
+        <div class="corporate-scope"><strong>JavaScript is off.</strong> You can still review the
+          scope and concepts here, but the private inquiry form requires JavaScript.</div>
+      </noscript>
+
+      <form id="corporateForm" novalidate autocomplete="off">
+        <div class="corporate-form-grid">
+          <div class="corporate-field">
+            <label for="corporateContactName">Contact name</label>
+            <input id="corporateContactName" name="contact_name" type="text" required
+                   minlength="2" maxlength="120" autocomplete="name"
+                   aria-describedby="corporateContactNameError">
+            <p class="field-error" id="corporateContactNameError" hidden></p>
+          </div>
+
+          <div class="corporate-field">
+            <label for="corporateOrganization">Organization</label>
+            <input id="corporateOrganization" name="organization" type="text" required
+                   minlength="2" maxlength="200" autocomplete="organization"
+                   aria-describedby="corporateOrganizationError">
+            <p class="field-error" id="corporateOrganizationError" hidden></p>
+          </div>
+
+          <div class="corporate-field">
+            <label for="corporatePhone">Phone</label>
+            <input id="corporatePhone" name="phone" type="tel" required minlength="7" maxlength="25"
+                   inputmode="tel" autocomplete="tel" placeholder="e.g. 01700 000000"
+                   aria-describedby="corporatePhoneHint corporatePhoneError">
+            <p class="field-hint" id="corporatePhoneHint">7–25 characters containing 7–15 digits.</p>
+            <p class="field-error" id="corporatePhoneError" hidden></p>
+          </div>
+
+          <div class="corporate-field">
+            <label for="corporateEmail">Email <span class="opt">(optional)</span></label>
+            <input id="corporateEmail" name="email" type="email" maxlength="254"
+                   inputmode="email" autocomplete="email" aria-describedby="corporateEmailError">
+            <p class="field-error" id="corporateEmailError" hidden></p>
+          </div>
+
+          <div class="corporate-field">
+            <label for="corporateQuantity">Approximate quantity</label>
+            <input id="corporateQuantity" name="approximate_quantity" type="number" required
+                   min="1" max="100000" step="1" inputmode="numeric"
+                   aria-describedby="corporateQuantityHint corporateQuantityError">
+            <p class="field-hint" id="corporateQuantityHint">Inquiry range: 1–100,000.</p>
+            <p class="field-error" id="corporateQuantityError" hidden></p>
+          </div>
+
+          <div class="corporate-field">
+            <label for="corporateNeededBy">Needed by <span class="opt">(optional)</span></label>
+            <input id="corporateNeededBy" name="needed_by" type="date"
+                   aria-describedby="corporateNeededByHint corporateNeededByError">
+            <p class="field-hint" id="corporateNeededByHint">Your browser shows today through 730 days as guidance; the server uses Asia/Dhaka.</p>
+            <p class="field-error" id="corporateNeededByError" hidden></p>
+          </div>
+
+          <div class="corporate-field full">
+            <label for="corporateDestination">Destination</label>
+            <input id="corporateDestination" name="destination" type="text" required
+                   minlength="2" maxlength="200" autocomplete="street-address"
+                   aria-describedby="corporateDestinationError">
+            <p class="field-error" id="corporateDestinationError" hidden></p>
+          </div>
+
+          <fieldset class="corporate-choices" id="corporateDirections"
+                    aria-describedby="corporateDirectionError">
+            <legend>Inquiry direction</legend>
+            <div class="corporate-choice-list">
+              <label class="corporate-choice"><input type="radio" name="occasion_or_product_interest"
+                value="Use chocolates currently available" required><span>Use chocolates currently available</span></label>
+              <label class="corporate-choice"><input type="radio" name="occasion_or_product_interest"
+                value="Request another chocolate or larger quantity"><span>Request another chocolate or larger quantity</span></label>
+              <label class="corporate-choice"><input type="radio" name="occasion_or_product_interest"
+                value="Recommend a mix for my budget"><span>Recommend a mix for my budget</span></label>
+            </div>
+            <div class="corporate-detail corporate-field">
+              <label for="corporateInterestDetail">Occasion or product detail <span class="opt">(optional)</span></label>
+              <input id="corporateInterestDetail" type="text" maxlength="440"
+                     aria-describedby="corporateInterestDetailHint corporateInterestDetailError">
+              <p class="field-hint" id="corporateInterestDetailHint">Added to the selected direction; the combined API value stays within 500 characters.</p>
+              <p class="field-error" id="corporateInterestDetailError" hidden></p>
+            </div>
+            <p class="field-error" id="corporateDirectionError" hidden></p>
+          </fieldset>
+
+          <div class="corporate-field full">
+            <label for="corporateBudget">Budget range</label>
+            <input id="corporateBudget" name="budget_range" type="text" required
+                   minlength="1" maxlength="120" placeholder="e.g. Approximate total or per-gift range"
+                   aria-describedby="corporateBudgetError">
+            <p class="field-error" id="corporateBudgetError" hidden></p>
+          </div>
+
+          <div class="corporate-field full">
+            <label for="corporateCustomization">Customization or packaging <span class="opt">(optional)</span></label>
+            <textarea id="corporateCustomization" name="customization_or_packaging" maxlength="500"
+                      aria-describedby="corporateCustomizationError"></textarea>
+            <p class="field-error" id="corporateCustomizationError" hidden></p>
+          </div>
+
+          <div class="corporate-field full">
+            <label for="corporateNote">Note <span class="opt">(optional)</span></label>
+            <textarea id="corporateNote" name="note" maxlength="1000"
+                      aria-describedby="corporateNoteError"></textarea>
+            <p class="field-error" id="corporateNoteError" hidden></p>
+          </div>
+        </div>
+
+        <div class="corporate-hp" aria-hidden="true">
+          <label for="corporateWebsite">Website</label>
+          <input id="corporateWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn-submit corporate-submit" id="corporateSubmit" type="submit" disabled>Preparing secure form…</button>
+        <p class="corporate-submit-note">Submitting creates only an inquiry for review. It does not reserve products or confirm delivery.</p>
+      </form>
+
+      <div class="corporate-result" id="corporateResult" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" hidden>
+        <h3 id="corporateResultTitle"></h3>
+        <p id="corporateResultMessage"></p>
+        <span class="corporate-reference" id="corporateReference" hidden></span>
+        <div class="corporate-email-fallback" id="corporateEmailFallback" hidden>
+          Email fallback: <a id="corporateEmailLink" href=""></a>
+        </div>
+        <div class="corporate-result-actions">
+          <button class="btn-ghost" id="corporateRetry" type="button" hidden>Review and retry</button>
+          <button class="btn-ghost" id="corporateAnother" type="button" hidden>Start another inquiry</button>
+          <a class="btn-ghost" href="#chocolates" data-corporate-close>Back to chocolates</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
 
 <div id="cartBar">
   <div class="inner">
     <div class="cinfo">
       <div class="ccount" id="cartCount">0 items</div>
       <div class="ctotal" id="cartTotal">৳0</div>
+      <div class="cart-notice" id="cartNotice" role="status" aria-live="polite" hidden></div>
     </div>
-    <button class="btn-primary" id="btnCheckout">Checkout →</button>
+    <button class="btn-primary" id="btnCheckout">Review order →</button>
   </div>
 </div>
 
 <!-- ---------------------------- checkout ---------------------------- -->
-<div class="screen" id="checkout" hidden>
+<div class="screen" id="checkout" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" hidden>
   <div class="stop">
     <button class="btn-back" id="btnBack" aria-label="Back to catalog">←</button>
-    <h2>Your order</h2>
+    <h2 id="checkoutTitle">Your order</h2>
   </div>
 
   <div class="wrap">
     <div class="panel">
       <div id="sumRows"></div>
+      <p class="sr-only" id="summaryEditStatus" role="status" aria-live="polite" aria-atomic="true"></p>
       <div class="tot">
-        <div class="tline"><span>Subtotal</span><span class="v" id="tSub">৳0</span></div>
-        <div class="tline save" id="tSaveRow" hidden>
-          <span id="tSaveLabel">Discount</span><span class="v" id="tSave">−৳0</span>
+        <div class="tline"><span>Regular subtotal</span><span class="v" id="tSub">৳0</span></div>
+        <div class="tline save" id="tCampaignRow" hidden>
+          <span>Campaign display subtotal</span><span class="v" id="tCampaign">৳0</span>
         </div>
         <div class="tline"><span>Delivery</span><span class="v" id="tShip">Free</span></div>
-        <div class="tline grand"><span>Total to pay</span><span class="v" id="tGrand">৳0</span></div>
-        <div class="roundnote" id="roundNote" hidden>Rounded up to the nearest ৳10</div>
+        <div class="tline grand"><span>Final payable</span><span class="v" id="tGrand">Confirmed by server</span></div>
         <div class="roundnote courier" id="shipNote" hidden>+ courier charge, paid to the rider</div>
       </div>
+      <p class="summary-authority">Display prices help you review the basket. Coupon benefit,
+         eligibility, discount, cash rounding and the amount actually payable are calculated only
+         by Chocolate Trail's server after a submission is accepted.</p>
     </div>
 
-    <label>How should we get it to you?</label>
+    <label id="deliveryLabel">How should we get it to you?</label>
     <div class="dopts" id="dopts">
-      <div class="dopt on" data-mode="free">
+      <label class="dopt on" data-mode="free">
+        <input type="radio" name="delivery" value="free" checked aria-labelledby="deliveryLabel deliveryFreeText">
         <span class="dot"></span>
-        <span class="dtext">
+        <span class="dtext" id="deliveryFreeText">
           <b>Free delivery <em class="free">৳0</em></b>
           <span>We bring it ourselves, at a time and date that suits us — we'll
                 confirm with you on WhatsApp.</span>
           <span class="zones" id="zoneList"></span>
         </span>
-      </div>
-      <div class="dopt" data-mode="courier">
+      </label>
+      <label class="dopt" data-mode="courier">
+        <input type="radio" name="delivery" value="courier" aria-labelledby="deliveryLabel deliveryCourierText">
         <span class="dot"></span>
-        <span class="dtext">
+        <span class="dtext" id="deliveryCourierText">
           <b>Instant or courier delivery <em class="chg">charge applies</em></b>
           <span>Anywhere else, or if you need it fast. Sent via a third-party
                 courier (<span id="courierList"></span>). <b class="warnt">The delivery charge is
                 set by the courier and paid separately by you</b> — it is not
                 included in the total below.</span>
         </span>
-      </div>
+      </label>
     </div>
 
     <div id="couponWrap" hidden>
@@ -497,27 +1603,33 @@ footer .heart{ color:var(--gold); }
         <button type="button" id="btnCoupon">Apply</button>
       </div>
     </div>
-    <div class="cmsg" id="couponMsg"></div>
+    <div class="cmsg" id="couponMsg" role="status" aria-live="polite"></div>
 
     <form id="orderForm" novalidate>
       <label for="fName">Your name</label>
-      <input id="fName" type="text" autocomplete="name" placeholder="e.g. Chocolate Khan" maxlength="60">
-      <div class="err" id="eName">Please tell us your name.</div>
+      <input id="fName" name="name" type="text" required minlength="2" maxlength="120"
+             autocomplete="name" placeholder="e.g. Chocolate Khan" aria-describedby="eName">
+      <div class="err" id="eName">Enter 2–120 characters without spaces at either end.</div>
 
       <label for="fPhone">Phone number</label>
-      <input id="fPhone" type="tel" inputmode="numeric" autocomplete="tel"
-             placeholder="01XXXXXXXXX" maxlength="20">
-      <div class="err" id="ePhone">Enter an 11-digit number starting with 01.</div>
+      <input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required
+             placeholder="01XXXXXXXXX" minlength="11" maxlength="25" aria-describedby="ePhone">
+      <div class="err" id="ePhone">Use a Bangladesh number beginning 01 or 8801.</div>
 
       <label for="fAddr">Delivery address</label>
-      <textarea id="fAddr" autocomplete="street-address"
+      <textarea id="fAddr" name="address" autocomplete="street-address" required minlength="5"
+        maxlength="500" aria-describedby="eAddr"
         placeholder="House / road / area — or your office desk &amp; floor"></textarea>
-      <div class="err" id="eAddr">We need an address to deliver to.</div>
+      <div class="err" id="eAddr">Enter 5–500 address characters without spaces at either end.</div>
 
       <label for="fNote">Delivery note <span class="opt">(optional)</span></label>
-      <textarea id="fNote" maxlength="300"
+      <textarea id="fNote" name="note" maxlength="1000" aria-describedby="eNote"
         placeholder="e.g. Call when you reach reception. Or: not in office Thursday."></textarea>
+      <div class="err" id="eNote">Notes may contain up to 1,000 characters and cannot begin with =, +, − or @.</div>
 
+      <div class="order-status" id="orderStatus" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <p class="order-gate-note" id="orderGateNote">Stock, benefits and the final payable are
+         confirmed by Chocolate Trail's server when you place the order.</p>
       <button class="btn-submit" id="btnSubmit" type="submit">Place order · Pay on delivery</button>
       <p class="fine">No payment now. No account.<br>We'll message you to confirm delivery time.</p>
     </form>
@@ -525,52 +1637,194 @@ footer .heart{ color:var(--gold); }
 </div>
 
 <!-- -------------------------- confirmation -------------------------- -->
-<div class="screen" id="thanks" hidden>
+<div class="screen" id="thanks" role="dialog" aria-modal="true" aria-labelledby="doneTitle" hidden>
   <div class="wrap">
     <div class="done">
-      <div class="big" id="doneEmoji">🍫</div>
-      <h2 id="doneTitle">Order received!</h2>
+      <div class="big" id="doneEmoji">✓</div>
+      <h2 id="doneTitle" tabindex="-1">Order received</h2>
       <p id="doneSub">Pay on delivery. 🍫</p>
-      <div class="oid" id="doneId"></div>
+      <div class="oid" id="doneId" hidden></div>
 
       <div class="panel recap" id="recap"></div>
 
       <div id="waPanel" hidden>
-        <h3>⚠️ Couldn't reach our order sheet</h3>
-        <p>Your order is <b>not saved yet</b>. Tap below — WhatsApp opens with your order
-           already typed out. Press send and you're done.</p>
-        <a class="btn-wa" id="waLink" href="#" target="_blank" rel="noopener">
-          <span>💬</span><span>Send order on WhatsApp</span></a>
-        <button class="btn-ghost" id="btnCopy" style="margin-top:10px">Copy order as text</button>
+        <h3>Manual recovery — no server order is confirmed</h3>
+        <p>The server did not confirm an order. Review the saved summary, then choose whether to
+           open WhatsApp or copy it. Neither action claims stock, a benefit or a final payable.</p>
+        <div class="recovery-summary" id="recoverySummary"></div>
+        <div class="recovery-actions">
+          <button class="btn-wa" id="waLink" type="button">Open summary in WhatsApp</button>
+          <button class="btn-ghost" id="btnCopy" type="button">Copy recovery summary</button>
+        </div>
       </div>
 
-      <button class="btn-ghost" id="btnAgain">Order something else</button>
+      <button class="btn-ghost" id="btnRetryOrder" type="button" hidden>Retry this same order</button>
+      <button class="btn-ghost" id="btnAgain" type="button">Back to chocolates</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ==================================================================
-   1. CONFIG — the two lines you MUST change
+   VISUAL_SETTINGS — safe local controls for the layered hero only.
+   Change booleans, the strength preset, or durations here; this module
+   never reads or changes catalog, cart, checkout, or order data.
+   ================================================================== */
+(() => {
+  "use strict";
+  const VISUAL_SETTINGS = {
+    cloudMotion: true,
+    isolatedSkySplashMotion: true,
+    moonShimmer: true,
+    celestialSparkleTwinkle: true,
+    houseLightTrailSequence: true,
+    autoplayOnce: true,
+    replayWithPointerOrKeyboard: true,
+    motionStrengthPreset: "gentle", // "subtle" | "gentle" | "expressive"
+    durations: {
+      cloudSeconds: 48,
+      skySplashSeconds: 29,
+      moonSeconds: 14,
+      sparkleSeconds: 10.7,
+      sequenceSeconds: 7.2,
+      trailStartSeconds: 2.15,
+      tileStepSeconds: 0.29,
+      autoplayDelayMs: 220
+    }
+  };
+
+  const stage = document.getElementById("heroReplay");
+  if (!stage) return;
+  const settings = VISUAL_SETTINGS;
+  const d = settings.durations;
+  const strength = { subtle:.62, gentle:1, expressive:1.28 }[settings.motionStrengthPreset] || 1;
+  const seconds = value => Math.max(.1, Number(value) || .1) + "s";
+  const css = {
+    "--motion-strength": strength,
+    "--sequence-duration": seconds(d.sequenceSeconds),
+    "--trail-delay": seconds(d.trailStartSeconds),
+    "--tile-step": seconds(d.tileStepSeconds),
+    "--cloud-a-duration": seconds(d.cloudSeconds),
+    "--cloud-b-duration": seconds(d.cloudSeconds * 1.27),
+    "--cloud-c-duration": seconds(d.cloudSeconds * 1.52),
+    "--splash-a-duration": seconds(d.skySplashSeconds),
+    "--splash-b-duration": seconds(d.skySplashSeconds * 1.28),
+    "--moon-duration": seconds(d.moonSeconds)
+  };
+  [1,1.22,1.52,1.11,1.7].forEach((factor,index) => {
+    css[`--sparkle-${"abcde"[index]}-duration`] = seconds(d.sparkleSeconds * factor);
+  });
+  Object.entries(css).forEach(([name,value]) => stage.style.setProperty(name,value));
+  [
+    ["cloud-motion",settings.cloudMotion],
+    ["splash-motion",settings.isolatedSkySplashMotion],
+    ["moon-motion",settings.moonShimmer],
+    ["sparkle-motion",settings.celestialSparkleTwinkle]
+  ].forEach(([name,on]) => stage.classList.toggle(name,!!on));
+
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const image = stage.querySelector(".hero-base");
+  let inView = false;
+  let autoPlayed = false;
+  let autoQueued = false;
+  let running = false;
+  let runCount = 0;
+  let timer = 0;
+  let startedAt = 0;
+  let remaining = d.sequenceSeconds * 1000;
+
+  const finish = () => {
+    clearTimeout(timer); timer = 0; running = false;
+    stage.classList.remove("sequence-running");
+    stage.classList.add("sequence-complete");
+    remaining = d.sequenceSeconds * 1000;
+  };
+  const pauseSequence = () => {
+    if (!running || !timer) return;
+    remaining = Math.max(0,remaining - (performance.now() - startedAt));
+    clearTimeout(timer); timer = 0;
+  };
+  const resumeSequence = () => {
+    if (!running || timer || reduced.matches) return;
+    if (remaining <= 0) return finish();
+    startedAt = performance.now();
+    timer = setTimeout(finish,remaining);
+  };
+  const syncPause = () => {
+    const paused = !inView || document.hidden;
+    stage.classList.toggle("motion-paused",paused);
+    paused ? pauseSequence() : resumeSequence();
+  };
+  const play = source => {
+    if (!settings.houseLightTrailSequence || running) return false;
+    if (source === "manual" && !settings.replayWithPointerOrKeyboard) return false;
+    if (reduced.matches) { finish(); return false; }
+    stage.classList.remove("sequence-running","sequence-complete");
+    void stage.offsetWidth;
+    remaining = d.sequenceSeconds * 1000;
+    running = true; runCount += 1;
+    stage.classList.add("sequence-running");
+    syncPause();
+    return true;
+  };
+  const queueAutoplay = () => {
+    if (!settings.autoplayOnce || autoPlayed || autoQueued || reduced.matches || !inView || document.hidden) return;
+    autoQueued = true;
+    setTimeout(() => {
+      autoQueued = false;
+      if (!autoPlayed && inView && !document.hidden && play("autoplay")) autoPlayed = true;
+    },Math.max(0,Number(d.autoplayDelayMs) || 0));
+  };
+  const onVisibility = () => { syncPause(); if (!document.hidden) queueAutoplay(); };
+  const onMotionPreference = () => {
+    if (reduced.matches) finish();
+    syncPause();
+  };
+
+  stage.classList.add("visual-ready");
+  image.addEventListener("error",() => { image.hidden = true; stage.classList.add("asset-missing"); });
+  stage.addEventListener("click",() => play("manual"));
+  document.addEventListener("visibilitychange",onVisibility);
+  if (reduced.addEventListener) reduced.addEventListener("change",onMotionPreference);
+  const observer = new IntersectionObserver(entries => {
+    const entry = entries[0];
+    inView = entry.isIntersecting && entry.intersectionRatio >= .42;
+    stage.classList.toggle("is-visible",inView);
+    syncPause(); queueAutoplay();
+  },{ threshold:[0,.42,.75] });
+  observer.observe(stage);
+  if (reduced.matches) finish();
+
+})();
+</script>
+
+<script>
+/* ==================================================================
+   1. CONFIG — one production service for every public data action
    ================================================================== */
 const CONFIG = {
+  WEBAPP_URL: "https://script.google.com/macros/s/AKfycbw75_rQsBTGjY9yeJXHB8AiVUD8yk0p4Gk6FkdyU73jypK_HqnJY1WXnAXSgjYA4U9h/exec",
 
-  // Google Apps Script Web App URL (SETUP.md, Part A step 23).
-  // Looks like: https://script.google.com/macros/s/AKfycb...long.../exec
-  SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbw6D-Zjwi1htH7K-1lmGvaNYM3jRH0MXvC1J0OAFVjWvTeQUnLqaG155Q1yzZChBoPp4w/exec",
+  // Stop waiting for the read-only catalog instead of leaving the page hanging.
+  CATALOG_TIMEOUT_MS: 30000,
 
   // Your WhatsApp number for the fallback: country code, digits only, no +.
   // 01712345678  ->  "8801712345678"   (880 = Bangladesh, drop the leading 0)
   WHATSAPP_NUMBER: "9190468 89546",
+
+  // Optional public business email. Leave blank to hide the email fallback.
+  BUSINESS_EMAIL: "",
+
+  CORPORATE_TIMEOUT_MS: 12000,
 
   // Seconds to wait for the Sheet before offering WhatsApp instead.
   TIMEOUT_MS: 12000,
 
   // Should customers SEE a coupon box on the checkout page?
   //   true  = the box shows (what you have now). It says only "Enter code" —
-  //           it never names a live code, so nobody learns TWINBIT by reading it.
+  //           it never names a live code.
   //   false = the box is hidden entirely. Codes still work through a private
-  //           link:  https://your-site/?coupon=twinbit
+  //           link:  https://your-site/?coupon=YOUR-CODE
   // Either way the ?coupon= link works, so you can share it with whoever you like.
   SHOW_COUPON_BOX: true
 };
@@ -592,142 +1846,162 @@ const COURIERS = "Pathao, Steadfast, etc.";
 
 
 /* ==================================================================
-   2. COUPONS
-   ==================================================================
-   Add a coupon by copying a line. The code on the LEFT must be lowercase —
-   customers can type it in any case, we match it lowercase.
-
-     percent : how much off, as a number.  10 = 10% off
-     label   : what the customer sees when it works
-
-   The total is always ROUNDED UP to the next ৳10 after the discount,
-   so ৳440 with 10% off = ৳396 -> customer pays ৳400. Never awkward change.
-*/
-const COUPONS = {
-  "twinbit": { percent: 10, label: "TWINBIT — 10% off" }
-  // ,"office5": { percent: 5, label: "OFFICE5 — 5% off" }
-};
-
-
-/* ==================================================================
-   3. PRODUCTS — your catalog
+   2. PRODUCTS — embedded emergency fallback catalog
    ==================================================================
 
-   HOW TO EDIT (no coding — careful copy/paste is enough):
+   The live catalog remains Sheet-driven. These 11 records are the emergency
+   browse-only fallback if the production service cannot be reached.
 
-   Each chocolate is one block between { curly braces }, ending with a comma.
-   TO ADD A NEW ONE: copy an entire block, paste it after the last one, put a
-   comma after the block before it, then change the words inside the "quotes".
-
-   FIELDS
-     id      "galaxy-cookie-crumble"
-             Short nickname. Letters/numbers/dashes only, NO spaces.
-             Must be DIFFERENT for every product. Never reuse an old one.
-     name    "Galaxy Cookie Crumble"    Shown big on the card.
-     bn      "গ্যালাক্সি কুকি ক্রাম্বল"      Bangla name under it. Use "" for none.
-     weight  "50g"                      Small chip on the photo.
-     photo   "images/galaxy-cookie-crumble.jpg"
-             Your photo file. If the file is missing the card shows a coloured
-             wrapper tile instead — the page never breaks.
-     emoji   "🍪"     Shown on that wrapper tile.
-     art     ["#8e1b3d","#d9536f","#ffe3ec"]
-             Wrapper tile colours: [dark, light, text]. Match the real pack.
-     desc    "..."    One or two short lines. Keep under ~85 characters.
-     price   210      Taka. NUMBERS ONLY — no ৳, no commas, no quotes.
-     stock   4        How many you have. NUMBERS ONLY.
-                        0     -> red "Sold out", Add button switched off
-                        1-3   -> amber "Only 3 left"
-                        4+    -> green "In stock"
-                      Customers cannot add more than this number to the cart.
-
-   RULES THAT BREAK THE PAGE IF YOU GET THEM WRONG
-     · Every line inside a block ends with a comma, except the last one.
-     · Text goes in "double quotes". price and stock never do.
-     · A " inside text must be written \"  — e.g. "the \"big\" one".
-     · Removing a product = delete its whole block from { to },
-     · To hide something for a week set stock to 0 instead of deleting it.
-
-   After editing: save, then refresh on your phone. Blank page = you broke a
-   comma or a quote. Undo your last change (Ctrl+Z) and save again.
+   MAINTENANCE RULES
+     · Keep every id stable, unique, lowercase and dash-separated.
+     · price and stock are numbers only. weight is the public pack label.
+     · photo must be a safe local images/ path, never a remote URL.
+     · Keep the exact pack size/variant matched to its image.
+     · Missing images fall back to the restrained art colours without breaking
+       the page. A future Sheet catalog should use the same identity system.
 */
-const PRODUCTS = [
+const EMERGENCY_PRODUCTS = [
   {
-    id:     "galaxy-cookie-crumble",
+    id:     "galaxy-cookie-crumble-50",
     name:   "Galaxy Cookie Crumble",
     bn:     "",
-    weight: "50g",
+    weight: "50 g",
     photo:  "images/galaxy-cookie-crumble.jpg",
     emoji:  "🍪",
     art:    ["#7d1633","#d4607f","#ffe6ee"],
-    desc:   "Mars' silkiest milk chocolate, shot through with crumbled cookie pieces. Softer and creamier than Cadbury.",
+    desc:   "Galaxy milk chocolate with cookie crumble pieces.",
     price:  210,
-    stock:  4
+    stock:  3
   },
   {
-    id:     "dm-roast-almond",
-    name:   "Dairy Milk Roast Almond",
+    id:     "cadbury-dairy-milk-roast-almond",
+    name:   "Cadbury Dairy Milk Roast Almond",
     bn:     "ডেইরি মিল্ক রোস্ট আমন্ড",
-    weight: "75g",
+    weight: "75 g",
     photo:  "images/dm-roast-almond.jpg",
     emoji:  "🌰",
     art:    ["#3d1e78","#7a52b8","#f0e4ff"],
-    desc:   "Classic Cadbury milk chocolate loaded with whole roasted almonds. The crunchy one everyone fights over.",
-    price:  220,
-    stock:  1
-  },
-  {
-    id:     "dm-crackle",
-    name:   "Dairy Milk Crackle",
-    bn:     "ডেইরি মিল্ক ক্র্যাকল",
-    weight: "35g",
-    photo:  "images/dm-crackle.jpg",
-    emoji:  "✨",
-    art:    ["#3d1e78","#8a63c4","#ffe9a8"],
-    desc:   "Dairy Milk with crispy puffed rice folded in — light, snappy, gone in about four bites.",
-    price:  110,
+    desc:   "Cadbury Dairy Milk chocolate with roasted almonds.",
+    price:  210,
     stock:  2
   },
   {
-    id:     "dm-crispello",
-    name:   "Dairy Milk Crispello",
+    id:     "cadbury-dairy-milk-crackle",
+    name:   "Cadbury Dairy Milk Crackle",
+    bn:     "ডেইরি মিল্ক ক্র্যাকল",
+    weight: "36 g",
+    photo:  "images/dm-crackle.jpg",
+    emoji:  "✨",
+    art:    ["#3d1e78","#8a63c4","#ffe9a8"],
+    desc:   "Cadbury Dairy Milk chocolate with crisped rice pieces.",
+    price:  100,
+    stock:  6
+  },
+  {
+    id:     "cadbury-dairy-milk-crispello-35",
+    name:   "Cadbury Dairy Milk Crispello",
     bn:     "ডেইরি মিল্ক ক্রিসপেলো",
-    weight: "35g",
+    weight: "35 g",
     photo:  "images/dm-crispello.jpg",
     emoji:  "🥐",
     art:    ["#4a2683","#e07a2a","#fff0dc"],
-    desc:   "Individually wrapped fingers — crisp wafer shell, soft cream centre, Dairy Milk all over.",
+    desc:   "Cadbury Dairy Milk Crispello with a light, crispy centre.",
     price:  120,
-    stock:  8
+    stock:  12
   },
   {
-    id:     "amul-sugarfree-dark",
-    name:   "Amul Sugar Free Dark",
-    bn:     "আমুল সুগার ফ্রি ডার্ক",
-    weight: "125g",
-    photo:  "images/amul-sugarfree-dark.jpg",
-    emoji:  "🖤",
-    art:    ["#0f0f0f","#3a3527","#f5c518"],
-    desc:   "55% cocoa, no added sugar. Genuinely bitter-rich — the one to send to your diabetic uncle.",
-    price:  440,
-    stock:  4
-  },
-  {
-    id:     "amul-dark",
-    name:   "Amul Dark Chocolate",
+    id:     "amul-dark-55-150",
+    name:   "Amul Dark Chocolate 55% Cocoa",
     bn:     "আমুল ডার্ক চকলেট",
-    weight: "125g",
+    weight: "150 g",
     photo:  "images/amul-dark.jpg",
     emoji:  "🍫",
     art:    ["#25120a","#5c2c12","#ff6a13"],
-    desc:   "55% cocoa from fine cocoa beans. Big 125g slab, deep and slightly fruity. Best value dark here.",
+    desc:   "Amul dark chocolate with 55% cocoa.",
     price:  420,
+    stock:  3
+  },
+  {
+    id:     "amul-sugar-free-dark-55",
+    name:   "Amul Sugar Free Dark Chocolate 55% Cocoa",
+    bn:     "আমুল সুগার ফ্রি ডার্ক",
+    weight: "150 g",
+    photo:  "images/amul-sugarfree-dark.jpg",
+    emoji:  "🖤",
+    art:    ["#0f0f0f","#3a3527","#f5c518"],
+    desc:   "Amul sugar-free dark chocolate with 55% cocoa.",
+    price:  430,
+    stock:  1
+  },
+  {
+    id:     "amul-india-twilight-tryst-55-125",
+    name:   "Amul India Twilight Tryst Single Origin Dark Chocolate 55%",
+    bn:     "",
+    weight: "125 g",
+    photo:  "images/amul-india-twilight-tryst-55-125.webp",
+    emoji:  "🦚",
+    art:    ["#302820","#e8e3d7","#3a2318"],
+    desc:   "Amul single-origin dark chocolate with 55% cocoa.",
+    price:  370,
     stock:  4
+  },
+  {
+    id:     "galaxy-fusions-dark-70",
+    name:   "Galaxy Fusions Dark Chocolate 70% Cocoa",
+    bn:     "",
+    weight: "56 g",
+    photo:  "images/galaxy-fusions-dark-70-56.webp",
+    emoji:  "🌌",
+    art:    ["#3d2a1f","#b28a45","#fff1b5"],
+    desc:   "Galaxy Fusions dark chocolate with 70% cocoa.",
+    price:  300,
+    stock:  3
+  },
+  {
+    id:     "kitkat-delights-rich-150",
+    name:   "Nestlé KitKat Delights Rich",
+    bn:     "",
+    weight: "150 g",
+    photo:  "images/kitkat-delights-rich-150.webp",
+    emoji:  "🍫",
+    art:    ["#8f1019","#165f91","#fff5df"],
+    desc:   "KitKat Delights Rich chocolate-coated wafer.",
+    price:  450,
+    stock:  2
+  },
+  {
+    id:     "kitkat-delights-dark-50",
+    name:   "Nestlé KitKat Delights Dark",
+    bn:     "",
+    weight: "50 g",
+    photo:  "images/kitkat-delights-dark-50.webp",
+    emoji:  "🍫",
+    art:    ["#4a050a","#9d0c16","#f6d56c"],
+    desc:   "KitKat Delights Dark chocolate-coated wafer.",
+    price:  220,
+    stock:  2
+  },
+  {
+    id:     "kitkat-delights-dark-150",
+    name:   "Nestlé KitKat Delights Dark",
+    bn:     "",
+    weight: "150 g",
+    photo:  "images/kitkat-delights-dark-150.webp",
+    emoji:  "🍫",
+    art:    ["#51080c","#b31d22","#f2cf83"],
+    desc:   "KitKat Delights Dark chocolate-coated wafer.",
+    price:  500,
+    stock:  1
   }
 ];
 
+/* Render these exact embedded facts immediately. A validated background response
+   refreshes this same single-page card model; no Product page is created. */
+let PRODUCTS = emergencyCatalog();
+
 
 /* ==================================================================
-   4. The app. Nothing below here needs editing.
+   3. The app. Nothing below here needs editing.
    ================================================================== */
 
 const $ = (id) => document.getElementById(id);
@@ -735,6 +2009,355 @@ const $ = (id) => document.getElementById(id);
 const taka = (n) => "৳" + Number(n).toLocaleString("en-IN");
 const esc  = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c =>
   ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+/* -------------------------- production catalog --------------------------
+   Security boundary: only a fully validated nine-field public Product
+   reaches the UI. The saved copy is validated again before it can be used.
+   Every non-fresh state is browse-only; fresh server stock and the server's
+   ordering_enabled setting are the ordering authority. */
+const CATALOG_CACHE_KEY = "ct_production_v4_catalog_lkg";
+const CATALOG_CACHE_SCHEMA = "chocolate-trail-production-v4-catalog-1";
+const CATALOG_BASE_TOP_FIELDS = [
+  "ok","test","action","catalog_version","business_name","currency",
+  "ordering_enabled","products"
+];
+const CATALOG_PROMOTION_FIELDS = [
+  "campaign_id","title","starts_at","end_exclusive","time_zone","theme_key","copy"
+];
+const CATALOG_PROMOTION_PRICE_FIELDS = ["product_id","display_price"];
+const CATALOG_THEME_KEYS = [
+  "founder","eid","puja","bangla-new-year","new-year","independence-day",
+  "victory-day","payday","seasonal"
+];
+const CATALOG_PRODUCT_FIELDS = [
+  "product_id","name","weight","sell_price","stock","stock_confirmed","image_file",
+  "sort_order","description"
+];
+const CATALOG_MAX_PRODUCTS = 200;
+const EMERGENCY_DECORATION = new Map(EMERGENCY_PRODUCTS.map(p => [p.id, {
+  bn:p.bn, emoji:p.emoji, art:p.art.slice()
+}]));
+let catalogRuntime = {
+  mode:"checking", version:"embedded-11", cachedAt:null, failure:"",
+  serverOrderingEnabled:false, promotion:null
+};
+let catalogLoadController = null;
+let catalogLoadSequence = 0;
+let catalogLoadStarted = false;
+
+function catalogFail(code){
+  const error = new Error("Catalog validation stopped.");
+  error.catalogCode = code;
+  throw error;
+}
+
+function exactOwnKeys(value, expected){
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const actual = Object.keys(value).sort();
+  const wanted = expected.slice().sort();
+  return actual.length === wanted.length && actual.every((key,index) => key === wanted[index]);
+}
+
+function boundedText(value, max){
+  return typeof value === "string" && value.length > 0 && value.length <= max &&
+    value === value.trim() && !/[\u0000-\u001F\u007F]/.test(value);
+}
+
+function safeIsoInstant(value){
+  if (typeof value !== "string" || value.length < 20 || value.length > 30 ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function validateCatalogPayload(value){
+  const hasPromotion = value && Object.prototype.hasOwnProperty.call(value,"promotion");
+  const hasPromotionPrices = value && Object.prototype.hasOwnProperty.call(value,"promotion_prices");
+  if (hasPromotion !== hasPromotionPrices) catalogFail("PROMOTION_PAIR_INVALID");
+  const expectedTop = hasPromotion
+    ? CATALOG_BASE_TOP_FIELDS.concat(["promotion","promotion_prices"])
+    : CATALOG_BASE_TOP_FIELDS;
+  if (!exactOwnKeys(value,expectedTop)) catalogFail("TOP_LEVEL_FIELDS_INVALID");
+  if (value.ok !== true || value.test !== false || value.action !== "catalog") {
+    catalogFail("TOP_LEVEL_VALUES_INVALID");
+  }
+  if (value.business_name !== "Chocolate Trail" || value.currency !== "BDT" ||
+      typeof value.ordering_enabled !== "boolean" ||
+      typeof value.catalog_version !== "string" ||
+      !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(value.catalog_version)) {
+    catalogFail("SETTINGS_INVALID");
+  }
+  if (!Array.isArray(value.products) || value.products.length > CATALOG_MAX_PRODUCTS) {
+    catalogFail("PRODUCT_CAPACITY_INVALID");
+  }
+
+  const ids = new Set();
+  const orders = new Set();
+  const products = value.products.map(record => {
+    if (!exactOwnKeys(record,CATALOG_PRODUCT_FIELDS)) catalogFail("PRODUCT_FIELDS_INVALID");
+    if (typeof record.product_id !== "string" || record.product_id.length > 64 ||
+        !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.product_id)) catalogFail("PRODUCT_ID_INVALID");
+    if (ids.has(record.product_id)) catalogFail("PRODUCT_ID_DUPLICATE");
+    ids.add(record.product_id);
+    if (!boundedText(record.name,200) || !boundedText(record.weight,40) ||
+        !boundedText(record.description,500)) catalogFail("PRODUCT_TEXT_INVALID");
+    if (!Number.isSafeInteger(record.sell_price) || record.sell_price <= 0 || record.sell_price > 1000000) {
+      catalogFail("PRODUCT_PRICE_INVALID");
+    }
+    if (!Number.isSafeInteger(record.stock) || record.stock < 0 || record.stock > 100000) {
+      catalogFail("PRODUCT_STOCK_INVALID");
+    }
+    if (typeof record.stock_confirmed !== "boolean") catalogFail("PRODUCT_CONFIRMATION_INVALID");
+    if (!Number.isSafeInteger(record.sort_order) || record.sort_order <= 0 || record.sort_order > 1000000) {
+      catalogFail("PRODUCT_SORT_INVALID");
+    }
+    if (orders.has(record.sort_order)) catalogFail("PRODUCT_SORT_DUPLICATE");
+    orders.add(record.sort_order);
+    if (typeof record.image_file !== "string" || record.image_file.length < 5 ||
+        record.image_file.length > 120 || record.image_file.includes("..") ||
+        /[\\\/\?#\u0000-\u001F\u007F]/.test(record.image_file) ||
+        /^[a-z]+:/i.test(record.image_file) ||
+        !/^[a-z0-9][a-z0-9._-]*\.(jpg|jpeg|png|webp)$/.test(record.image_file)) {
+      catalogFail("PRODUCT_IMAGE_INVALID");
+    }
+    return {
+      product_id:record.product_id, name:record.name, weight:record.weight,
+      sell_price:record.sell_price, stock:record.stock, stock_confirmed:record.stock_confirmed,
+      image_file:record.image_file,
+      sort_order:record.sort_order, description:record.description
+    };
+  });
+  products.sort((a,b) => a.sort_order - b.sort_order);
+  let promotion = null;
+  let promotionPrices = null;
+  if (hasPromotion){
+    const publicCampaign = value.promotion;
+    if (!exactOwnKeys(publicCampaign,CATALOG_PROMOTION_FIELDS) ||
+        typeof publicCampaign.campaign_id !== "string" || publicCampaign.campaign_id.length > 64 ||
+        !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(publicCampaign.campaign_id) ||
+        !boundedText(publicCampaign.title,120) || !boundedText(publicCampaign.copy,500) ||
+        publicCampaign.time_zone !== "Asia/Dhaka" ||
+        !CATALOG_THEME_KEYS.includes(publicCampaign.theme_key)) {
+      catalogFail("PROMOTION_FIELDS_INVALID");
+    }
+    const startsAt = safeIsoInstant(publicCampaign.starts_at);
+    const endsAt = safeIsoInstant(publicCampaign.end_exclusive);
+    if (!startsAt || !endsAt || startsAt.getTime() >= endsAt.getTime()) {
+      catalogFail("PROMOTION_TIME_INVALID");
+    }
+    if (!Array.isArray(value.promotion_prices) || value.promotion_prices.length !== products.length) {
+      catalogFail("PROMOTION_PRICE_CAPACITY_INVALID");
+    }
+    const regularById = new Map(products.map(product => [product.product_id,product.sell_price]));
+    const seenPromotionIds = new Set();
+    promotionPrices = value.promotion_prices.map(record => {
+      if (!exactOwnKeys(record,CATALOG_PROMOTION_PRICE_FIELDS) ||
+          !regularById.has(record.product_id) || seenPromotionIds.has(record.product_id) ||
+          !Number.isSafeInteger(record.display_price) || record.display_price <= 0 ||
+          record.display_price > regularById.get(record.product_id)) {
+        catalogFail("PROMOTION_PRICE_INVALID");
+      }
+      seenPromotionIds.add(record.product_id);
+      return {product_id:record.product_id,display_price:record.display_price};
+    });
+    const productOrder = new Map(products.map((product,index) => [product.product_id,index]));
+    promotionPrices.sort((a,b) => productOrder.get(a.product_id) - productOrder.get(b.product_id));
+    promotion = {
+      campaign_id:publicCampaign.campaign_id,title:publicCampaign.title,
+      starts_at:publicCampaign.starts_at,end_exclusive:publicCampaign.end_exclusive,
+      time_zone:"Asia/Dhaka",theme_key:publicCampaign.theme_key,copy:publicCampaign.copy
+    };
+  }
+  const result = {
+    ok:true, test:false, action:"catalog", catalog_version:value.catalog_version,
+    business_name:"Chocolate Trail", currency:"BDT", ordering_enabled:value.ordering_enabled, products
+  };
+  if (promotion){ result.promotion = promotion; result.promotion_prices = promotionPrices; }
+  return result;
+}
+
+function mapPublicProduct(record,promotionPriceMap){
+  const decoration = EMERGENCY_DECORATION.get(record.product_id) || {
+    bn:"", emoji:"", art:["#33251d","#5a4436","#eadcca"]
+  };
+  return {
+    id:record.product_id, name:record.name, bn:decoration.bn, weight:record.weight,
+    photo:"images/" + record.image_file, emoji:decoration.emoji,
+    art:decoration.art.slice(), desc:record.description,
+    price:record.sell_price, regularPrice:record.sell_price,
+    displayPrice:promotionPriceMap && promotionPriceMap.has(record.product_id)
+      ? promotionPriceMap.get(record.product_id) : record.sell_price,
+    stock:record.stock, stockConfirmed:record.stock_confirmed,
+    sortOrder:record.sort_order
+  };
+}
+
+function emergencyCatalog(){
+  return EMERGENCY_PRODUCTS.map(p => ({...p,regularPrice:p.price,displayPrice:p.price,
+    stockConfirmed:false,art:p.art.slice()}));
+}
+
+function reconcileCartWithFreshProducts(){
+  if (!cart || typeof cart !== "object" || Array.isArray(cart)) cart = {};
+  const changes = [];
+  for (const id of Object.keys(cart)){
+    const p = PRODUCTS.find(product => product.id === id);
+    const q = cart[id];
+    if (!p || !Number.isSafeInteger(q) || q <= 0){ delete cart[id]; changes.push("A removed item left the catalog."); }
+    else if (p.stockConfirmed === true && p.stock <= 0){ delete cart[id]; changes.push(p.name + " sold out and was removed."); }
+    else if (p.stockConfirmed === true && q > p.stock){ cart[id] = p.stock; changes.push(p.name + " changed to " + p.stock + " available."); }
+  }
+  cartReconcileMessage = changes.join(" ");
+}
+
+function catalogRequestUrl(){
+  let url;
+  try { url = new URL(CONFIG.WEBAPP_URL); }
+  catch(e){ catalogFail("CATALOG_URL_INVALID"); }
+  if (url.protocol !== "https:" || url.hostname !== "script.google.com" ||
+      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) || url.search || url.hash) {
+    catalogFail("CATALOG_URL_INVALID");
+  }
+  url.searchParams.set("action","catalog");
+  return url.href;
+}
+
+function writeValidatedCatalogCache(payload, cachedAt){
+  try{
+    localStorage.setItem(CATALOG_CACHE_KEY,JSON.stringify({
+      schema:CATALOG_CACHE_SCHEMA, cached_at:cachedAt, payload
+    }));
+  }catch(e){}
+}
+
+function readValidatedCatalogCache(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(CATALOG_CACHE_KEY) || "null");
+    if (!exactOwnKeys(saved,["schema","cached_at","payload"]) ||
+        saved.schema !== CATALOG_CACHE_SCHEMA || !Number.isSafeInteger(saved.cached_at) ||
+        saved.cached_at <= 0 || saved.cached_at > Date.now() + 300000) catalogFail("CACHE_INVALID");
+    return { payload:validateCatalogPayload(saved.payload), cachedAt:saved.cached_at };
+  }catch(e){
+    try { localStorage.removeItem(CATALOG_CACHE_KEY); }catch(_e){}
+    return null;
+  }
+}
+
+function setCatalogStatus(kind,title,detail){
+  const el = $("catalogStatus");
+  el.className = "catalog-status is-" + kind;
+  $("catalogStatusTitle").textContent = title;
+  $("catalogStatusDetail").textContent = detail;
+}
+
+function cartReviewAllowed(){
+  return catalogRuntime.mode === "fresh" && PRODUCTS.length > 0 &&
+    PRODUCTS.every(product => product.stockConfirmed === true);
+}
+
+function orderingAllowed(){
+  return cartReviewAllowed() && catalogRuntime.serverOrderingEnabled === true;
+}
+
+function productOrderingAllowed(product){
+  return cartReviewAllowed() && product && product.stockConfirmed === true && product.stock > 0;
+}
+
+function showPromotion(promotion){
+  const banner = $("promotionBanner");
+  banner.hidden = !promotion;
+  if (!promotion) return;
+  $("promotionTitle").textContent = promotion.title;
+  $("promotionCopy").textContent = promotion.copy;
+  const ends = new Date(promotion.end_exclusive);
+  $("promotionTime").textContent = "Ends " + new Intl.DateTimeFormat("en-BD",{
+    dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Dhaka"
+  }).format(ends) + " (Asia/Dhaka).";
+}
+
+function applyValidatedCatalog(payload,mode,cachedAt,failure){
+  const promotionPriceMap = payload.promotion
+    ? new Map(payload.promotion_prices.map(row => [row.product_id,row.display_price])) : null;
+  PRODUCTS = payload.products.map(record => mapPublicProduct(record,promotionPriceMap));
+  catalogRuntime = {
+    mode, version:payload.catalog_version, cachedAt:cachedAt || null,
+    failure:failure || "", serverOrderingEnabled:payload.ordering_enabled,
+    promotion:payload.promotion || null
+  };
+  if (mode === "fresh") {
+    reconcileCartWithFreshProducts();
+    saveCart();
+  }
+  if (mode === "fresh"){
+    setCatalogStatus("fresh","Live availability connected",
+      "Current catalog · " + payload.catalog_version + " · " +
+      (payload.ordering_enabled ? "ordering is available." : "ordinary ordering is currently paused."));
+  } else {
+    setCatalogStatus("stale","Live catalog unavailable — saved copy only",
+      "Validated " + new Date(cachedAt).toLocaleString() + " · browse-only · ordering disabled.");
+  }
+  showPromotion(payload.promotion || null);
+  refresh();
+}
+
+function applyEmergencyCatalog(failure){
+  PRODUCTS = emergencyCatalog();
+  catalogRuntime = {
+    mode:"emergency", version:"embedded-11", cachedAt:null,
+    failure, serverOrderingEnabled:false, promotion:null
+  };
+  showPromotion(null);
+  setCatalogStatus("emergency","Live catalog unavailable — emergency preview",
+    "The embedded 11-product catalog is browse-only. Prices and stock may be stale; ordering is disabled.");
+  refresh();
+}
+
+function failureCode(error){
+  if (error && error.name === "AbortError") return "TIMEOUT";
+  if (error && /^[A-Z0-9_]{3,64}$/.test(error.catalogCode || "")) return error.catalogCode;
+  return "FETCH_FAILED";
+}
+
+async function loadCatalog(forceRefresh=false){
+  if (catalogLoadStarted && !forceRefresh) return;
+  catalogLoadStarted = true;
+  const sequence = ++catalogLoadSequence;
+  if (catalogLoadController) catalogLoadController.abort();
+  const ctrl = new AbortController();
+  catalogLoadController = ctrl;
+  catalogRuntime = {mode:"checking",version:"embedded-11",cachedAt:null,failure:"",serverOrderingEnabled:false,promotion:null};
+  showPromotion(null);
+  setCatalogStatus("loading","Checking live availability",
+    "The embedded catalog is ready now; stock remains unconfirmed until the background check completes.");
+  refresh();
+  const timer = setTimeout(() => ctrl.abort(),CONFIG.CATALOG_TIMEOUT_MS);
+  try{
+    const res = await fetch(catalogRequestUrl(),{
+      method:"GET", signal:ctrl.signal, redirect:"follow", cache:"no-store",
+      credentials:"omit", referrerPolicy:"no-referrer"
+    });
+    if (!res.ok) catalogFail("HTTP_STATUS_INVALID");
+    if (!(res.headers.get("content-type") || "").toLowerCase().includes("application/json")) {
+      catalogFail("CONTENT_TYPE_INVALID");
+    }
+    let raw;
+    try { raw = await res.json(); } catch(e){ catalogFail("JSON_INVALID"); }
+    const payload = validateCatalogPayload(raw);
+    if (sequence !== catalogLoadSequence) return;
+    const cachedAt = Date.now();
+    writeValidatedCatalogCache(payload,cachedAt);
+    applyValidatedCatalog(payload,"fresh",cachedAt,"");
+  }catch(error){
+    if (sequence !== catalogLoadSequence) return;
+    const code = failureCode(error);
+    const cached = readValidatedCatalogCache();
+    if (cached) applyValidatedCatalog(cached.payload,"stale",cached.cachedAt,code);
+    else applyEmergencyCatalog(code);
+  }finally{
+    clearTimeout(timer);
+    if (sequence === catalogLoadSequence) catalogLoadController = null;
+  }
+}
 
 /* stock number -> badge */
 function badgeOf(n){
@@ -746,34 +2369,55 @@ function badgeOf(n){
 let cart = {};
 try { cart = JSON.parse(localStorage.getItem("ct_cart") || "{}") || {}; } catch(e){ cart = {}; }
 
-let coupon = null;                       // { code, percent, label }
+let coupon = null;                       // only the one validated public response
 let delivery = "free";                   // "free" | "courier"
-let pendingOrder = null;
+let cartReconcileMessage = "";
+let currentOrderAttempt = null;           // { signature, token } for one logical order
+let orderSubmitting = false;
+let pendingRecovery = null;               // memory-only; never localStorage
+let lastOrderFailureState = "";
 
 const DELIVERY_LABEL = {
   free:    "Free delivery (" + FREE_ZONES.join(" / ") + ")",
   courier: "Instant / courier (" + COURIERS + ") — charge paid to courier"
 };
 
-const isConfigured = () => CONFIG.SHEET_WEBAPP_URL.indexOf("script.google.com") !== -1;
 const findP = (id) => PRODUCTS.find(p => p.id === id);
 
 /* ------------------------------ catalog ------------------------------ */
 function renderCatalog(){
-  $("secCount").textContent = PRODUCTS.length + " chocolates";
+  const checking = catalogRuntime.mode === "checking";
+  $("grid").setAttribute("aria-busy",checking ? "true" : "false");
+  $("secCount").textContent = PRODUCTS.length + " chocolates" + (checking ? " · checking" : "");
 
-  $("grid").innerHTML = PRODUCTS.map(p => {
+  if (PRODUCTS.length === 0){
+    $("grid").innerHTML = `
+      <section class="catalog-empty" aria-labelledby="catalogEmptyTitle">
+        <div>
+          <span class="empty-mark" aria-hidden="true">◇</span>
+          <h3 id="catalogEmptyTitle">No products are listed right now</h3>
+          <p>The live catalog connected correctly, but nothing is currently available to order.</p>
+        </div>
+      </section>`;
+    return;
+  }
+
+  $("grid").innerHTML = PRODUCTS.map((p, index) => {
     const q = cart[p.id] || 0;
-    const b = badgeOf(p.stock);
-    const out = p.stock <= 0;
-    const atMax = q >= p.stock;
+    const unconfirmed = p.stockConfirmed !== true;
+    const out = !unconfirmed && p.stock <= 0;
+    const b = unconfirmed
+      ? { cls:"pending", txt:"Stock " + p.stock + (checking ? " · checking" : " · unconfirmed") }
+      : badgeOf(p.stock);
+    const atStock = q >= p.stock;
+    const hasPromotionPrice = p.displayPrice !== p.regularPrice;
     const [c1, c2, ct] = (p.art && p.art.length === 3) ? p.art : ["#3b2418","#5c3a24","#f7ebdc"];
 
     return `
-    <article class="card ${q?"active":""} ${out?"out":""}">
+    <article class="card ${q?"active":""} ${out?"out":""}" style="--i:${index}">
       <div class="photo">
         <div class="art" style="background:linear-gradient(145deg,${esc(c2)} 0%,${esc(c1)} 78%);color:${esc(ct)}">
-          <span class="g">${esc(p.emoji || "🍫")}</span>
+          <span class="g">${esc(p.emoji || "")}</span>
           <span class="t">${esc(p.name)}</span>
         </div>
         <img src="${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy"
@@ -785,19 +2429,24 @@ function renderCatalog(){
         <h3 class="name">${esc(p.name)}</h3>
         ${p.bn ? `<p class="sub">${esc(p.bn)}</p>` : ""}
         <p class="desc">${esc(p.desc)}</p>
-        <div class="priceline">
-          <span class="price">${taka(p.price)}</span><span class="per">per piece</span>
+        <div class="priceline ${hasPromotionPrice ? "has-promotion" : ""}">
+          <span class="price">${taka(p.displayPrice)}</span>
+          ${hasPromotionPrice ? `<span class="regular-price">${taka(p.regularPrice)}</span><span class="campaign-price-note">campaign display price</span>` : `<span class="per">per piece</span>`}
         </div>
         <div class="actions">${
-          out ? `<button class="btn-add" disabled>Sold out</button>`
+          unconfirmed
+            ? `<button class="btn-add preview-only" disabled>${checking ? "Checking availability" : "Stock confirmation pending"}</button>`
+          : out ? `<button class="btn-add" disabled>Sold out</button>`
+          : !productOrderingAllowed(p)
+            ? `<button class="btn-add preview-only" disabled>Preview only</button>`
           : q === 0
             ? `<button class="btn-add" data-add="${esc(p.id)}">Add to cart</button>`
             : `<div class="qty">
                  <button data-dec="${esc(p.id)}" aria-label="One less">−</button>
                  <span class="v">${q}</span>
-                 <button data-inc="${esc(p.id)}" ${atMax?"disabled":""} aria-label="One more">+</button>
+                 <button data-inc="${esc(p.id)}" ${atStock?"disabled":""} aria-label="One more">+</button>
                </div>
-               ${atMax ? `<div class="maxhint">That's all we have (${p.stock})</div>` : ""}`
+               ${atStock ? `<div class="maxhint">That's all we have (${p.stock})</div>` : ""}`
         }</div>
       </div>
     </article>`;
@@ -808,45 +2457,58 @@ function renderCatalog(){
 function lines(){
   return PRODUCTS.filter(p => cart[p.id] > 0).map(p => ({
     id:p.id, name:p.name, weight:p.weight, qty:cart[p.id],
-    price:p.price, line:p.price * cart[p.id]
+    regularUnit:p.regularPrice, displayUnit:p.displayPrice,
+    regularLine:p.regularPrice * cart[p.id], displayLine:p.displayPrice * cart[p.id]
   }));
 }
 const cartCount = () => lines().reduce((s,l) => s + l.qty, 0);
-const subtotal  = () => lines().reduce((s,l) => s + l.line, 0);
-
-/* Discount, then ALWAYS round the total UP to the next ৳10.
-   440 -10%  = 396  ->  400        555 -> 560
-   521 -> 530        112 -> 120    (a total already on a 10 stays put)   */
-function totals(){
-  const sub = subtotal();
-  if (!coupon || sub === 0) return { sub, discount:0, total:sub };
-  let total = Math.ceil((sub * (100 - coupon.percent) / 100) / 10) * 10;
-  if (total > sub) total = sub;          // never charge more than the subtotal
-  return { sub, discount: sub - total, total };
+function basketDisplayTotals(){
+  return lines().reduce((totals,line) => ({
+    regular:totals.regular + line.regularLine,
+    display:totals.display + line.displayLine
+  }),{regular:0,display:0});
 }
 
 function saveCart(){ try{ localStorage.setItem("ct_cart", JSON.stringify(cart)); }catch(e){} }
 
 function refresh(){
   renderCatalog();
-  const n = cartCount(), t = totals();
+  const n = cartCount(), t = basketDisplayTotals();
   $("cartCount").textContent = (n === 1 ? "1 item" : n + " items")
                              + (coupon ? " · " + coupon.code.toUpperCase() : "");
-  $("cartTotal").textContent = taka(t.total);
+  $("cartTotal").textContent = taka(t.display);
+  $("cartNotice").hidden = !cartReconcileMessage;
+  $("cartNotice").textContent = cartReconcileMessage;
   $("cartBar").classList.toggle("show", n > 0);
+  $("btnCheckout").disabled = n === 0 || !cartReviewAllowed();
+  $("btnCheckout").textContent = cartReviewAllowed() ? "Review order →" : "Availability required";
+  $("btnSubmit").disabled = orderSubmitting || n === 0 || !orderingAllowed();
+  $("btnSubmit").textContent = orderSubmitting ? "Submitting once…" :
+    orderingAllowed() ? "Place order · Pay on delivery" : "Ordering currently paused";
   saveCart();
+  if (!$("checkout").hidden){
+    if (n === 0) closeEmptyCheckout();
+    else drawSummary();
+  }
 }
 
 function setQty(id, q){
-  const p = findP(id); if (!p) return;
+  const p = findP(id); if (!productOrderingAllowed(p)) return false;
+  const current = cart[id] || 0;
   q = Math.max(0, Math.min(q, p.stock));
+  if (q === current) return false;
   if (q === 0) delete cart[id]; else cart[id] = q;
+  cartReconcileMessage = "";
   refresh();
+  return true;
 }
 
 $("grid").addEventListener("click", (ev) => {
+  if (!cartReviewAllowed()) return;
   const b = ev.target.closest("button"); if (!b) return;
   const { add, inc, dec } = b.dataset;
+  const p = findP(add || inc || dec);
+  if (!productOrderingAllowed(p)) return;
   if (add) setQty(add, 1);
   if (inc) setQty(inc, (cart[inc] || 0) + 1);
   if (dec) setQty(dec, (cart[dec] || 0) - 1);
@@ -858,250 +2520,934 @@ function hide(el){ el.hidden = true;  document.body.style.overflow = ""; }
 
 function drawSummary(){
   $("sumRows").innerHTML = lines().map(l => `
-    <div class="srow">
-      <span>${esc(l.name)} <span class="q">${esc(l.weight)} · ×${l.qty}</span></span>
-      <span class="v">${taka(l.line)}</span>
+    <div class="srow" data-summary-line="${esc(l.id)}">
+      <div class="srow-main">
+        <span class="srow-name">${esc(l.name)} <span class="q">${esc(l.weight)}</span></span>
+        <span class="v">${taka(l.displayLine)}</span>
+      </div>
+      <div class="srow-actions" role="group" aria-label="Change quantity for ${esc(l.name)}">
+        <button type="button" data-summary-dec="${esc(l.id)}" aria-label="Decrease ${esc(l.name)} quantity">−</button>
+        <span class="srow-qty" aria-label="Current quantity">${l.qty}</span>
+        <button type="button" data-summary-inc="${esc(l.id)}"
+                aria-label="Increase ${esc(l.name)} quantity"
+                ${l.qty >= findP(l.id).stock ? "disabled" : ""}>+</button>
+        <button class="srow-remove" type="button" data-summary-remove="${esc(l.id)}"
+                aria-label="Remove ${esc(l.name)} from your order">Remove</button>
+      </div>
     </div>`).join("");
 
-  const t = totals();
-  $("tSub").textContent   = taka(t.sub);
-  $("tGrand").textContent = taka(t.total);
-  $("tSaveRow").hidden    = !coupon || t.discount <= 0;
-  $("roundNote").hidden   = !coupon || t.discount <= 0;
-  if (coupon){
-    $("tSaveLabel").textContent = coupon.code.toUpperCase() + " · " + coupon.percent + "% off";
-    $("tSave").textContent = "−" + taka(t.discount);
-  }
+  const t = basketDisplayTotals();
+  $("tSub").textContent = taka(t.regular);
+  $("tCampaignRow").hidden = !catalogRuntime.promotion;
+  $("tCampaign").textContent = taka(t.display);
+  $("tGrand").textContent = "Confirmed by server";
 
   $("tShip").textContent  = delivery === "free" ? "Free" : "At actual";
   $("tShip").style.color  = delivery === "free" ? "var(--ok)" : "var(--warn)";
   $("shipNote").hidden    = delivery !== "courier";
 }
 
+function closeEmptyCheckout(){
+  hide($("checkout"));
+  const catalogHeading = document.querySelector("#chocolates h2");
+  catalogHeading.setAttribute("tabindex","-1");
+  catalogHeading.scrollIntoView({block:"start"});
+  catalogHeading.focus({preventScroll:true});
+}
+
+function focusSummaryControl(id,action){
+  const key = action === "inc" ? "summaryInc" : "summaryDec";
+  const control = Array.from($("sumRows").querySelectorAll("button"))
+    .find(button => button.dataset[key] === id);
+  (control || $("sumRows").querySelector("button") || $("btnBack")).focus();
+}
+
+$("sumRows").addEventListener("click", (ev) => {
+  const button = ev.target.closest("button");
+  if (!button || button.disabled) return;
+  const id = button.dataset.summaryDec || button.dataset.summaryInc || button.dataset.summaryRemove;
+  const product = findP(id);
+  if (!product || !cart[id]) return;
+  const priorQty = cart[id];
+  const action = button.dataset.summaryInc ? "inc" : button.dataset.summaryDec ? "dec" : "remove";
+  const nextQty = action === "inc" ? priorQty + 1 : action === "dec" ? priorQty - 1 : 0;
+  if (!setQty(id,nextQty)) return;
+  if (cartCount() === 0) return;
+  $("summaryEditStatus").textContent = cart[id]
+    ? product.name + " quantity " + cart[id] + "."
+    : product.name + " removed from your order.";
+  focusSummaryControl(id,action);
+});
+
 /* delivery picker */
 $("dopts").addEventListener("click", (ev) => {
   const opt = ev.target.closest(".dopt"); if (!opt) return;
   delivery = opt.dataset.mode;
   document.querySelectorAll(".dopt").forEach(d => d.classList.toggle("on", d === opt));
+  opt.querySelector('input[type="radio"]').checked = true;
+  drawSummary();
+});
+
+$("dopts").addEventListener("change", (ev) => {
+  if (!ev.target.matches('input[type="radio"]')) return;
+  delivery = ev.target.value;
+  document.querySelectorAll(".dopt").forEach(d => d.classList.toggle("on",d.contains(ev.target)));
   drawSummary();
 });
 
 $("btnCheckout").addEventListener("click", () => {
-  if (cartCount() === 0) return;
+  if (cartCount() === 0 || !cartReviewAllowed()) return;
   drawSummary();
+  $("orderStatus").hidden = true;
   show($("checkout"));
+  $("btnBack").focus();
 });
-$("btnBack").addEventListener("click", () => hide($("checkout")));
+$("btnBack").addEventListener("click", () => { hide($("checkout")); $("btnCheckout").focus(); });
 
-/* ------------------------------ coupon ------------------------------ */
-/* Applies a code. `quiet` = came from the ?coupon= link, so a wrong code
-   says nothing at all — the customer never typed it and shouldn't see an error. */
-function setCoupon(raw, quiet){
-  const msg  = $("couponMsg");
-  const code = String(raw || "").trim().toLowerCase();
+/* ------------------------------ coupon ------------------------------
+   The browser asks about one submitted code only. It never contains or
+   downloads a coupon table, private notes, rewards, use counts or rules. */
+const COUPON_VALID_FIELDS = [
+  "ok","test","action","valid","normalized_code","customer_discount_pct","message"
+];
+const COUPON_INVALID_FIELDS = ["ok","test","action","valid","silent","message"];
+const COUPON_UNAVAILABLE_FIELDS = COUPON_INVALID_FIELDS.concat(["error"]);
+let couponValidationController = null;
 
-  if (!code){
-    coupon = null; msg.className = "cmsg"; drawSummary(); refresh(); return;
+function couponRequestUrl(raw,source){
+  const code = String(raw || "").trim().toUpperCase();
+  let url;
+  try { url = new URL(CONFIG.WEBAPP_URL); }
+  catch(e){ throw orderFailure("COUPON_UNAVAILABLE"); }
+  if (url.protocol !== "https:" || url.hostname !== "script.google.com" ||
+      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) || url.search || url.hash) {
+    throw orderFailure("COUPON_UNAVAILABLE");
   }
-  if (COUPONS[code]){
-    coupon = { code, percent: COUPONS[code].percent, label: COUPONS[code].label };
-    const t = totals();
-    msg.className = "cmsg show good";
-    msg.textContent = "✓ " + COUPONS[code].label + " applied — you save " + taka(t.discount) + ".";
-    $("btnCoupon").textContent = "Remove";
-  } else if (quiet){
-    coupon = null; msg.className = "cmsg";
-  } else {
-    coupon = null;
-    msg.className = "cmsg show bad";
-    msg.textContent = "✕ \"" + raw + "\" isn't a valid code.";
-    $("btnCoupon").textContent = "Apply";
+  url.searchParams.set("action","validateCoupon");
+  url.searchParams.set("code",code);
+  url.searchParams.set("source",source === "prefilled" ? "prefilled" : "typed");
+  return url.href;
+}
+
+function validateCouponResponse(value,source){
+  const unavailable = value && value.ok === false;
+  const expected = unavailable ? COUPON_UNAVAILABLE_FIELDS :
+    value && value.valid === true ? COUPON_VALID_FIELDS : COUPON_INVALID_FIELDS;
+  const messageOk = value && typeof value.message === "string" && value.message.length <= 500 &&
+    (value.message === "" || boundedText(value.message,500));
+  if (!exactOwnKeys(value,expected) || value.test !== false || value.action !== "validateCoupon" ||
+      typeof value.valid !== "boolean" || !messageOk) {
+    throw orderFailure("MALFORMED_RESPONSE");
   }
+  if (value.valid){
+    if (value.ok !== true || typeof value.normalized_code !== "string" ||
+        value.normalized_code.length < 3 || value.normalized_code.length > 32 ||
+        !/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/.test(value.normalized_code) ||
+        typeof value.customer_discount_pct !== "number" || !Number.isFinite(value.customer_discount_pct) ||
+        value.customer_discount_pct < 0 || value.customer_discount_pct > .5) {
+      throw orderFailure("MALFORMED_RESPONSE");
+    }
+  } else if (value.silent !== (source === "prefilled") ||
+      (unavailable && value.error !== "COUPON_UNAVAILABLE") ||
+      (!unavailable && value.ok !== true)) {
+    throw orderFailure("MALFORMED_RESPONSE");
+  }
+  return value;
+}
+
+function clearCoupon(message="",bad=false){
+  coupon = null;
+  $("btnCoupon").textContent = "Apply";
+  $("couponMsg").className = message ? "cmsg show " + (bad ? "bad" : "") : "cmsg";
+  $("couponMsg").textContent = message;
   drawSummary(); refresh();
 }
 
-const applyCoupon = () => setCoupon($("fCoupon").value, false);
+async function validateOneCoupon(raw,source="typed"){
+  const code = String(raw || "").trim().toUpperCase();
+  if (!/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/.test(code) || code.length < 3 || code.length > 32){
+    if (source === "prefilled") $("fCoupon").value = "";
+    clearCoupon(source === "prefilled" ? "" : "This coupon is not valid for this order.",source !== "prefilled");
+    return false;
+  }
+  if (couponValidationController) couponValidationController.abort();
+  const controller = new AbortController();
+  couponValidationController = controller;
+  const timer = setTimeout(() => controller.abort(),CONFIG.TIMEOUT_MS);
+  $("btnCoupon").disabled = true;
+  $("btnCoupon").textContent = "Checking…";
+  try{
+    const response = await fetch(couponRequestUrl(code,source),{
+      method:"GET",signal:controller.signal,redirect:"follow",cache:"no-store",
+      credentials:"omit",referrerPolicy:"no-referrer"
+    });
+    if (!response.ok) throw orderFailure("COUPON_UNAVAILABLE");
+    const data = validateCouponResponse(await response.json(),source);
+    if (!data.valid){
+      if (source === "prefilled") $("fCoupon").value = "";
+      clearCoupon(data.message,source !== "prefilled" && !!data.message); return false;
+    }
+    coupon = {code:data.normalized_code,customerDiscountPct:data.customer_discount_pct};
+    $("fCoupon").value = data.normalized_code;
+    $("couponMsg").className = "cmsg show good";
+    $("couponMsg").textContent = "✓ " + data.message;
+    $("btnCoupon").textContent = "Remove";
+    drawSummary(); refresh();
+    return true;
+  }catch(error){
+    if (source === "prefilled") $("fCoupon").value = "";
+    clearCoupon(source === "prefilled" ? "" : "Coupon validation is temporarily unavailable.",source !== "prefilled");
+    return false;
+  }finally{
+    clearTimeout(timer);
+    if (couponValidationController === controller) couponValidationController = null;
+    $("btnCoupon").disabled = false;
+    $("btnCoupon").textContent = coupon ? "Remove" : "Apply";
+  }
+}
 
 $("btnCoupon").addEventListener("click", () => {
-  if (coupon){                                   // second tap removes it
-    coupon = null; $("fCoupon").value = "";
-    $("couponMsg").className = "cmsg"; $("couponMsg").textContent = "";
-    $("btnCoupon").textContent = "Apply";
-    drawSummary(); refresh(); return;
+  if (coupon){
+    $("fCoupon").value = "";
+    clearCoupon();
+    return;
   }
-  applyCoupon();
+  validateOneCoupon($("fCoupon").value,"typed");
 });
-$("fCoupon").addEventListener("keydown", (e) => {
-  if (e.key === "Enter"){ e.preventDefault(); if (!coupon) applyCoupon(); }
+$("fCoupon").addEventListener("input",() => {
+  if (coupon && $("fCoupon").value.toUpperCase() !== coupon.code) clearCoupon();
+});
+$("fCoupon").addEventListener("keydown", (event) => {
+  if (event.key === "Enter"){ event.preventDefault(); if (!coupon) validateOneCoupon($("fCoupon").value,"typed"); }
 });
 
 /* ---------------------------- validation ---------------------------- */
-function validate(){
+function safeOrderText(value,min,max,optional=false){
+  if (optional && value === "") return true;
+  return typeof value === "string" && value.length >= min && value.length <= max &&
+    value === value.trim() && !/[\u0000-\u001F\u007F]/.test(value) && !/^[=+@-]/.test(value);
+}
+
+function validateOrderForm(){
   let ok = true;
-  const name  = $("fName").value.trim();
-  const phone = $("fPhone").value.replace(/[^0-9]/g, "");
-  const addr  = $("fAddr").value.trim();
-  const note  = $("fNote").value.trim();
-  const flag  = (id, bad) => { $(id).classList.toggle("show", bad); if (bad) ok = false; };
-
-  flag("eName",  name.length < 2);
-  flag("ePhone", !/^(01\d{9}|8801\d{9})$/.test(phone));   // 01... or 8801...
-  flag("eAddr",  addr.length < 5);
-
-  return ok ? { name, phone, addr, note } : null;
+  const name = $("fName").value;
+  const phone = $("fPhone").value;
+  const address = $("fAddr").value;
+  const note = $("fNote").value;
+  const digits = phone.replace(/[^0-9]/g,"");
+  const flag = (controlId,errorId,bad) => {
+    $(errorId).classList.toggle("show",bad);
+    $(controlId).setAttribute("aria-invalid",bad ? "true" : "false");
+    if (bad) ok = false;
+  };
+  flag("fName","eName",!safeOrderText(name,2,120));
+  flag("fPhone","ePhone",phone.length < 11 || phone.length > 25 || phone !== phone.trim() ||
+    !/^\+?[0-9 ()-]+$/.test(phone) || !(/^(01\d{9}|8801\d{9})$/.test(digits)) || /^[=+@-]/.test(phone));
+  flag("fAddr","eAddr",!safeOrderText(address,5,500));
+  flag("fNote","eNote",!safeOrderText(note,0,1000,true));
+  const basket = lines();
+  if (basket.length < 1 || basket.length > PRODUCTS.length || cartCount() < 1 ||
+      basket.some(line => !Number.isSafeInteger(line.qty) || line.qty < 1 ||
+        !findP(line.id) || findP(line.id).stockConfirmed !== true || line.qty > findP(line.id).stock)) {
+    ok = false;
+    showOrderStatus("changed_stock");
+  }
+  if (!ok) return null;
+  return {
+    name,phone,address,delivery,note,
+    items:basket.map(line => ({product_id:line.id,quantity:line.qty})),
+    coupon_code:coupon ? coupon.code : ""
+  };
 }
 
-/* ------------------------- text for WhatsApp ------------------------- */
-function orderText(o){
-  return "🍫 *Chocolate Trail order*\n"
-    + "Order: " + o.orderId + "\n\n"
-    + o.items.map(l => "• " + l.name + " (" + l.weight + ") × " + l.qty + " = ৳" + l.line).join("\n")
-    + "\n\nSubtotal: ৳" + o.subtotal
-    + (o.coupon ? "\nCoupon " + o.coupon.toUpperCase() + ": −৳" + o.discount : "")
-    + "\n*Total to pay: ৳" + o.total + "*\n"
-    + "Delivery: " + o.deliveryLabel
-    + (o.delivery === "courier" ? "\n(courier charge extra, paid to the rider)" : "")
-    + "\n\nName: " + o.name + "\n"
-    + "Phone: " + o.phone + "\n"
-    + "Address: " + o.address + "\n"
-    + (o.note ? "Note: " + o.note + "\n" : "")
-    + "\n(Cash on delivery)";
+/* --------------------- authoritative v4 order boundary --------------------- */
+const ORDER_REQUEST_FIELDS = [
+  "action","client_request_token","name","phone","address","delivery","note","items","coupon_code"
+];
+const ORDER_RESPONSE_FIELDS = [
+  "ok","test","action","status","idempotent_retry","order_id","lines","pricing","message"
+];
+const ORDER_LINE_FIELDS = [
+  "product_id","name","weight","quantity","regular_unit_price","display_unit_price",
+  "regular_line_total","display_line_total"
+];
+const ORDER_PRICING_FIELDS = [
+  "currency","regular_subtotal","campaign_display_subtotal","campaign","threshold_bdt",
+  "threshold_result","applied_benefit","customer_discount_amount","payable_before_rounding",
+  "rounding_addition","actual_payable","saving_vs_regular"
+];
+const ORDER_FAILURE_FIELDS = ["ok","test","action","error","message"];
+const ORDER_MAX_RESPONSE_QUANTITY = 100000;
+const ORDER_FAILURE_STATES = {
+  ordering_disabled:{title:"Ordering is currently paused",message:"Chocolate Trail is not accepting ordinary orders right now. No order was created."},
+  invalid_input:{title:"Please review the order details",message:"One or more fields or basket details were not accepted. Nothing was submitted as an order."},
+  coupon_conflict:{title:"Coupon not available for this order",message:"The submitted coupon is invalid or cannot be combined with the current public benefit. No order was created."},
+  changed_stock:{title:"Availability changed",message:"A selected quantity is sold out, unconfirmed or higher than current stock. Review the cart before trying again."},
+  idempotency_conflict:{title:"This retry cannot be matched safely",message:"The request token belongs to different or incomplete order data. Return to the cart and deliberately begin a new logical order."},
+  cap:{title:"Today's order limit has been reached",message:"Chocolate Trail cannot accept another ordinary order today. No order was created by this attempt."},
+  timeout:{title:"The server response took too long",message:"The result is uncertain. Do not assume an order exists; retrying this unchanged order will reuse the same request token."},
+  offline:{title:"You appear to be offline",message:"No server confirmation was received. Keep this summary and retry the unchanged order when the connection returns."},
+  malformed:{title:"The server response could not be verified",message:"Do not assume an order exists. Retry the unchanged order so Chocolate Trail can safely reconcile the same request token."},
+  unavailable:{title:"Ordering is temporarily unavailable",message:"The server did not confirm an order. Keep the local summary or contact Chocolate Trail manually."}
+};
+
+function orderFailure(code){
+  const error = new Error("V4 order boundary stopped.");
+  error.orderCode = code;
+  return error;
 }
 
-/* --------------------------- send to Sheet ---------------------------
-   Content-Type is text/plain on purpose — that keeps it a "simple" request
-   so the browser skips the CORS preflight Apps Script can't answer.       */
-async function postToSheet(order){
-  const ctrl  = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), CONFIG.TIMEOUT_MS);
+function moneyValue(value){
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1000000;
+}
+
+function validateOrderResponse(value){
+  if (!exactOwnKeys(value,ORDER_RESPONSE_FIELDS) || value.ok !== true || value.test !== false ||
+      value.action !== "order" || value.status !== "RECEIVED" || typeof value.idempotent_retry !== "boolean" ||
+      typeof value.order_id !== "string" || !/^CTO-\d{8}-[A-F0-9]{32}$/.test(value.order_id) ||
+      !boundedText(value.message,500) || !Array.isArray(value.lines) ||
+      value.lines.length < 1 || value.lines.length > CATALOG_MAX_PRODUCTS || !exactOwnKeys(value.pricing,ORDER_PRICING_FIELDS)) {
+    throw orderFailure("MALFORMED_RESPONSE");
+  }
+  const ids = new Set();
+  let units = 0,regularSum = 0,displaySum = 0;
+  const lines = value.lines.map(line => {
+    if (!exactOwnKeys(line,ORDER_LINE_FIELDS) || typeof line.product_id !== "string" ||
+        line.product_id.length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(line.product_id) ||
+        ids.has(line.product_id) || !boundedText(line.name,200) || !boundedText(line.weight,40) ||
+        !Number.isSafeInteger(line.quantity) || line.quantity < 1 || line.quantity > ORDER_MAX_RESPONSE_QUANTITY ||
+        !moneyValue(line.regular_unit_price) || !moneyValue(line.display_unit_price) ||
+        !moneyValue(line.regular_line_total) || !moneyValue(line.display_line_total) ||
+        line.regular_line_total !== line.regular_unit_price * line.quantity ||
+        line.display_line_total !== line.display_unit_price * line.quantity) {
+      throw orderFailure("MALFORMED_RESPONSE");
+    }
+    ids.add(line.product_id); units += line.quantity;
+    regularSum += line.regular_line_total; displaySum += line.display_line_total;
+    return {...line};
+  });
+  if (units < 1 || units > CATALOG_MAX_PRODUCTS * ORDER_MAX_RESPONSE_QUANTITY) {
+    throw orderFailure("MALFORMED_RESPONSE");
+  }
+  const pricing = value.pricing;
+  const campaignOk = pricing.campaign === null ||
+    (exactOwnKeys(pricing.campaign,["campaign_id","title"]) &&
+     typeof pricing.campaign.campaign_id === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(pricing.campaign.campaign_id) &&
+     boundedText(pricing.campaign.title,120));
+  if (pricing.currency !== "BDT" || !moneyValue(pricing.regular_subtotal) ||
+      !moneyValue(pricing.campaign_display_subtotal) || pricing.regular_subtotal !== regularSum ||
+      pricing.campaign_display_subtotal !== displaySum || !campaignOk ||
+      !moneyValue(pricing.threshold_bdt) ||
+      !["NOT_APPLICABLE","QUALIFIED","NOT_QUALIFIED"].includes(pricing.threshold_result) ||
+      !boundedText(pricing.applied_benefit,500) || !moneyValue(pricing.customer_discount_amount) ||
+      !moneyValue(pricing.payable_before_rounding) || !moneyValue(pricing.rounding_addition) ||
+      !moneyValue(pricing.actual_payable) || !moneyValue(pricing.saving_vs_regular) ||
+      pricing.actual_payable > pricing.regular_subtotal ||
+      pricing.saving_vs_regular !== pricing.regular_subtotal - pricing.actual_payable) {
+    throw orderFailure("MALFORMED_RESPONSE");
+  }
+  return {...value,lines,pricing:{...pricing,campaign:pricing.campaign ? {...pricing.campaign} : null}};
+}
+
+function validateOrderFailureResponse(value){
+  if (!exactOwnKeys(value,ORDER_FAILURE_FIELDS) || value.ok !== false || value.test !== false ||
+      value.action !== "order" || typeof value.error !== "string" ||
+      !/^[A-Z0-9_]{3,64}$/.test(value.error) || !boundedText(value.message,500)) {
+    throw orderFailure("MALFORMED_RESPONSE");
+  }
+  return value;
+}
+
+function orderUiStateForCode(code){
+  if (code === "ORDERING_DISABLED") return "ordering_disabled";
+  if (["INVALID_REQUEST","PRODUCT_INVALID"].includes(code)) return "invalid_input";
+  if (["COUPON_INVALID","BENEFIT_CONFLICT"].includes(code)) return "coupon_conflict";
+  if (["SOLD_OUT","OVER_STOCK","STOCK_UNCONFIRMED"].includes(code)) return "changed_stock";
+  if (code === "IDEMPOTENCY_CONFLICT") return "idempotency_conflict";
+  if (code === "DAILY_CAP_REACHED") return "cap";
+  if (code === "TIMEOUT") return "timeout";
+  if (code === "OFFLINE") return "offline";
+  if (code === "MALFORMED_RESPONSE") return "malformed";
+  return "unavailable";
+}
+
+function showOrderStatus(state){
+  const safe = ORDER_FAILURE_STATES[state] || ORDER_FAILURE_STATES.unavailable;
+  const node = $("orderStatus");
+  node.className = "order-status " + (state === "ordering_disabled" ? "is-warning" : "is-error");
+  node.innerHTML = "";
+  const strong = document.createElement("strong"); strong.textContent = safe.title;
+  const text = document.createElement("span"); text.textContent = safe.message;
+  node.append(strong,text); node.hidden = false;
+  return state;
+}
+
+function generateOrderToken(){
+  if (!window.crypto || typeof window.crypto.getRandomValues !== "function") throw orderFailure("ORDER_UNAVAILABLE");
+  const bytes = new Uint8Array(16); window.crypto.getRandomValues(bytes);
+  return Array.from(bytes,value => value.toString(16).padStart(2,"0")).join("").toUpperCase();
+}
+
+function buildOrderPayload(fields){
+  const signature = JSON.stringify(fields);
+  if (!currentOrderAttempt || currentOrderAttempt.signature !== signature){
+    currentOrderAttempt = {signature,token:generateOrderToken()};
+  }
+  return {
+    action:"order",client_request_token:currentOrderAttempt.token,
+    name:fields.name,phone:fields.phone,address:fields.address,delivery:fields.delivery,
+    note:fields.note,items:fields.items.map(item => ({...item})),coupon_code:fields.coupon_code
+  };
+}
+
+function orderRequestUrl(){
+  let url;
+  try { url = new URL(CONFIG.WEBAPP_URL); }
+  catch(e){ throw orderFailure("ORDER_UNAVAILABLE"); }
+  if (url.protocol !== "https:" || url.hostname !== "script.google.com" ||
+      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) || url.search || url.hash) {
+    throw orderFailure("ORDER_UNAVAILABLE");
+  }
+  return url.href;
+}
+
+async function orderNetworkTransport(url,options){
+  return window.fetch.call(window,url,options);
+}
+
+async function submitV4Order(payload){
+  if (!exactOwnKeys(payload,ORDER_REQUEST_FIELDS)) throw orderFailure("INVALID_REQUEST");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(),CONFIG.TIMEOUT_MS);
   try{
-    const res = await fetch(CONFIG.SHEET_WEBAPP_URL, {
-      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
-      body: JSON.stringify(order), signal: ctrl.signal, redirect:"follow"
+    const response = await orderNetworkTransport(orderRequestUrl(),{
+      method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload),signal:controller.signal,redirect:"follow",
+      credentials:"omit",referrerPolicy:"no-referrer"
     });
-    if (!res.ok) return false;
-    const data = await res.json().catch(() => null);
-    return !!(data && data.ok);
-  } catch(e){ return false; }
-  finally { clearTimeout(timer); }
+    if (!response.ok) throw orderFailure("ORDER_UNAVAILABLE");
+    let data;
+    try { data = await response.json(); } catch(error){ throw orderFailure("MALFORMED_RESPONSE"); }
+    return data && data.ok === true ? validateOrderResponse(data) : validateOrderFailureResponse(data);
+  }catch(error){
+    if (error && error.name === "AbortError") throw orderFailure("TIMEOUT");
+    if (error && error.orderCode) throw error;
+    if (navigator.onLine === false) throw orderFailure("OFFLINE");
+    throw orderFailure("ORDER_UNAVAILABLE");
+  }finally{ clearTimeout(timer); }
+}
+
+function recoveryText(request){
+  const itemText = request.items.map(item => {
+    const product = findP(item.product_id);
+    return "• " + (product ? product.name + " (" + product.weight + ")" : item.product_id) + " × " + item.quantity;
+  }).join("\n");
+  return "Chocolate Trail manual order summary — NOT SERVER-CONFIRMED\n\n" + itemText +
+    "\n\nDelivery: " + DELIVERY_LABEL[request.delivery] +
+    "\nCoupon submitted: " + (request.coupon_code || "None") +
+    "\nName: " + request.name + "\nPhone: " + request.phone + "\nAddress: " + request.address +
+    (request.note ? "\nNote: " + request.note : "") +
+    "\n\nPlease confirm stock, benefit and final payable manually.";
 }
 
 /* ------------------------------ submit ------------------------------ */
 $("orderForm").addEventListener("submit", async (ev) => {
   ev.preventDefault();
-  const who = validate();
-  if (!who){
+  if (orderSubmitting) return;
+  const fields = validateOrderForm();
+  if (!fields){
     const first = document.querySelector(".err.show");
-    if (first) first.scrollIntoView({ behavior:"smooth", block:"center" });
+    if (first){
+      const control = document.querySelector('[aria-describedby~="' + first.id + '"]');
+      if (control) control.focus();
+    }
     return;
   }
-
-  const btn = $("btnSubmit");
-  btn.disabled = true; btn.textContent = "Sending your order…";
-
-  const t = totals();
-  const order = {
-    orderId:  "CT-" + Date.now().toString(36).toUpperCase().slice(-6),
-    at:       new Date().toISOString(),
-    name:     who.name,
-    phone:    who.phone,
-    address:  who.addr,
-    note:     who.note,
-    delivery:      delivery,                    // "free" | "courier"
-    deliveryLabel: DELIVERY_LABEL[delivery],
-    items:    lines(),
-    subtotal: t.sub,
-    coupon:   coupon ? coupon.code.toUpperCase() : "",
-    discount: t.discount,
-    total:    t.total
-  };
-
-  try{                                     // local backup, whatever else happens
-    const log = JSON.parse(localStorage.getItem("ct_orders") || "[]");
-    log.push(order);
-    localStorage.setItem("ct_orders", JSON.stringify(log.slice(-25)));
-  }catch(e){}
-
-  const saved = isConfigured() ? await postToSheet(order) : false;
-
-  btn.disabled = false; btn.textContent = "Place order · Pay on delivery";
-  showThanks(order, saved);
+  let payload;
+  try { payload = buildOrderPayload(fields); }
+  catch(error){ showOrderFailure("unavailable",fields); return; }
+  orderSubmitting = true; refresh();
+  $("orderStatus").hidden = true;
+  try{
+    const response = await submitV4Order(payload);
+    if (response.ok === true) showAuthoritativeOrder(response);
+    else {
+      const state = orderUiStateForCode(response.error);
+      let recoveryRequest = payload;
+      if (state === "changed_stock") {
+        await loadCatalog(true);
+        recoveryRequest = catalogRuntime.mode === "fresh"
+          ? {...payload,items:lines().map(line => ({product_id:line.id,quantity:line.qty}))}
+          : null;
+      }
+      showOrderFailure(state,recoveryRequest);
+    }
+  }catch(error){
+    showOrderFailure(orderUiStateForCode(error && error.orderCode),payload);
+  }finally{
+    orderSubmitting = false; refresh();
+  }
 });
 
 /* --------------------------- confirmation --------------------------- */
-function showThanks(order, saved){
+function showAuthoritativeOrder(rawResponse){
+  const response = validateOrderResponse(rawResponse);
   hide($("checkout"));
-  $("doneId").textContent = "Order " + order.orderId;
-
+  $("thanks").querySelector(".done").classList.remove("is-failure");
+  $("doneEmoji").textContent = "✓";
+  $("doneTitle").textContent = "Order received";
+  $("doneSub").textContent = response.idempotent_retry
+    ? "The server confirmed the already-recorded order. Pay on delivery."
+    : "Chocolate Trail confirmed this order. Pay on delivery.";
+  $("doneId").hidden = false;
+  $("doneId").textContent = "Order " + response.order_id;
+  const pricing = response.pricing;
   $("recap").innerHTML =
-    order.items.map(l => `
-      <div class="srow"><span>${esc(l.name)} <span class="q">×${l.qty}</span></span>
-      <span class="v">${taka(l.line)}</span></div>`).join("")
-    + `<div class="tot">
-         ${order.discount > 0
-           ? `<div class="tline"><span>Subtotal</span><span>${taka(order.subtotal)}</span></div>
-              <div class="tline save"><span>${esc(order.coupon)} discount</span>
-              <span>−${taka(order.discount)}</span></div>` : ""}
-         <div class="tline"><span>Delivery</span><span>${
-           order.delivery === "free" ? "Free" : "Courier — charge at actual"}</span></div>
-         <div class="tline grand"><span>Pay on delivery</span>
-         <span class="v">${taka(order.total)}</span></div>
-         ${order.delivery === "courier"
-           ? `<div class="roundnote courier">+ courier charge, paid to the rider</div>` : ""}
+    response.lines.map(line => `
+      <div class="srow"><span>${esc(line.name)} <span class="q">${esc(line.weight)} · ×${line.quantity}</span></span>
+      <span class="v">${taka(line.display_line_total)}</span></div>
+      <div class="tline"><span>Regular ${taka(line.regular_unit_price)} · display ${taka(line.display_unit_price)}</span>
+      <span>line ${taka(line.regular_line_total)} / ${taka(line.display_line_total)}</span></div>`).join("")
+    + `<div class="tot authoritative-pricing">
+         <div class="tline"><span>Regular subtotal</span><span>${taka(pricing.regular_subtotal)}</span></div>
+         <div class="tline"><span>Campaign display subtotal</span><span>${taka(pricing.campaign_display_subtotal)}</span></div>
+         <div class="tline"><span>Campaign</span><span>${pricing.campaign ? esc(pricing.campaign.title) : "Not applied"}</span></div>
+         <div class="tline"><span>Threshold result</span><span>${esc(pricing.threshold_result)}${pricing.threshold_bdt ? " · " + taka(pricing.threshold_bdt) : ""}</span></div>
+         <div class="tline save"><span>Discount amount</span><span>−${taka(pricing.customer_discount_amount)}</span></div>
+         <div class="tline"><span>Before cash rounding</span><span>${taka(pricing.payable_before_rounding)}</span></div>
+         <div class="tline"><span>Rounding addition</span><span>${taka(pricing.rounding_addition)}</span></div>
+         <div class="tline save"><span>Actual saving</span><span>${taka(pricing.saving_vs_regular)}</span></div>
+         <div class="tline grand"><span>Actual payable</span><span class="v">${taka(pricing.actual_payable)}</span></div>
+         <p class="benefit-copy">${esc(pricing.applied_benefit)}</p>
        </div>`;
-
-  if (saved){
-    $("doneEmoji").textContent = "🍫";
-    $("doneTitle").textContent = "Order received, " + order.name + "!";
-    $("doneSub").textContent   = "Pay on delivery. 🍫";
-    $("waPanel").hidden = true;
-    cart = {}; coupon = null; saveCart(); refresh();
-  } else {
-    pendingOrder = order;
-    $("doneEmoji").textContent = "📩";
-    $("doneTitle").textContent = "One tap left, " + order.name + "!";
-    $("doneSub").textContent   = "Send it on WhatsApp and you're done. Pay on delivery. 🍫";
-    $("waLink").href = "https://wa.me/" + CONFIG.WHATSAPP_NUMBER
-                     + "?text=" + encodeURIComponent(orderText(order));
-    $("waPanel").hidden = false;           // cart kept until they actually send
-  }
+  $("waPanel").hidden = true;
+  $("btnRetryOrder").hidden = true;
+  pendingRecovery = null;
+  lastOrderFailureState = "";
+  currentOrderAttempt = null;
+  cart = {}; coupon = null; saveCart(); refresh();
   show($("thanks"));
+  $("doneTitle").focus?.();
+  return response;
+}
+
+function showOrderFailure(state,request){
+  const safe = ORDER_FAILURE_STATES[state] || ORDER_FAILURE_STATES.unavailable;
+  pendingRecovery = request && Array.isArray(request.items) ? request : null;
+  lastOrderFailureState = state;
+  hide($("checkout"));
+  $("thanks").querySelector(".done").classList.add("is-failure");
+  $("doneEmoji").textContent = state === "offline" ? "⌁" : "!";
+  $("doneTitle").textContent = safe.title;
+  $("doneSub").textContent = safe.message;
+  $("doneId").hidden = true; $("doneId").textContent = "";
+  $("recap").innerHTML = `<div class="order-status ${state === "ordering_disabled" ? "is-warning" : "is-error"}"><strong>No confirmed server order</strong><span>${esc(safe.message)}</span></div>`;
+  $("waPanel").hidden = !pendingRecovery;
+  $("recoverySummary").textContent = pendingRecovery ? recoveryText(pendingRecovery) : "";
+  $("btnRetryOrder").hidden = !pendingRecovery || !["timeout","offline","malformed","unavailable"].includes(state);
+  $("btnAgain").textContent = state === "idempotency_conflict" ? "Start a new logical order" : "Back to chocolates";
+  $("btnCopy").textContent = "Copy recovery summary";
+  show($("thanks"));
+  $("doneTitle").focus();
+  return state;
 }
 
 $("waLink").addEventListener("click", () => {
-  if (!pendingOrder) return;
-  const nm = pendingOrder.name;
-  setTimeout(() => {
-    $("doneEmoji").textContent = "🍫";
-    $("doneTitle").textContent = "Order received, " + nm + "!";
-    $("doneSub").textContent   = "Pay on delivery. 🍫";
-    $("waPanel").hidden = true;
-    pendingOrder = null;
-    cart = {}; coupon = null; saveCart(); refresh();
-  }, 900);
+  if (!pendingRecovery) return;
+  const number = String(CONFIG.WHATSAPP_NUMBER || "").replace(/[^0-9]/g,"");
+  if (!number) return;
+  const url = "https://wa.me/" + number + "?text=" + encodeURIComponent(recoveryText(pendingRecovery));
+  window.open(url,"_blank","noopener,noreferrer");
 });
 
 $("btnCopy").addEventListener("click", async () => {
-  if (!pendingOrder) return;
-  const txt = orderText(pendingOrder).replace(/\*/g, "");
+  if (!pendingRecovery) return;
+  const txt = recoveryText(pendingRecovery);
   try{
     await navigator.clipboard.writeText(txt);
-    $("btnCopy").textContent = "Copied ✓ — paste it to us";
+    $("btnCopy").textContent = "Copied ✓ — send only after review";
   }catch(e){ window.prompt("Copy this and send it to us:", txt); }
 });
 
+$("btnRetryOrder").addEventListener("click",() => {
+  if (!pendingRecovery) return;
+  hide($("thanks")); show($("checkout"));
+  $("orderForm").requestSubmit();
+});
+
 $("btnAgain").addEventListener("click", () => {
-  hide($("thanks")); pendingOrder = null;
-  $("fCoupon").value = ""; $("couponMsg").className = "cmsg";
-  $("btnCoupon").textContent = "Apply";
+  hide($("thanks")); pendingRecovery = null;
+  if (lastOrderFailureState === "idempotency_conflict") currentOrderAttempt = null;
+  lastOrderFailureState = "";
+  $("btnAgain").textContent = "Back to chocolates";
+  document.body.style.overflow = "";
+  document.querySelector("#chocolates").scrollIntoView({block:"start"});
+});
+
+/* ----------------------- corporate inquiry view -----------------------
+   Private form values are never stored, placed in the URL, logged, or echoed
+   into result messages. */
+const CORPORATE_DIRECTIONS = [
+  "Use chocolates currently available",
+  "Request another chocolate or larger quantity",
+  "Recommend a mix for my budget"
+];
+const CORPORATE_PAYLOAD_KEYS = [
+  "action","contact_name","organization","phone","email",
+  "approximate_quantity","needed_by","destination",
+  "occasion_or_product_interest","budget_range",
+  "customization_or_packaging","note","website","started_at_ms"
+];
+const CORPORATE_FIELD_ERRORS = {
+  contact_name:"corporateContactNameError",
+  organization:"corporateOrganizationError",
+  phone:"corporatePhoneError",
+  email:"corporateEmailError",
+  approximate_quantity:"corporateQuantityError",
+  needed_by:"corporateNeededByError",
+  destination:"corporateDestinationError",
+  occasion_or_product_interest:"corporateDirectionError",
+  interest_detail:"corporateInterestDetailError",
+  budget_range:"corporateBudgetError",
+  customization_or_packaging:"corporateCustomizationError",
+  note:"corporateNoteError"
+};
+
+let corporateStartedAtMs = 0;
+let corporateSubmitting = false;
+let corporateReturnFocus = null;
+let corporateLastState = "initial";
+
+function corporateLocalDate(dayOffset){
+  const date = new Date();
+  date.setHours(12,0,0,0);
+  date.setDate(date.getDate() + dayOffset);
+  return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2,"0") + "-" +
+    String(date.getDate()).padStart(2,"0");
+}
+
+function prepareCorporateForm(){
+  $("corporateNeededBy").min = corporateLocalDate(0);
+  $("corporateNeededBy").max = corporateLocalDate(730);
+  if (!corporateStartedAtMs || Date.now() - corporateStartedAtMs > 4 * 60 * 60 * 1000) {
+    corporateStartedAtMs = Date.now();
+  }
+  $("corporateSubmit").disabled = false;
+  $("corporateSubmit").textContent = "Submit inquiry for review";
+
+  const email = CONFIG.BUSINESS_EMAIL;
+  const validEmail = typeof email === "string" && email !== "" && email === email.trim() &&
+    email.length <= 254 && !/[\x00-\x20\x7F]/.test(email) && /^[^@]+@[^@.]+(?:\.[^@.]+)+$/.test(email);
+  $("corporateEmailFallback").hidden = !validEmail;
+  $("corporateEmailLink").textContent = validEmail ? email : "";
+  if (validEmail) $("corporateEmailLink").href = "mailto:" + email;
+  else $("corporateEmailLink").removeAttribute("href");
+}
+
+function openCorporate(trigger,moveFocus=true){
+  if (trigger) corporateReturnFocus = trigger;
+  prepareCorporateForm();
+  document.body.classList.add("corporate-open");
+  document.body.style.overflow = "hidden";
+  $("corporateView").scrollTop = 0;
+  if (moveFocus) setTimeout(() => $("corporateBack").focus(),0);
+}
+
+function closeCorporate(moveFocus=true,cleanHash=true){
+  document.body.classList.remove("corporate-open");
+  document.body.style.overflow = "";
+  if (cleanHash && location.hash === "#corporateView") {
+    history.replaceState(null,"",location.pathname + location.search);
+  }
+  if (moveFocus && corporateReturnFocus && document.contains(corporateReturnFocus)) {
+    corporateReturnFocus.focus();
+  }
+}
+
+document.querySelectorAll("[data-corporate-open]").forEach(link => {
+  link.addEventListener("click",event => {
+    event.preventDefault();
+    openCorporate(event.currentTarget);
+  });
+});
+document.querySelectorAll("[data-corporate-close]").forEach(link => {
+  link.addEventListener("click",event => {
+    event.preventDefault();
+    closeCorporate();
+  });
+});
+
+$("corporateView").addEventListener("keydown",event => {
+  if (!document.body.classList.contains("corporate-open")) return;
+  if (event.key === "Escape") {
+    event.preventDefault(); closeCorporate(); return;
+  }
+  if (event.key !== "Tab") return;
+  const focusable = [...$("corporateView").querySelectorAll(
+    "a[href],button:not([disabled]),input:not([disabled]):not([tabindex='-1']),textarea:not([disabled]),select:not([disabled])"
+  )].filter(element => !element.hidden && element.getClientRects().length);
+  if (!focusable.length) return;
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
+
+window.addEventListener("hashchange",() => {
+  if (location.hash === "#corporateView") openCorporate(null);
+  else if (document.body.classList.contains("corporate-open")) closeCorporate(false,false);
+});
+
+function corporateSafeText(value,minimum,maximum){
+  return typeof value === "string" && value.length >= minimum && value.length <= maximum &&
+    value === value.trim() && !/[\x00-\x1F\x7F]/.test(value);
+}
+function corporateOptionalText(value,maximum){
+  return value === "" || corporateSafeText(value,1,maximum);
+}
+function corporateEmailValid(value){
+  return value === "" || (value.length <= 254 && value === value.trim() &&
+    !/[\x00-\x20\x7F]/.test(value) && /^[^@]+@[^@.]+(?:\.[^@.]+)+$/.test(value));
+}
+function corporatePhoneValid(value){
+  if (typeof value !== "string" || value.length < 7 || value.length > 25 ||
+      value !== value.trim() || /[\x00-\x1F\x7F]/.test(value) || !/^[+0-9][0-9 ()-]*$/.test(value)) return false;
+  const digits = value.replace(/[^0-9]/g,"");
+  return digits.length >= 7 && digits.length <= 15;
+}
+function corporateDateValid(value){
+  if (value === "") return true;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parts = value.split("-").map(Number);
+  const serial = Date.UTC(parts[0],parts[1] - 1,parts[2]);
+  const date = new Date(serial);
+  if (date.getUTCFullYear() !== parts[0] || date.getUTCMonth() !== parts[1] - 1 || date.getUTCDate() !== parts[2]) return false;
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+  return serial >= today && serial <= today + 730 * 24 * 60 * 60 * 1000;
+}
+
+function clearCorporateErrors(){
+  Object.values(CORPORATE_FIELD_ERRORS).forEach(id => { $(id).hidden = true; $(id).textContent = ""; });
+  $("corporateDirections").classList.remove("has-error");
+  $("corporateForm").querySelectorAll("[aria-invalid]").forEach(field => field.removeAttribute("aria-invalid"));
+}
+function setCorporateError(key,field,message){
+  const error = $(CORPORATE_FIELD_ERRORS[key]);
+  error.textContent = message; error.hidden = false;
+  if (field) field.setAttribute("aria-invalid","true");
+}
+
+function validateCorporateForm(){
+  clearCorporateErrors();
+  const form = $("corporateForm");
+  const value = name => form.elements.namedItem(name).value;
+  const contactName = value("contact_name");
+  const organization = value("organization");
+  const phone = value("phone");
+  const email = value("email");
+  const quantityText = value("approximate_quantity");
+  const quantity = Number(quantityText);
+  const neededBy = value("needed_by");
+  const destination = value("destination");
+  const directionNode = form.elements.namedItem("occasion_or_product_interest");
+  const direction = directionNode.value;
+  const detail = $("corporateInterestDetail").value;
+  const interest = detail ? direction + " — " + detail : direction;
+  const budget = value("budget_range");
+  const customization = value("customization_or_packaging");
+  const note = value("note");
+  const website = value("website");
+  let firstInvalid = null;
+  const invalid = (key,field,message) => { setCorporateError(key,field,message); if (!firstInvalid) firstInvalid = field; };
+
+  if (!corporateSafeText(contactName,2,120)) invalid("contact_name",$("corporateContactName"),"Enter 2–120 characters without leading or trailing spaces.");
+  if (!corporateSafeText(organization,2,200)) invalid("organization",$("corporateOrganization"),"Enter 2–200 characters without leading or trailing spaces.");
+  if (!corporatePhoneValid(phone)) invalid("phone",$("corporatePhone"),"Use 7–25 permitted characters containing 7–15 digits.");
+  if (!corporateEmailValid(email)) invalid("email",$("corporateEmail"),"Enter a complete email address or leave this blank.");
+  if (quantityText === "" || !Number.isInteger(quantity) || quantity < 1 || quantity > 100000) invalid("approximate_quantity",$("corporateQuantity"),"Enter a whole number from 1 to 100,000.");
+  if (!corporateDateValid(neededBy)) invalid("needed_by",$("corporateNeededBy"),"Choose a real date from today through 730 days ahead.");
+  if (!corporateSafeText(destination,2,200)) invalid("destination",$("corporateDestination"),"Enter a destination using 2–200 characters.");
+  if (!CORPORATE_DIRECTIONS.includes(direction)) {
+    $("corporateDirections").classList.add("has-error");
+    invalid("occasion_or_product_interest",$("corporateDirections").querySelector("input"),"Choose one inquiry direction.");
+  }
+  if (!corporateOptionalText(detail,440) || interest.length > 500) invalid("interest_detail",$("corporateInterestDetail"),"Keep optional detail within the stated limit and remove edge spaces.");
+  if (!corporateSafeText(budget,1,120)) invalid("budget_range",$("corporateBudget"),"Enter a budget range using 1–120 characters.");
+  if (!corporateOptionalText(customization,500)) invalid("customization_or_packaging",$("corporateCustomization"),"Use no more than 500 characters and remove edge spaces.");
+  if (!corporateOptionalText(note,1000)) invalid("note",$("corporateNote"),"Use no more than 1,000 characters and remove edge spaces.");
+  if (website !== "") firstInvalid = firstInvalid || $("corporateContactName");
+
+  if (firstInvalid) return {ok:false,firstInvalid};
+  const payload = {
+    action:"corporate_inquiry",
+    contact_name:contactName,
+    organization:organization,
+    phone:phone,
+    email:email,
+    approximate_quantity:quantity,
+    needed_by:neededBy,
+    destination:destination,
+    occasion_or_product_interest:interest,
+    budget_range:budget,
+    customization_or_packaging:customization,
+    note:note,
+    website:"",
+    started_at_ms:corporateStartedAtMs
+  };
+  return {ok:true,payload};
+}
+
+function corporateFailure(code){
+  const error = new Error(code);
+  error.corporateCode = code;
+  return error;
+}
+async function corporateNetworkTransport(url,options){
+  return window.fetch.call(window,url,options);
+}
+
+/* One request boundary: exact JSON body + text/plain. */
+async function submitCorporateInquiry(payload){
+  const exactKeys = Object.keys(payload);
+  if (JSON.stringify(exactKeys) !== JSON.stringify(CORPORATE_PAYLOAD_KEYS)) throw corporateFailure("PAYLOAD_INVALID");
+  const controller = new AbortController();
+  const options = {
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload),
+    signal:controller.signal,
+    redirect:"follow",
+    credentials:"omit",
+    referrerPolicy:"no-referrer"
+  };
+  let timer;
+  try{
+    const response = await Promise.race([
+      corporateNetworkTransport(CONFIG.WEBAPP_URL,options),
+      new Promise((resolve,reject) => {
+        timer = setTimeout(() => { controller.abort(); reject(corporateFailure("TIMEOUT")); },CONFIG.CORPORATE_TIMEOUT_MS);
+      })
+    ]);
+    if (!response || response.ok !== true || typeof response.json !== "function") throw corporateFailure("UNAVAILABLE");
+    let data;
+    try { data = await response.json(); } catch(error) { throw corporateFailure("MALFORMED_RESPONSE"); }
+    return data;
+  } catch(error) {
+    if (error && error.corporateCode) throw error;
+    if (error && error.name === "AbortError") throw corporateFailure("TIMEOUT");
+    if (navigator.onLine === false) throw corporateFailure("OFFLINE");
+    throw corporateFailure("UNAVAILABLE");
+  } finally { clearTimeout(timer); }
+}
+
+function mapCorporateResponse(data){
+  if (!data || typeof data !== "object" || Array.isArray(data) ||
+      data.test !== false || data.action !== "corporate_inquiry") return "malformed";
+  if (data.ok === true && data.status === "NEW" &&
+      exactOwnKeys(data,["ok","test","action","inquiry_id","status","message"]) &&
+      typeof data.inquiry_id === "string" && /^CTI-\d{8}-[A-F0-9]{32}$/.test(data.inquiry_id) &&
+      boundedText(data.message,500)) return "success";
+  if (data.ok === true && data.status === "RECEIVED" &&
+      exactOwnKeys(data,["ok","test","action","status","message"]) &&
+      boundedText(data.message,500)) return "duplicate";
+  if (data.ok !== false || !exactOwnKeys(data,["ok","test","action","error","message"]) ||
+      typeof data.error !== "string" || !/^[A-Z0-9_]{3,64}$/.test(data.error) ||
+      !boundedText(data.message,500)) return "malformed";
+  if (data.error === "PLEASE_WAIT") return "cooldown";
+  if (data.error === "DAILY_CAP_REACHED") return "daily-cap";
+  if (data.error === "INVALID_REQUEST" || data.error === "TOO_FAST_OR_STALE") return "invalid";
+  if (data.error === "INTAKE_UNAVAILABLE") return "unavailable";
+  return "unavailable";
+}
+
+const CORPORATE_RESULTS = {
+  submitting:{className:"",title:"Submitting inquiry…",message:"Please keep this view open while a safe response is checked.",retry:false,another:false},
+  success:{className:"is-success",title:"Inquiry received",message:"Status: NEW. Chocolate Trail will review it and contact you using the submitted details.",retry:false,another:true},
+  duplicate:{className:"is-success",title:"Inquiry already recorded",message:"This inquiry is already recorded. Chocolate Trail will review it; no second record was created.",retry:false,another:true},
+  cooldown:{className:"is-warning",title:"Please wait before retrying",message:"The same contact path was used recently. Wait about 10 minutes, then review and retry.",retry:true,another:false},
+  "daily-cap":{className:"is-warning",title:"Inquiry limit reached",message:"The intake has reached its daily limit. Please try another day.",retry:true,another:false},
+  invalid:{className:"is-error",title:"Please review the form",message:"The inquiry was not accepted. Check the fields, review them briefly, then retry.",retry:true,another:false},
+  timeout:{className:"is-warning",title:"No safe response yet",message:"The inquiry timed out before a safe response arrived. Nothing is confirmed; review and retry when your connection is stable.",retry:true,another:false},
+  offline:{className:"is-warning",title:"You appear to be offline",message:"No inquiry was confirmed. Reconnect, then review and retry.",retry:true,another:false},
+  malformed:{className:"is-error",title:"Unexpected response",message:"The reply could not be verified. Nothing is confirmed; review and retry later.",retry:true,another:false},
+  unavailable:{className:"is-error",title:"Inquiry intake unavailable",message:"The inquiry could not be safely confirmed. Nothing is reserved or promised; review and retry later.",retry:true,another:false},
+};
+
+function showCorporateResult(state,reference=""){
+  const spec = CORPORATE_RESULTS[state] || CORPORATE_RESULTS.unavailable;
+  corporateLastState = state;
+  $("corporateResult").className = "corporate-result " + spec.className;
+  $("corporateResultTitle").textContent = spec.title;
+  $("corporateResultMessage").textContent = spec.message;
+  $("corporateReference").hidden = !reference;
+  $("corporateReference").textContent = reference ? "Reference " + reference : "";
+  $("corporateRetry").hidden = !spec.retry;
+  $("corporateAnother").hidden = !spec.another;
+  $("corporateResult").hidden = false;
+  if (state !== "submitting") $("corporateResult").focus({preventScroll:true});
+}
+
+function clearCorporatePrivateFields(){
+  $("corporateForm").reset();
+  clearCorporateErrors();
+  corporateStartedAtMs = 0;
+}
+function setCorporateBusy(busy){
+  corporateSubmitting = busy;
+  $("corporateForm").setAttribute("aria-busy",busy ? "true" : "false");
+  $("corporateSubmit").disabled = busy;
+  $("corporateSubmit").textContent = busy ? "Submitting inquiry…" : "Submit inquiry for review";
+}
+
+function applyCorporateResponse(data){
+  const state = mapCorporateResponse(data);
+  const reference = state === "success" ? data.inquiry_id : "";
+  if (state === "success" || state === "duplicate") {
+    clearCorporatePrivateFields();
+    $("corporateForm").hidden = true;
+  }
+  showCorporateResult(state,reference);
+  return state;
+}
+
+$("corporateForm").addEventListener("submit",async event => {
+  event.preventDefault();
+  if (corporateSubmitting) return;
+  const validated = validateCorporateForm();
+  if (!validated.ok) {
+    showCorporateResult("invalid");
+    validated.firstInvalid.focus();
+    return;
+  }
+  setCorporateBusy(true);
+  showCorporateResult("submitting");
+  try{
+    const response = await submitCorporateInquiry(validated.payload);
+    applyCorporateResponse(response);
+  } catch(error) {
+    const code = error && error.corporateCode;
+    const state = code === "TIMEOUT" ? "timeout" : code === "OFFLINE" ? "offline" :
+      code === "MALFORMED_RESPONSE" ? "malformed" : code === "PAYLOAD_INVALID" ? "invalid" : "unavailable";
+    showCorporateResult(state);
+  } finally { setCorporateBusy(false); }
+});
+
+$("corporateRetry").addEventListener("click",() => {
+  $("corporateResult").hidden = true;
+  $("corporateForm").hidden = false;
+  $("corporateContactName").focus();
+});
+$("corporateAnother").addEventListener("click",() => {
+  clearCorporatePrivateFields();
+  $("corporateResult").hidden = true;
+  $("corporateForm").hidden = false;
+  prepareCorporateForm();
+  $("corporateContactName").focus();
 });
 
 /* ------------------------------- boot ------------------------------- */
-for (const id in cart){                    // drop stale items / over-stock
-  const p = findP(id);
-  if (!p || p.stock <= 0) delete cart[id];
-  else if (cart[id] > p.stock) cart[id] = p.stock;
-}
+/* Cart cleanup waits until a fully accepted fresh/stale/emergency source is
+   chosen, so the loading state never destroys a still-reconcilable basket. */
 /* fill the delivery text from FREE_ZONES / COURIERS so it's edited in one place */
 $("zoneList").innerHTML = "<i>✓</i> " + FREE_ZONES.map(esc).join("<br><i>✓</i> ");
 $("courierList").textContent = COURIERS;
@@ -1109,14 +3455,20 @@ $("courierList").textContent = COURIERS;
 /* coupon box: hidden unless you switch it on in CONFIG */
 $("couponWrap").hidden = !CONFIG.SHOW_COUPON_BOX;
 
-/* a private link like  ?coupon=twinbit  applies the discount silently */
+/* A private ?coupon= link validates only that one code. Invalid prefilled
+   codes remain silent; no coupon table is present in this file. */
 const urlCoupon = new URLSearchParams(location.search).get("coupon");
-if (urlCoupon) setCoupon(urlCoupon, true);
+if (urlCoupon){
+  $("fCoupon").value = urlCoupon;
+  validateOneCoupon(urlCoupon,"prefilled");
+}
 
-if (!isConfigured() || CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
+if (CONFIG.WEBAPP_URL.indexOf("script.google.com") === -1 || CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
   $("setupWarn").style.display = "block";
 }
+if (location.hash === "#corporateView") openCorporate(null,false);
 refresh();
+setTimeout(loadCatalog,0);
 </script>
 </body>
 </html>
