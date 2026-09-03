@@ -1159,8 +1159,8 @@ footer .footer-corporate{ display:inline-block; margin:11px 0 8px; color:var(--g
 
   <div id="setupWarn">
     <b>⚙️ Setup not finished.</b> Open <code>index.html</code> and fill in
-    <code>WEBAPP_URL</code> and <code>WHATSAPP_NUMBER</code> in the CONFIG block.
-    Until then orders go to WhatsApp only. <b>Your customers see this message too.</b>
+    <code>SUPABASE_URL</code>, <code>SUPABASE_PUBLISHABLE_KEY</code> and
+    <code>WHATSAPP_NUMBER</code> in the CONFIG block. <b>Your customers see this message too.</b>
   </div>
 
   <section class="hero" aria-labelledby="pageTitle">
@@ -1803,12 +1803,13 @@ footer .footer-corporate{ display:inline-block; margin:11px 0 8px; color:var(--g
    1. CONFIG — one production service for every public data action
    ================================================================== */
 const CONFIG = {
-  WEBAPP_URL: "https://script.google.com/macros/s/AKfycbw75_rQsBTGjY9yeJXHB8AiVUD8yk0p4Gk6FkdyU73jypK_HqnJY1WXnAXSgjYA4U9h/exec",
+  SUPABASE_URL: "https://dgtvagacpeicfpqygaed.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_PjBM8W7CMQmYE3ppGtcZLA_21pvldMT",
 
   // Stop waiting for the read-only catalog instead of leaving the page hanging.
   CATALOG_TIMEOUT_MS: 30000,
 
-  // Allow a production Apps Script cold start before coupon checking stops.
+  // Allow a production backend cold start before coupon checking stops.
   COUPON_TIMEOUT_MS: 30000,
 
   // Your WhatsApp number for the fallback: country code, digits only, no +.
@@ -1874,7 +1875,7 @@ const EMERGENCY_PRODUCTS = [
     art:    ["#7d1633","#d4607f","#ffe6ee"],
     desc:   "Galaxy milk chocolate with cookie crumble pieces.",
     price:  210,
-    stock:  3
+    stock:  2
   },
   {
     id:     "cadbury-dairy-milk-roast-almond",
@@ -1885,7 +1886,7 @@ const EMERGENCY_PRODUCTS = [
     emoji:  "🌰",
     art:    ["#3d1e78","#7a52b8","#f0e4ff"],
     desc:   "Cadbury Dairy Milk chocolate with roasted almonds.",
-    price:  210,
+    price:  220,
     stock:  2
   },
   {
@@ -1897,7 +1898,7 @@ const EMERGENCY_PRODUCTS = [
     emoji:  "✨",
     art:    ["#3d1e78","#8a63c4","#ffe9a8"],
     desc:   "Cadbury Dairy Milk chocolate with crisped rice pieces.",
-    price:  100,
+    price:  110,
     stock:  6
   },
   {
@@ -1910,7 +1911,7 @@ const EMERGENCY_PRODUCTS = [
     art:    ["#4a2683","#e07a2a","#fff0dc"],
     desc:   "Cadbury Dairy Milk Crispello with a light, crispy centre.",
     price:  120,
-    stock:  12
+    stock:  10
   },
   {
     id:     "amul-dark-55-150",
@@ -1933,7 +1934,7 @@ const EMERGENCY_PRODUCTS = [
     emoji:  "🖤",
     art:    ["#0f0f0f","#3a3527","#f5c518"],
     desc:   "Amul sugar-free dark chocolate with 55% cocoa.",
-    price:  430,
+    price:  440,
     stock:  1
   },
   {
@@ -2014,12 +2015,8 @@ const esc  = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c =>
   ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
 /* -------------------------- production catalog --------------------------
-   Security boundary: only a fully validated nine-field public Product
-   reaches the UI. The saved copy is validated again before it can be used.
-   Every non-fresh state is browse-only; fresh server stock and the server's
-   ordering_enabled setting are the ordering authority. */
-const CATALOG_CACHE_KEY = "ct_production_v4_catalog_lkg";
-const CATALOG_CACHE_SCHEMA = "chocolate-trail-production-v4-catalog-1";
+   Security boundary: only a fully validated nine-field public Product reaches
+   the UI. Supabase is the live catalog, stock and ordering authority. */
 const CATALOG_BASE_TOP_FIELDS = [
   "ok","test","action","catalog_version","business_name","currency",
   "ordering_enabled","products"
@@ -2213,38 +2210,31 @@ function reconcileCartWithFreshProducts(){
   cartReconcileMessage = changes.join(" ");
 }
 
-function catalogRequestUrl(){
-  let url;
-  try { url = new URL(CONFIG.WEBAPP_URL); }
-  catch(e){ catalogFail("CATALOG_URL_INVALID"); }
-  if (url.protocol !== "https:" || url.hostname !== "script.google.com" ||
-      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) || url.search || url.hash) {
-    catalogFail("CATALOG_URL_INVALID");
+function supabaseBaseUrl(){
+  const url = new URL(CONFIG.SUPABASE_URL);
+  if (url.protocol !== "https:" || !/^[a-z0-9-]+\.supabase\.co$/.test(url.hostname) ||
+      (url.pathname !== "/" && url.pathname !== "") || url.search || url.hash) {
+    throw new Error("SUPABASE_CONFIG_INVALID");
   }
-  url.searchParams.set("action","catalog");
-  return url.href;
+  return url;
 }
 
-function writeValidatedCatalogCache(payload, cachedAt){
-  try{
-    localStorage.setItem(CATALOG_CACHE_KEY,JSON.stringify({
-      schema:CATALOG_CACHE_SCHEMA, cached_at:cachedAt, payload
-    }));
-  }catch(e){}
+function supabasePublishableKey(){
+  const key = String(CONFIG.SUPABASE_PUBLISHABLE_KEY || "").trim();
+  if (!/^sb_publishable_[A-Za-z0-9_-]{20,}$/.test(key)) throw new Error("SUPABASE_CONFIG_INVALID");
+  return key;
 }
 
-function readValidatedCatalogCache(){
-  try{
-    const saved = JSON.parse(localStorage.getItem(CATALOG_CACHE_KEY) || "null");
-    if (!exactOwnKeys(saved,["schema","cached_at","payload"]) ||
-        saved.schema !== CATALOG_CACHE_SCHEMA || !Number.isSafeInteger(saved.cached_at) ||
-        saved.cached_at <= 0 || saved.cached_at > Date.now() + 300000) catalogFail("CACHE_INVALID");
-    return { payload:validateCatalogPayload(saved.payload), cachedAt:saved.cached_at };
-  }catch(e){
-    try { localStorage.removeItem(CATALOG_CACHE_KEY); }catch(_e){}
-    return null;
-  }
+function supabaseRpcUrl(functionName){
+  return new URL("/rest/v1/rpc/" + functionName,supabaseBaseUrl()).href;
 }
+
+function supabaseRequestHeaders(){
+  const key = supabasePublishableKey();
+  return {"Content-Type":"application/json","apikey":key,"Authorization":"Bearer " + key};
+}
+
+function catalogRequestUrl(){ return supabaseRpcUrl("public_catalog"); }
 
 function setCatalogStatus(kind,title,detail){
   const el = $("catalogStatus");
@@ -2278,40 +2268,33 @@ function showPromotion(promotion){
   }).format(ends) + " (Asia/Dhaka).";
 }
 
-function applyValidatedCatalog(payload,mode,cachedAt,failure){
+function applyValidatedCatalog(payload){
   const promotionPriceMap = payload.promotion
     ? new Map(payload.promotion_prices.map(row => [row.product_id,row.display_price])) : null;
   PRODUCTS = payload.products.map(record => mapPublicProduct(record,promotionPriceMap));
   catalogRuntime = {
-    mode, version:payload.catalog_version, cachedAt:cachedAt || null,
-    failure:failure || "", serverOrderingEnabled:payload.ordering_enabled,
+    mode:"fresh", version:payload.catalog_version, cachedAt:Date.now(),
+    failure:"", serverOrderingEnabled:payload.ordering_enabled,
     promotion:payload.promotion || null
   };
-  if (mode === "fresh") {
-    reconcileCartWithFreshProducts();
-    saveCart();
-  }
-  if (mode === "fresh"){
-    setCatalogStatus("fresh","Live availability connected",
-      "Current catalog · " + payload.catalog_version + " · " +
-      (payload.ordering_enabled ? "ordering is available." : "ordinary ordering is currently paused."));
-  } else {
-    setCatalogStatus("stale","Live catalog unavailable — saved copy only",
-      "Validated " + new Date(cachedAt).toLocaleString() + " · browse-only · ordering disabled.");
-  }
+  reconcileCartWithFreshProducts();
+  saveCart();
+  setCatalogStatus("fresh","Live availability connected",
+    "Current catalog · " + payload.catalog_version + " · " +
+    (payload.ordering_enabled ? "ordering is available." : "ordinary ordering is currently paused."));
   showPromotion(payload.promotion || null);
   refresh();
 }
 
-function applyEmergencyCatalog(failure){
-  PRODUCTS = emergencyCatalog();
+function applyUnavailableCatalog(failure){
+  PRODUCTS = PRODUCTS.map(product => ({...product,stockConfirmed:false}));
   catalogRuntime = {
-    mode:"emergency", version:"embedded-11", cachedAt:null,
+    mode:"unavailable", version:"supabase-unavailable", cachedAt:null,
     failure, serverOrderingEnabled:false, promotion:null
   };
   showPromotion(null);
-  setCatalogStatus("emergency","Live catalog unavailable — emergency preview",
-    "The embedded 11-product catalog is browse-only. Prices and stock may be stale; ordering is disabled.");
+  setCatalogStatus("emergency","Live availability unavailable",
+    "Ordering is disabled until the live catalog reconnects.");
   refresh();
 }
 
@@ -2336,7 +2319,8 @@ async function loadCatalog(forceRefresh=false){
   const timer = setTimeout(() => ctrl.abort(),CONFIG.CATALOG_TIMEOUT_MS);
   try{
     const res = await fetch(catalogRequestUrl(),{
-      method:"GET", signal:ctrl.signal, redirect:"follow", cache:"no-store",
+      method:"POST", headers:supabaseRequestHeaders(), body:"{}",
+      signal:ctrl.signal, redirect:"follow", cache:"no-store",
       credentials:"omit", referrerPolicy:"no-referrer"
     });
     if (!res.ok) catalogFail("HTTP_STATUS_INVALID");
@@ -2345,21 +2329,13 @@ async function loadCatalog(forceRefresh=false){
     }
     let raw;
     try { raw = await res.json(); } catch(e){ catalogFail("JSON_INVALID"); }
-    if (raw && raw.ok === false && typeof raw.error === "string" &&
-        /(?:LOCK|BUSY|WAIT|TEMPORAR|UNAVAILABLE)/.test(raw.error.toUpperCase())) {
-      catalogFail("LOCK_STYLE_FAILURE");
-    }
     const payload = validateCatalogPayload(raw);
     if (sequence !== catalogLoadSequence) return;
-    const cachedAt = Date.now();
-    writeValidatedCatalogCache(payload,cachedAt);
-    applyValidatedCatalog(payload,"fresh",cachedAt,"");
+    applyValidatedCatalog(payload);
   }catch(error){
     if (sequence !== catalogLoadSequence) return;
     const code = failureCode(error);
-    const cached = readValidatedCatalogCache();
-    if (cached) applyValidatedCatalog(cached.payload,"stale",cached.cachedAt,code);
-    else applyEmergencyCatalog(code);
+    applyUnavailableCatalog(code);
   }finally{
     clearTimeout(timer);
     if (sequence === catalogLoadSequence) catalogLoadController = null;
@@ -2367,8 +2343,7 @@ async function loadCatalog(forceRefresh=false){
 }
 
 const CATALOG_BOOT_RETRY_FAILURES = new Set([
-  "TIMEOUT","FETCH_FAILED","HTTP_STATUS_INVALID","CONTENT_TYPE_INVALID",
-  "JSON_INVALID","LOCK_STYLE_FAILURE"
+  "TIMEOUT","FETCH_FAILED","HTTP_STATUS_INVALID","CONTENT_TYPE_INVALID","JSON_INVALID"
 ]);
 
 function waitForCatalogBootRetry(){
@@ -2384,6 +2359,63 @@ async function bootPublicData(prefilledCoupon){
   if (catalogRuntime.mode === "fresh" && prefilledCoupon) {
     await validateOneCoupon(prefilledCoupon,"prefilled");
   }
+  if (catalogRuntime.mode === "fresh") startStockRealtime();
+}
+
+let stockRealtimeSocket = null;
+let stockRealtimeHeartbeat = null;
+let stockRealtimeReconnect = null;
+let stockRealtimeRefresh = null;
+let stockRealtimeStarted = false;
+let stockRealtimeRef = 0;
+
+function startStockRealtime(){
+  if (stockRealtimeStarted) return;
+  stockRealtimeStarted = true;
+  connectStockRealtime();
+}
+
+function connectStockRealtime(){
+  if (!stockRealtimeStarted || stockRealtimeSocket) return;
+  let key,wsUrl;
+  try{
+    key = supabasePublishableKey();
+    wsUrl = new URL("/realtime/v1/websocket",supabaseBaseUrl());
+  }catch(error){ return; }
+  wsUrl.protocol = "wss:";
+  wsUrl.searchParams.set("apikey",key);
+  wsUrl.searchParams.set("vsn","1.0.0");
+  const socket = new WebSocket(wsUrl.href);
+  stockRealtimeSocket = socket;
+  socket.addEventListener("open",() => {
+    const ref = String(++stockRealtimeRef);
+    socket.send(JSON.stringify({
+      topic:"realtime:public:products",event:"phx_join",ref,
+      payload:{config:{broadcast:{ack:false,self:false},presence:{key:""},
+        postgres_changes:[{event:"*",schema:"public",table:"products"}]},access_token:key}
+    }));
+    stockRealtimeHeartbeat = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({
+        topic:"phoenix",event:"heartbeat",payload:{},ref:String(++stockRealtimeRef)
+      }));
+    },25000);
+  });
+  socket.addEventListener("message",event => {
+    let message;
+    try { message = JSON.parse(event.data); } catch(error){ return; }
+    if (message && message.event === "postgres_changes") {
+      clearTimeout(stockRealtimeRefresh);
+      stockRealtimeRefresh = setTimeout(() => loadCatalog(true),300);
+    }
+  });
+  socket.addEventListener("close",() => {
+    clearInterval(stockRealtimeHeartbeat);
+    stockRealtimeHeartbeat = null;
+    if (stockRealtimeSocket === socket) stockRealtimeSocket = null;
+    clearTimeout(stockRealtimeReconnect);
+    stockRealtimeReconnect = setTimeout(connectStockRealtime,5000);
+  });
+  socket.addEventListener("error",() => socket.close());
 }
 
 /* stock number -> badge */
@@ -2465,7 +2497,7 @@ function renderCatalog(){
             ? `<button class="btn-add preview-only" disabled>${checking ? "Checking availability" : "Stock confirmation pending"}</button>`
           : out ? `<button class="btn-add" disabled>Sold out</button>`
           : !productOrderingAllowed(p)
-            ? `<button class="btn-add preview-only" disabled>Preview only</button>`
+            ? `<button class="btn-add preview-only" disabled>Refreshing availability</button>`
           : q === 0
             ? `<button class="btn-add" data-add="${esc(p.id)}">Add to cart</button>`
             : `<div class="qty">
@@ -2805,18 +2837,7 @@ const COUPON_UNAVAILABLE_FIELDS = COUPON_INVALID_FIELDS.concat(["error"]);
 let couponValidationController = null;
 
 function couponRequestUrl(raw,source){
-  const code = String(raw || "").trim().toUpperCase();
-  let url;
-  try { url = new URL(CONFIG.WEBAPP_URL); }
-  catch(e){ throw orderFailure("COUPON_UNAVAILABLE"); }
-  if (url.protocol !== "https:" || url.hostname !== "script.google.com" ||
-      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) || url.search || url.hash) {
-    throw orderFailure("COUPON_UNAVAILABLE");
-  }
-  url.searchParams.set("action","validateCoupon");
-  url.searchParams.set("code",code);
-  url.searchParams.set("source",source === "prefilled" ? "prefilled" : "typed");
-  return url.href;
+  return supabaseRpcUrl("validate_coupon");
 }
 
 function validateCouponResponse(value,source){
@@ -2868,7 +2889,9 @@ async function validateOneCoupon(raw,source="typed"){
   $("btnCoupon").textContent = "Checking…";
   try{
     const response = await fetch(couponRequestUrl(code,source),{
-      method:"GET",signal:controller.signal,redirect:"follow",cache:"no-store",
+      method:"POST",headers:supabaseRequestHeaders(),
+      body:JSON.stringify({p_code:code,p_source:source === "prefilled" ? "prefilled" : "typed"}),
+      signal:controller.signal,redirect:"follow",cache:"no-store",
       credentials:"omit",referrerPolicy:"no-referrer"
     });
     if (!response.ok) throw orderFailure("COUPON_UNAVAILABLE");
@@ -3112,14 +3135,7 @@ function buildOrderPayload(fields){
 }
 
 function orderRequestUrl(){
-  let url;
-  try { url = new URL(CONFIG.WEBAPP_URL); }
-  catch(e){ throw orderFailure("ORDER_UNAVAILABLE"); }
-  if (url.protocol !== "https:" || url.hostname !== "script.google.com" ||
-      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) || url.search || url.hash) {
-    throw orderFailure("ORDER_UNAVAILABLE");
-  }
-  return url.href;
+  return supabaseRpcUrl("submit_order");
 }
 
 async function orderNetworkTransport(url,options){
@@ -3132,7 +3148,7 @@ async function submitV4Order(payload,body){
   const timer = setTimeout(() => controller.abort(),CONFIG.ORDER_TIMEOUT_MS);
   try{
     const response = await orderNetworkTransport(orderRequestUrl(),{
-      method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      method:"POST",headers:supabaseRequestHeaders(),
       body,signal:controller.signal,redirect:"follow",
       credentials:"omit",referrerPolicy:"no-referrer"
     });
@@ -3149,7 +3165,7 @@ async function submitV4Order(payload,body){
 }
 
 async function submitOrderWithOneAutomaticReconciliation(payload){
-  const body = JSON.stringify(payload);
+  const body = JSON.stringify({p_request:payload});
   try{
     return await submitV4Order(payload,body);
   }catch(firstError){
@@ -3518,15 +3534,15 @@ async function corporateNetworkTransport(url,options){
   return window.fetch.call(window,url,options);
 }
 
-/* One request boundary: exact JSON body + text/plain. */
+/* One request boundary: exact JSON body through the private-write RPC. */
 async function submitCorporateInquiry(payload){
   const exactKeys = Object.keys(payload);
   if (JSON.stringify(exactKeys) !== JSON.stringify(CORPORATE_PAYLOAD_KEYS)) throw corporateFailure("PAYLOAD_INVALID");
   const controller = new AbortController();
   const options = {
     method:"POST",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify(payload),
+    headers:supabaseRequestHeaders(),
+    body:JSON.stringify({p_request:payload}),
     signal:controller.signal,
     redirect:"follow",
     credentials:"omit",
@@ -3535,7 +3551,7 @@ async function submitCorporateInquiry(payload){
   let timer;
   try{
     const response = await Promise.race([
-      corporateNetworkTransport(CONFIG.WEBAPP_URL,options),
+      corporateNetworkTransport(supabaseRpcUrl("submit_corporate_inquiry"),options),
       new Promise((resolve,reject) => {
         timer = setTimeout(() => { controller.abort(); reject(corporateFailure("TIMEOUT")); },CONFIG.CORPORATE_TIMEOUT_MS);
       })
@@ -3679,7 +3695,9 @@ if (prefilledCoupon){
   }
 }
 
-if (CONFIG.WEBAPP_URL.indexOf("script.google.com") === -1 || CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
+if (CONFIG.SUPABASE_URL === "SUPABASE_URL" ||
+    CONFIG.SUPABASE_PUBLISHABLE_KEY === "SUPABASE_PUBLISHABLE_KEY" ||
+    CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
   $("setupWarn").style.display = "block";
 }
 refresh();
