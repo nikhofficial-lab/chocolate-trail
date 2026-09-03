@@ -2345,6 +2345,10 @@ async function loadCatalog(forceRefresh=false){
     }
     let raw;
     try { raw = await res.json(); } catch(e){ catalogFail("JSON_INVALID"); }
+    if (raw && raw.ok === false && typeof raw.error === "string" &&
+        /(?:LOCK|BUSY|WAIT|TEMPORAR|UNAVAILABLE)/.test(raw.error.toUpperCase())) {
+      catalogFail("LOCK_STYLE_FAILURE");
+    }
     const payload = validateCatalogPayload(raw);
     if (sequence !== catalogLoadSequence) return;
     const cachedAt = Date.now();
@@ -2359,6 +2363,26 @@ async function loadCatalog(forceRefresh=false){
   }finally{
     clearTimeout(timer);
     if (sequence === catalogLoadSequence) catalogLoadController = null;
+  }
+}
+
+const CATALOG_BOOT_RETRY_FAILURES = new Set([
+  "TIMEOUT","FETCH_FAILED","HTTP_STATUS_INVALID","CONTENT_TYPE_INVALID",
+  "JSON_INVALID","LOCK_STYLE_FAILURE"
+]);
+
+function waitForCatalogBootRetry(){
+  return new Promise(resolve => setTimeout(resolve,2000));
+}
+
+async function bootPublicData(prefilledCoupon){
+  await loadCatalog();
+  if (catalogRuntime.mode !== "fresh" && CATALOG_BOOT_RETRY_FAILURES.has(catalogRuntime.failure)) {
+    await waitForCatalogBootRetry();
+    await loadCatalog(true);
+  }
+  if (catalogRuntime.mode === "fresh" && prefilledCoupon) {
+    await validateOneCoupon(prefilledCoupon,"prefilled");
   }
 }
 
@@ -3646,9 +3670,13 @@ $("couponWrap").hidden = !CONFIG.SHOW_COUPON_BOX;
 /* A private ?coupon= link validates only that one code. Invalid prefilled
    codes remain silent; no coupon table is present in this file. */
 const urlCoupon = new URLSearchParams(location.search).get("coupon");
-if (urlCoupon){
-  $("fCoupon").value = urlCoupon;
-  validateOneCoupon(urlCoupon,"prefilled");
+const prefilledCoupon = String(urlCoupon || "").trim().toUpperCase();
+if (prefilledCoupon){
+  $("fCoupon").value = prefilledCoupon;
+  if (CONFIG.SHOW_COUPON_BOX) {
+    $("couponMsg").className = "cmsg show";
+    $("couponMsg").textContent = "Checking coupon after live availability connects…";
+  }
 }
 
 if (CONFIG.WEBAPP_URL.indexOf("script.google.com") === -1 || CONFIG.WHATSAPP_NUMBER.indexOf("X") !== -1){
@@ -3656,7 +3684,7 @@ if (CONFIG.WEBAPP_URL.indexOf("script.google.com") === -1 || CONFIG.WHATSAPP_NUM
 }
 refresh();
 ctInitializeHistory();
-setTimeout(loadCatalog,0);
+bootPublicData(prefilledCoupon);
 </script>
 </body>
 </html>
