@@ -1613,8 +1613,8 @@ footer .footer-corporate{ display:inline-block; margin:11px 0 8px; color:var(--g
 
       <label for="fPhone">Phone number</label>
       <input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required
-             placeholder="01XXXXXXXXX" minlength="11" maxlength="25" aria-describedby="ePhone">
-      <div class="err" id="ePhone">Use a Bangladesh number beginning 01 or 8801.</div>
+             placeholder="01XXXXXXXXX or +8801XXXXXXXXX" minlength="11" maxlength="25" aria-describedby="ePhone">
+      <div class="err" id="ePhone">Use 01XXXXXXXXX, 8801XXXXXXXXX, or +8801XXXXXXXXX.</div>
 
       <label for="fAddr">Delivery address</label>
       <textarea id="fAddr" name="address" autocomplete="street-address" required minlength="5"
@@ -2961,7 +2961,7 @@ function validateOrderForm(){
   };
   flag("fName","eName",!safeOrderText(name,2,120));
   flag("fPhone","ePhone",phone.length < 11 || phone.length > 25 || phone !== phone.trim() ||
-    !/^\+?[0-9 ()-]+$/.test(phone) || !(/^(01\d{9}|8801\d{9})$/.test(digits)) || /^[=+@-]/.test(phone));
+    !/^\+?[0-9 ()-]+$/.test(phone) || !(/^(01\d{9}|8801\d{9})$/.test(digits)));
   flag("fAddr","eAddr",!safeOrderText(address,5,500));
   flag("fNote","eNote",!safeOrderText(note,0,1000,true));
   const basket = lines();
