@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://dgtvagacpeicfpqygaed.supabase.co; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Chocolate Trail Admin</title>
+  <style>
+    :root{color-scheme:dark;--bg:#10090b;--panel:#1d1215;--panel2:#28171b;--line:#5d383b;--text:#fff5df;--muted:#c9b7a8;--gold:#f1ba4d;--green:#80dc99;--red:#ff8f8f;--blue:#8fc6ff;--shadow:0 22px 60px rgba(0,0,0,.28)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 70% -20%,#4a2926 0,transparent 38%),var(--bg);color:var(--text);font:16px/1.5 Arial,sans-serif;min-height:100vh}
+    button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}
+    .shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 70px}.hidden{display:none!important}
+    .topbar{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border:1px solid #8a6334;border-radius:14px;display:grid;place-items:center;background:#2b1b16;color:var(--gold);font-size:24px}.brand h1{font-size:clamp(1.25rem,4vw,1.8rem);margin:0}.brand p{margin:1px 0 0;color:var(--muted);font-size:.9rem}
+    .panel{background:linear-gradient(145deg,rgba(45,25,29,.98),rgba(25,15,18,.98));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:20px;margin:16px 0}.panel h2{margin:0 0 6px;font-size:1.2rem}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:15px}.panel-head p{margin:0;color:var(--muted);font-size:.9rem}
+    .login{width:min(500px,100%);margin:10vh auto 0}.notice{border:1px solid #7d5d2e;background:#2c2114;color:#ffe1a0;padding:12px 14px;border-radius:13px;margin:15px 0;font-size:.92rem}.error{color:var(--red);min-height:1.5em}.muted{color:var(--muted)}
+    label{display:block;color:#ead7c6;font-weight:700;font-size:.86rem;margin:12px 0 6px}.input,select{width:100%;background:#120c0e;color:var(--text);border:1px solid #70454a;border-radius:12px;padding:12px 13px;outline:none}.input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(241,186,77,.12)}textarea.input{min-height:84px;resize:vertical}
+    .btn{border:1px solid #8b6233;border-radius:12px;padding:10px 14px;background:#2a1916;color:var(--text);font-weight:800}.btn:hover{border-color:var(--gold)}.btn.primary{background:var(--gold);color:#21140c;border-color:var(--gold)}.btn.safe{background:#17331f;border-color:#34784a;color:#b8f4c7}.btn.danger{background:#401d21;border-color:#94444b;color:#ffc0c0}.btn.small{padding:7px 10px;font-size:.82rem}.btn.full{width:100%;margin-top:14px}.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{padding:15px;border:1px solid #503237;border-radius:15px;background:#160d10}.metric span{display:block;color:var(--muted);font-size:.82rem}.metric strong{display:block;font-size:1.35rem;margin-top:3px}.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--gold)}
+    .tabs{display:flex;gap:8px;overflow:auto;padding-bottom:4px;position:sticky;top:0;z-index:5;background:rgba(16,9,11,.94);backdrop-filter:blur(12px);padding-top:8px}.tab{white-space:nowrap;border:1px solid #563439;border-radius:999px;padding:9px 13px;color:var(--muted);background:#1a1013;font-weight:800}.tab.active{background:#3a211b;color:#ffe8b7;border-color:#a06c31}
+    .table-wrap{overflow:auto;border:1px solid #4e3035;border-radius:14px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px 12px;border-bottom:1px solid #3c252a;text-align:left;vertical-align:top}th{background:#201317;color:#eac77e;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:0}.number{width:95px}.pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.75rem;font-weight:800;background:#302024;border:1px solid #5a383e}.pill.on{color:#aef0bf;border-color:#39774c;background:#17331f}.pill.off{color:#ffc3c3;border-color:#824047;background:#3b1c20}.pill.gold{color:#ffdc90;border-color:#77562b;background:#302413}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{border:1px solid #4f3035;border-radius:15px;padding:15px;background:#160e10}.card h3{margin:0 0 4px}.card p{margin:4px 0;color:var(--muted)}.card .price{color:var(--gold);font-weight:900;font-size:1.1rem}.items{margin:9px 0;padding-left:19px}.items li{margin:3px 0}.danger-zone{border-color:#7c373d}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.span2{grid-column:1/-1}.check{display:flex;gap:9px;align-items:center;margin:12px 0;color:var(--text);font-weight:700}.check input{width:19px;height:19px;accent-color:var(--gold)}
+    .toast{position:fixed;right:18px;bottom:18px;max-width:min(420px,calc(100% - 36px));padding:13px 16px;border-radius:13px;background:#17331f;border:1px solid #3c8150;color:#c7f5d2;box-shadow:var(--shadow);z-index:30}.toast.fail{background:#421e22;border-color:#9e4b52;color:#ffd0d0}.spinner{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}
+    .empty{text-align:center;color:var(--muted);padding:24px}.foot{margin-top:26px;color:var(--muted);font-size:.8rem;text-align:center}
+    @media(max-width:820px){.status-grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.span2{grid-column:auto}.topbar{align-items:flex-start}.shell{width:min(100% - 18px,1180px)}.panel{padding:15px;border-radius:16px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section id="loginView" class="login panel">
+      <div class="brand"><div class="logo">▣</div><div><h1>Chocolate Trail Admin</h1><p>Private owner, manager and read-only dashboard</p></div></div>
+      <div class="notice">Use only a private staff account created in Supabase Authentication and approved by the primary owner. This page never asks for a database password or secret/service-role key.</div>
+      <form id="loginForm">
+        <label for="email">Staff email</label><input class="input" id="email" name="email" type="email" autocomplete="username" required>
+        <label for="password">Staff password</label><input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="btn primary full" id="loginButton" type="submit">Sign in securely</button>
+        <p id="loginError" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="appView" class="hidden">
+      <header class="topbar">
+        <div class="brand"><div class="logo">▣</div><div><h1>Chocolate Trail Admin</h1><p id="serverTime">Private live controls</p></div></div>
+        <div class="actions"><button class="btn" id="refreshButton" type="button">Refresh</button><button class="btn danger" id="logoutButton" type="button">Sign out</button></div>
+      </header>
+
+      <nav class="tabs" aria-label="Administration sections">
+        <button class="tab active" data-tab="overview" type="button">Overview</button>
+        <button class="tab" data-tab="stock" type="button">Stock</button>
+        <button class="tab" data-tab="orders" type="button">Orders</button>
+        <button class="tab" data-tab="campaigns" type="button">Campaign</button>
+        <button class="tab" data-tab="coupons" type="button">Coupons & referrals</button>
+        <button class="tab hidden" id="teamTab" data-tab="team" type="button">Team access</button>
+        <button class="tab" data-tab="audit" type="button">Activity</button>
+      </nav>
+
+      <section class="tab-page" data-page="overview">
+        <div class="status-grid" id="statusGrid"></div>
+        <div class="panel">
+          <div class="panel-head"><div><h2>Accepting customer orders</h2><p>This is the master switch. Pausing does not alter stock, campaigns or existing orders.</p></div><span id="orderingPill" class="pill"></span></div>
+          <div class="actions" id="orderingActions"><button id="orderingButton" class="btn" type="button"></button></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h2>Operating rules</h2><p>These are deliberate safety limits.</p></div></div>
+          <ul><li>Never delete an order. Cancel it here so stock and coupon use are reversed once.</li><li>Never subtract stock manually after a successful website order.</li><li>New coupons are created paused. Review the margin before activating them.</li><li>TWINBIT remains locked to its current 10% customer / 0% referrer server rule until a separate tested migration changes that rule.</li></ul>
+        </div>
+      </section>
+
+      <section class="tab-page hidden" data-page="stock">
+        <div class="panel"><div class="panel-head"><div><h2>Product stock</h2><p>Add a delivery, save an exact physical count, or mark one product sold out. Every change is recorded.</p></div></div><div id="stockTable"></div></div>
+      </section>
+
+      <section class="tab-page hidden" data-page="orders">
+        <div class="panel danger-zone"><div class="panel-head"><div><h2>Recent orders</h2><p>Cancellation restores every line item and reverses one coupon use atomically. A paid referral reward must be manually resolved first.</p></div></div><div id="ordersList"></div></div>
+      </section>
+
+      <section class="tab-page hidden" data-page="campaigns">
+        <div class="panel"><div class="panel-head"><div><h2>Campaign schedule</h2><p>Times below are Dhaka time. Saving an active campaign checks the full price list and prevents overlapping campaigns.</p></div></div><div id="campaignList"></div></div>
+      </section>
+
+      <section class="tab-page hidden" data-page="coupons">
+        <div class="panel"><div class="panel-head"><div><h2>Current coupons and referrals</h2><p>Only a submitted code is exposed to customers. Private contact notes and reward percentages stay in this owner view.</p></div></div><div id="couponTable"></div></div>
+        <div class="panel" id="couponFormPanel"><div class="panel-head"><div><h2 id="couponFormTitle">Create a coupon or referral code</h2><p>Creation is always paused. A commercial edit also pauses the code automatically.</p></div></div>
+          <form id="couponForm" class="form-grid">
+            <input id="couponMode" type="hidden" value="create">
+            <div><label for="couponCode">Code</label><input class="input" id="couponCode" maxlength="32" placeholder="FRIEND5" required></div>
+            <div><label for="referrerName">Referrer name (required if reward is above 0%)</label><input class="input" id="referrerName" maxlength="120"></div>
+            <div><label for="customerPercent">Customer discount %</label><input class="input" id="customerPercent" type="number" min="0" max="50" step="0.01" required></div>
+            <div><label for="rewardPercent">Referrer reward %</label><input class="input" id="rewardPercent" type="number" min="0" max="50" step="0.01" required></div>
+            <div><label for="maxUses">Maximum uses</label><input class="input" id="maxUses" type="number" min="1" max="1000000" step="1" value="100" required></div>
+            <div><label for="contactNote">Private contact note</label><input class="input" id="contactNote" maxlength="500" placeholder="Phone or settlement note — never public"></div>
+            <div><label for="couponStart">Starts (Dhaka time)</label><input class="input coupon-time" id="couponStart" type="datetime-local"></div>
+            <div><label for="couponEnd">Ends (Dhaka time)</label><input class="input coupon-time" id="couponEnd" type="datetime-local"></div>
+            <label class="check span2"><input id="couponPermanent" type="checkbox"> No expiry — keep this code permanent</label>
+            <div class="span2"><label for="couponNotes">Owner notes</label><textarea class="input" id="couponNotes" maxlength="1000"></textarea></div>
+            <div class="notice span2">If a referrer reward is above 0%, verify the current product, packing and delivery margin before activation. Do not promise or pay rewards from this form.</div>
+            <div class="actions span2"><button class="btn primary" type="submit">Save paused code</button><button class="btn hidden" id="cancelCouponEdit" type="button">Cancel edit</button></div>
+          </form>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h2>Referral ledger</h2><p>Read-only here. Settlement remains manual during the pilot.</p></div></div><div id="ledgerTable"></div></div>
+      </section>
+
+      <section class="tab-page hidden" data-page="team">
+        <div class="panel"><div class="panel-head"><div><h2>Team access</h2><p>Only the primary owner can see or change this section. Deactivation removes dashboard access without deleting the person's Auth account.</p></div></div><div id="teamTable"></div></div>
+        <div class="panel"><div class="panel-head"><div><h2>Add or reactivate a manager/viewer</h2><p>First create and confirm the person's separate account under Supabase Authentication → Users. Then enter that exact email here.</p></div></div>
+          <form id="teamForm" class="form-grid">
+            <div><label for="teamEmail">Confirmed Auth user email</label><input class="input" id="teamEmail" type="email" required></div>
+            <div><label for="teamRole">Access level</label><select id="teamRole"><option value="MANAGER">Manager — operational changes</option><option value="VIEWER">Read-only — no changes</option></select></div>
+            <div class="span2"><label for="teamLabel">Name or responsibility</label><input class="input" id="teamLabel" maxlength="120" placeholder="Partner shop manager" required></div>
+            <div class="notice span2"><strong>Manager:</strong> stock, ordering, cancellation, campaigns and coupons. <strong>Read-only:</strong> can view the dashboard but every write RPC is denied by Supabase. Neither role can add, remove or promote staff.</div>
+            <div class="actions span2"><button class="btn primary" type="submit">Grant dashboard access</button></div>
+          </form>
+        </div>
+      </section>
+
+      <section class="tab-page hidden" data-page="audit">
+        <div class="panel"><div class="panel-head"><div><h2>Recent owner activity</h2><p>Pause, stock, cancellation, campaign and coupon changes are recorded.</p></div></div><div id="auditTable"></div></div>
+      </section>
+      <p class="foot">Private data is kept in memory only for this tab. Closing the tab ends the saved dashboard session.</p>
+    </section>
+  </main>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script>
+  "use strict";
+  const CONFIG={
+    SUPABASE_URL:"https://dgtvagacpeicfpqygaed.supabase.co",
+    SUPABASE_PUBLISHABLE_KEY:"sb_publishable_PjBM8W7CMQmYE3ppGtcZLA_21pvldMT"
+  };
+  const SESSION_KEY="ct_admin_session_v1";
+  let session=null;
+  let snapshot=null;
+  let accessInfo=null;
+  let teamSnapshot=null;
+  let busy=false;
+  const $=id=>document.getElementById(id);
+  const esc=value=>String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[ch]);
+  const money=value=>"৳"+Number(value||0).toLocaleString("en-BD",{maximumFractionDigits:2});
+  const dhakaDate=value=>value?new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",dateStyle:"medium",timeStyle:"short"}).format(new Date(value)):"No expiry";
+  const dhakaInput=value=>{
+    if(!value)return "";
+    const parts=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date(value)).filter(x=>x.type!=="literal").map(x=>[x.type,x.value]));
+    return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+  };
+  const dhakaIso=value=>value?new Date(value+":00+06:00").toISOString():null;
+  const errorText=raw=>{
+    const key=String(raw?.message||raw?.error_description||raw?.error||raw||"");
+    const known={
+      OWNER_AUTHORIZATION_REQUIRED:"This signed-in account is not approved for the Chocolate Trail dashboard.",
+      DASHBOARD_AUTHORIZATION_REQUIRED:"This signed-in account is not approved for the Chocolate Trail dashboard.",
+      MANAGER_AUTHORIZATION_REQUIRED:"This account has read-only access and cannot make changes.",
+      PRIMARY_OWNER_AUTHORIZATION_REQUIRED:"Only the primary owner can change team access.",
+      INVALID_LOGIN_CREDENTIALS:"The email or password is incorrect.",
+      INVALID_STOCK_VALUE:"Enter a whole stock number from 0 to 100,000.",
+      INVALID_RESTOCK_VALUE:"Enter a whole positive restock quantity.",
+      PRODUCT_NOT_FOUND:"That product no longer exists.",
+      INVALID_CANCELLATION_REQUEST:"Enter a clear cancellation reason of at least 3 characters.",
+      ORDER_NOT_FOUND:"That order was not found.",
+      ORDER_STATUS_NOT_CANCELLABLE:"Only a RECEIVED order can be cancelled here.",
+      PAID_REWARD_REQUIRES_MANUAL_REVERSAL:"This order has a paid referral reward. Resolve that payment manually before cancelling.",
+      COUPON_USE_STATE_INVALID:"The coupon use count is inconsistent. Stop and inspect it before cancelling.",
+      INVALID_COUPON_DETAILS:"Check the code, percentages, dates and maximum uses.",
+      REFERRER_NAME_REQUIRED:"A referrer name is required when the reward is above 0%.",
+      COUPON_ALREADY_EXISTS:"That coupon code already exists. Edit the existing code instead.",
+      COUPON_NOT_FOUND:"That coupon no longer exists.",
+      COUPON_LIMIT_REACHED:"This coupon has reached its use limit.",
+      TWINBIT_BACKEND_MIGRATION_REQUIRED:"TWINBIT is locked to 10% customer / 0% referrer by the current order server. Change it only through a separate tested backend migration.",
+      CAMPAIGN_WINDOW_REQUIRED:"Add both a start and an end time before activating the campaign.",
+      INVALID_CAMPAIGN_WINDOW:"The campaign needs a start before its end.",
+      CAMPAIGN_PRICES_INCOMPLETE:"Every product needs a campaign price before activation.",
+      CAMPAIGN_PRICE_INVALID:"A campaign price is higher than its regular price.",
+      CAMPAIGN_WINDOW_CONFLICT:"Another active campaign overlaps this time window.",
+      INVALID_TEAM_MEMBER_DETAILS:"Check the staff email, name and access level.",
+      AUTH_USER_NOT_FOUND:"No Supabase Auth user has that email. Create and confirm the account under Authentication → Users first.",
+      AUTH_USER_NOT_CONFIRMED:"That Auth user has not been confirmed yet.",
+      CANNOT_CHANGE_PRIMARY_OWNER:"The primary owner cannot be changed or deactivated from this page.",
+      TEAM_MEMBER_NOT_FOUND:"That team member is no longer in the dashboard allowlist."
+    };
+    return known[key]||key||"The request could not be completed.";
+  };
+  function setSession(value){session=value;if(value)sessionStorage.setItem(SESSION_KEY,JSON.stringify(value));else sessionStorage.removeItem(SESSION_KEY)}
+  function toast(message,failed=false){const el=$("toast");el.textContent=message;el.className="toast"+(failed?" fail":"");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),4300)}
+  function setBusy(value,label="Working…"){busy=value;document.querySelectorAll("button").forEach(btn=>{if(btn.id!=="logoutButton")btn.disabled=value});if(value)toast(label)}
+
+  async function authRequest(path,body,token=""){
+    const response=await fetch(CONFIG.SUPABASE_URL+path,{method:"POST",headers:{"apikey":CONFIG.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json",...(token?{"Authorization":"Bearer "+token}:{})},body:body===null?undefined:JSON.stringify(body)});
+    let data={};try{data=await response.json()}catch(_e){}
+    if(!response.ok)throw new Error(errorText(data));
+    return data;
+  }
+  async function refreshSession(){
+    if(!session?.refresh_token)throw new Error("Your owner session expired. Please sign in again.");
+    const data=await authRequest("/auth/v1/token?grant_type=refresh_token",{refresh_token:session.refresh_token});
+    setSession(data);return data.access_token;
+  }
+  async function rpc(name,payload={},retried=false){
+    if(!session?.access_token)throw new Error("Please sign in.");
+    let response=await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${name}`,{method:"POST",headers:{"apikey":CONFIG.SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+session.access_token,"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload)});
+    if(response.status===401&&!retried){await refreshSession();return rpc(name,payload,true)}
+    let data={};try{data=await response.json()}catch(_e){}
+    if(!response.ok)throw new Error(errorText(data));
+    return data;
+  }
+  async function signOut(){
+    const token=session?.access_token;setSession(null);snapshot=null;accessInfo=null;teamSnapshot=null;
+    if(token){try{await authRequest("/auth/v1/logout",null,token)}catch(_e){}}
+    $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("password").value="";
+  }
+  async function loadSnapshot(showMessage=false){
+    [accessInfo,snapshot]=await Promise.all([rpc("owner_access"),rpc("owner_snapshot")]);
+    teamSnapshot=accessInfo.can_manage_team?await rpc("owner_team_snapshot"):null;
+    renderAll();
+    if(showMessage)toast("Dashboard refreshed.");
+  }
+  async function perform(label,work){
+    if(busy)return;setBusy(true,label);
+    try{const result=await work();await loadSnapshot(false);toast(result?.message||"Saved successfully.")}
+    catch(error){toast(error.message,true)}finally{setBusy(false)}
+  }
+
+  function renderAll(){
+    $("loginView").classList.add("hidden");$("appView").classList.remove("hidden");
+    $("serverTime").textContent=`${accessInfo.access_level} · Live server check: ${dhakaDate(snapshot.server_time)}`;
+    const liveCampaign=(snapshot.campaigns||[]).find(c=>c.is_live_now);
+    const usableCoupons=(snapshot.coupons||[]).filter(c=>c.usable_now).length;
+    const received=(snapshot.orders||[]).filter(o=>o.order_status==="RECEIVED").length;
+    $("statusGrid").innerHTML=`
+      <div class="metric"><span>Ordering</span><strong class="${snapshot.ordering_enabled?'good':'bad'}">${snapshot.ordering_enabled?'OPEN':'PAUSED'}</strong></div>
+      <div class="metric"><span>Available units</span><strong>${esc(snapshot.total_stock)}</strong></div>
+      <div class="metric"><span>Campaign now</span><strong class="${liveCampaign?'good':'warn'}">${liveCampaign?esc(liveCampaign.public_title):'None'}</strong></div>
+      <div class="metric"><span>Usable coupons / received orders</span><strong>${usableCoupons} / ${received}</strong></div>
+      <div class="metric"><span>Your access</span><strong class="${accessInfo.access_level==='VIEWER'?'warn':'good'}">${esc(accessInfo.access_level)}</strong></div>`;
+    const pill=$("orderingPill");pill.textContent=snapshot.ordering_enabled?"OPEN":"PAUSED";pill.className="pill "+(snapshot.ordering_enabled?"on":"off");
+    $("orderingActions").innerHTML=accessInfo.can_manage_operations?'<button id="orderingButton" class="btn '+(snapshot.ordering_enabled?'danger':'safe')+'" type="button">'+(snapshot.ordering_enabled?'Pause new orders':'Resume new orders')+'</button>':'<span class="pill gold">READ-ONLY — no changes permitted</span>';
+    if(accessInfo.can_manage_operations)$("orderingButton").addEventListener("click",toggleOrdering);
+    $("teamTab").classList.toggle("hidden",!accessInfo.can_manage_team);
+    $("couponFormPanel").classList.toggle("hidden",!accessInfo.can_manage_operations);
+    renderStock();renderOrders();renderCampaigns();renderCoupons();renderLedger();renderAudit();renderTeam();
+  }
+  function renderStock(){
+    const canManage=accessInfo.can_manage_operations;
+    const rows=(snapshot.products||[]).map(p=>`<tr>
+      <td><strong>${esc(p.name)}</strong><br><span class="muted">${esc(p.weight)}</span></td><td><strong>${p.stock}</strong></td><td><span class="pill ${p.stock_confirmed?'on':'off'}">${p.stock_confirmed?'Confirmed':'Unconfirmed'}</span></td>
+      <td>${canManage?`<input class="input number" id="stock-${esc(p.product_id)}" type="number" min="0" max="100000" step="1" aria-label="Quantity for ${esc(p.name)}">`:'—'}</td>
+      <td>${canManage?`<div class="actions"><button class="btn small safe" data-action="add-stock" data-id="${esc(p.product_id)}">Add</button><button class="btn small" data-action="set-stock" data-id="${esc(p.product_id)}">Set exact</button><button class="btn small danger" data-action="sold-out" data-id="${esc(p.product_id)}">Sold out</button></div>`:'<span class="pill gold">Read only</span>'}</td></tr>`).join("");
+    $("stockTable").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Product</th><th>Current</th><th>Physical check</th><th>Quantity</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  function renderOrders(){
+    const orders=snapshot.orders||[];
+    if(!orders.length){$("ordersList").innerHTML='<div class="empty">No Supabase orders have been received yet.</div>';return}
+    $("ordersList").innerHTML='<div class="cards">'+orders.map(o=>`<article class="card">
+      <div class="actions" style="justify-content:space-between"><h3>${esc(o.order_id)}</h3><span class="pill ${o.order_status==='RECEIVED'?'on':'off'}">${esc(o.order_status)}</span></div>
+      <p>${dhakaDate(o.created_at)} · ${esc(o.customer_name)} · ${esc(o.phone)}</p><p>${esc(o.address)}</p>
+      <ul class="items">${(o.items||[]).map(i=>`<li>${esc(i.name)} ${esc(i.weight)} × ${i.quantity}</li>`).join("")}</ul>
+      <div class="price">Final payable ${money(o.final_payable)}</div><p>${o.coupon_code?'Coupon '+esc(o.coupon_code):'No coupon'}${o.campaign_title?' · '+esc(o.campaign_title):''}</p>
+      ${o.order_status==='RECEIVED'&&accessInfo.can_manage_operations?`<button class="btn danger small" data-action="cancel-order" data-id="${esc(o.order_id)}">Cancel safely</button>`:o.order_status==='CANCELLED'?`<p class="bad">Cancelled: ${esc(o.cancellation_reason||'No reason saved')}</p>`:'<span class="pill gold">Read only</span>'}
+    </article>`).join("")+'</div>';
+  }
+  function renderCampaigns(){
+    const campaigns=snapshot.campaigns||[];
+    $("campaignList").innerHTML=campaigns.length?campaigns.map(c=>`<article class="card" style="margin-bottom:12px"><div class="actions" style="justify-content:space-between"><h3>${esc(c.public_title)}</h3><span class="pill ${c.is_live_now?'on':c.active?'gold':'off'}">${c.is_live_now?'LIVE NOW':c.active?'SCHEDULED':'PAUSED'}</span></div>
+      <div class="form-grid"><div><label>Starts (Dhaka time)</label><input class="input" id="campaign-start-${esc(c.campaign_id)}" type="datetime-local" value="${dhakaInput(c.starts_at)}" ${accessInfo.can_manage_operations?'':'disabled'}></div><div><label>Ends (Dhaka time)</label><input class="input" id="campaign-end-${esc(c.campaign_id)}" type="datetime-local" value="${dhakaInput(c.ends_at)}" ${accessInfo.can_manage_operations?'':'disabled'}></div></div>
+      <p>Threshold ${money(c.regular_subtotal_threshold)} · Coupon ${esc(c.permitted_coupon_code||'none')}</p>${accessInfo.can_manage_operations?`<div class="actions"><button class="btn primary" data-action="save-campaign" data-id="${esc(c.campaign_id)}" data-active="${c.active}">Save schedule as ${c.active?'active':'paused'}</button>${c.active?`<button class="btn danger" data-action="pause-campaign" data-id="${esc(c.campaign_id)}">Pause campaign</button>`:`<button class="btn safe" data-action="activate-campaign" data-id="${esc(c.campaign_id)}">Activate with these times</button>`}</div>`:'<span class="pill gold">Read only</span>'}</article>`).join(""):'<div class="empty">No campaigns exist.</div>';
+  }
+  function renderCoupons(){
+    const rows=(snapshot.coupons||[]).map(c=>`<tr><td><strong>${esc(c.coupon_code)}</strong><br><span class="muted">${esc(c.referrer_display_name||'Discount only')}</span></td><td>${c.customer_discount_percent}% / ${c.referrer_reward_percent}%</td><td>${c.uses} / ${c.max_uses}</td><td>${c.valid_from?dhakaDate(c.valid_from)+' → '+dhakaDate(c.valid_until):'Permanent'}</td><td><span class="pill ${c.usable_now?'on':c.active?'gold':'off'}">${c.usable_now?'USABLE':c.active?'SCHEDULED':'PAUSED'}</span></td><td>${accessInfo.can_manage_operations?`<div class="actions">${c.coupon_code==='TWINBIT'?'':`<button class="btn small" data-action="edit-coupon" data-id="${esc(c.coupon_code)}">Edit</button>`}<button class="btn small ${c.active?'danger':'safe'}" data-action="toggle-coupon" data-id="${esc(c.coupon_code)}" data-active="${c.active}">${c.active?'Pause':'Activate'}</button></div>`:'<span class="pill gold">Read only</span>'}</td></tr>`).join("");
+    $("couponTable").innerHTML=rows?`<div class="table-wrap"><table><thead><tr><th>Code / referrer</th><th>Customer / referrer</th><th>Uses</th><th>Window</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">No coupons exist.</div>';
+  }
+  function renderLedger(){
+    const rows=(snapshot.referral_ledger||[]).map(x=>`<tr><td>${esc(x.order_id)}</td><td>${esc(x.coupon_code)}</td><td>${esc(x.referrer_name)}</td><td>${money(x.reward_amount)}</td><td>${esc(x.reward_status)}</td></tr>`).join("");
+    $("ledgerTable").innerHTML=rows?`<div class="table-wrap"><table><thead><tr><th>Order</th><th>Code</th><th>Referrer</th><th>Reward</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">No referral rewards have been created.</div>';
+  }
+  function renderAudit(){
+    const rows=(snapshot.recent_actions||[]).map(a=>`<tr><td>${dhakaDate(a.created_at)}</td><td>${esc(a.action)}</td><td>${esc(a.target_type)}: ${esc(a.target_id)}</td><td>${esc(a.note)}</td></tr>`).join("");
+    $("auditTable").innerHTML=rows?`<div class="table-wrap"><table><thead><tr><th>Time</th><th>Action</th><th>Target</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">No owner actions have been recorded.</div>';
+  }
+  function renderTeam(){
+    if(!accessInfo.can_manage_team){$("teamTable").innerHTML="";return}
+    const members=teamSnapshot?.members||[];
+    const rows=members.map(member=>`<tr>
+      <td><strong>${esc(member.email)}</strong><br><span class="muted">Last sign-in: ${member.last_sign_in_at?dhakaDate(member.last_sign_in_at):'Never'}</span></td>
+      <td>${member.access_level==='OWNER'?`<strong>${esc(member.label)}</strong>`:`<input class="input" id="team-label-${esc(member.user_id)}" maxlength="120" value="${esc(member.label)}">`}</td>
+      <td>${member.access_level==='OWNER'?'<span class="pill on">PRIMARY OWNER</span>':`<select id="team-role-${esc(member.user_id)}"><option value="MANAGER" ${member.access_level==='MANAGER'?'selected':''}>Manager</option><option value="VIEWER" ${member.access_level==='VIEWER'?'selected':''}>Read-only</option></select>`}</td>
+      <td><span class="pill ${member.active?'on':'off'}">${member.active?'ACTIVE':'REMOVED'}</span></td>
+      <td>${member.access_level==='OWNER'?'<span class="muted">Protected</span>':`<div class="actions"><button class="btn small" data-action="save-team" data-id="${esc(member.user_id)}" data-active="${member.active}">Save role</button><button class="btn small ${member.active?'danger':'safe'}" data-action="toggle-team" data-id="${esc(member.user_id)}" data-active="${member.active}">${member.active?'Remove access':'Restore access'}</button></div>`}</td>
+    </tr>`).join("");
+    $("teamTable").innerHTML=rows?`<div class="table-wrap"><table><thead><tr><th>Auth account</th><th>Name / responsibility</th><th>Role</th><th>Status</th><th>Owner action</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">No approved dashboard accounts.</div>';
+  }
+
+  function resetCouponForm(){
+    $("couponForm").reset();$("couponMode").value="create";$("couponCode").readOnly=false;$("maxUses").value="100";$("couponFormTitle").textContent="Create a coupon or referral code";$("cancelCouponEdit").classList.add("hidden");togglePermanent();
+  }
+  function editCoupon(code){
+    const c=(snapshot.coupons||[]).find(x=>x.coupon_code===code);if(!c)return;
+    $("couponMode").value="update";$("couponCode").value=c.coupon_code;$("couponCode").readOnly=true;$("referrerName").value=c.referrer_display_name||"";$("customerPercent").value=c.customer_discount_percent;$("rewardPercent").value=c.referrer_reward_percent;$("maxUses").value=c.max_uses;$("contactNote").value=c.private_contact_note||"";$("couponNotes").value=c.owner_notes||"";$("couponPermanent").checked=!c.valid_from;$("couponStart").value=dhakaInput(c.valid_from);$("couponEnd").value=dhakaInput(c.valid_until);$("couponFormTitle").textContent="Edit "+c.coupon_code;$("cancelCouponEdit").classList.remove("hidden");togglePermanent();$("couponForm").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function togglePermanent(){const permanent=$("couponPermanent").checked;document.querySelectorAll(".coupon-time").forEach(el=>{el.disabled=permanent;if(permanent)el.value=""})}
+  function toggleOrdering(){
+    const next=!snapshot.ordering_enabled;
+    if(confirm(next?"Resume new customer orders now?":"Pause new customer orders now? Existing orders stay unchanged."))perform(next?"Resuming orders…":"Pausing orders…",()=>rpc("owner_set_ordering",{p_enabled:next}));
+  }
+
+  document.addEventListener("click",event=>{
+    const tab=event.target.closest("[data-tab]");if(tab){document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===tab));document.querySelectorAll(".tab-page").forEach(x=>x.classList.toggle("hidden",x.dataset.page!==tab.dataset.tab));return}
+    const button=event.target.closest("[data-action]");if(!button||busy)return;
+    const id=button.dataset.id;const action=button.dataset.action;
+    if(action==="add-stock"||action==="set-stock"){
+      const input=$("stock-"+id);const quantity=Number(input.value);if(!Number.isInteger(quantity)||(action==="add-stock"?quantity<1:quantity<0)){toast("Enter a valid whole quantity first.",true);return}
+      const wording=action==="add-stock"?`Add ${quantity} unit(s) to this product?`:`Replace the stock with exactly ${quantity}?`;
+      if(!confirm(wording))return;
+      perform("Saving stock…",()=>rpc(action==="add-stock"?"owner_add_stock":"owner_set_stock",action==="add-stock"?{p_product_id:id,p_quantity:quantity,p_stock_confirmed:true}:{p_product_id:id,p_new_stock:quantity,p_stock_confirmed:true}));
+    }else if(action==="sold-out"){
+      if(confirm("Mark only this product as sold out (stock 0)?"))perform("Marking sold out…",()=>rpc("owner_set_stock",{p_product_id:id,p_new_stock:0,p_stock_confirmed:true}));
+    }else if(action==="cancel-order"){
+      const reason=prompt("Why is this order being cancelled? This will restore its stock once.","");if(reason===null)return;
+      if(confirm("Final check: cancel this order, restore all of its stock and reverse one coupon use?"))perform("Cancelling safely…",()=>rpc("owner_cancel_order",{p_order_id:id,p_reason:reason.trim()}));
+    }else if(action==="toggle-coupon"){
+      const active=button.dataset.active==="true";if(confirm(`${active?'Pause':'Activate'} coupon ${id}?`))perform("Saving coupon status…",()=>rpc("owner_set_coupon_active",{p_coupon_code:id,p_active:!active}));
+    }else if(action==="edit-coupon"){editCoupon(id)
+    }else if(action==="save-team"||action==="toggle-team"){
+      const role=$("team-role-"+id).value,label=$("team-label-"+id).value.trim();
+      const current=button.dataset.active==="true";
+      const active=action==="toggle-team"?!current:current;
+      const question=action==="toggle-team"?(active?"Restore this person's dashboard access?":"Remove this person's dashboard access immediately?"):"Save this person's role and label?";
+      if(confirm(question))perform("Saving team access…",()=>rpc("owner_set_team_member_access",{p_user_id:id,p_access_level:role,p_active:active,p_label:label}));
+    }else if(["save-campaign","pause-campaign","activate-campaign"].includes(action)){
+      const start=$("campaign-start-"+id).value,end=$("campaign-end-"+id).value;
+      const active=action==="pause-campaign"?false:action==="activate-campaign"?true:button.dataset.active==="true";
+      if(active&&!confirm("Activate this campaign for the shown Dhaka-time window?"))return;
+      if(!active&&!confirm("Save this campaign as paused?"))return;
+      perform("Saving campaign…",()=>rpc("owner_schedule_campaign",{p_campaign_id:id,p_active:active,p_starts_at:dhakaIso(start),p_ends_at:dhakaIso(end)}));
+    }
+  });
+  $("couponPermanent").addEventListener("change",togglePermanent);
+  $("cancelCouponEdit").addEventListener("click",resetCouponForm);
+  $("couponForm").addEventListener("submit",event=>{
+    event.preventDefault();
+    const permanent=$("couponPermanent").checked,start=$("couponStart").value,end=$("couponEnd").value;
+    if(!permanent&&(!start||!end)){toast("Choose both coupon times or select No expiry.",true);return}
+    const payload={p_coupon_code:$("couponCode").value,p_referrer_display_name:$("referrerName").value,p_private_contact_note:$("contactNote").value,p_customer_discount_percent:Number($("customerPercent").value),p_referrer_reward_percent:Number($("rewardPercent").value),p_valid_from:permanent?null:dhakaIso(start),p_valid_until:permanent?null:dhakaIso(end),p_max_uses:Number($("maxUses").value),p_owner_notes:$("couponNotes").value};
+    const mode=$("couponMode").value;if(!confirm(mode==="create"?"Create this code paused?":"Save these changes and pause the code automatically?"))return;
+    perform("Saving coupon…",async()=>{const result=await rpc(mode==="create"?"owner_create_coupon":"owner_update_coupon",payload);resetCouponForm();return result});
+  });
+  $("teamForm").addEventListener("submit",event=>{
+    event.preventDefault();
+    const email=$("teamEmail").value.trim(),role=$("teamRole").value,label=$("teamLabel").value.trim();
+    if(!confirm(`Grant ${role==='MANAGER'?'manager':'read-only'} dashboard access to ${email}?`))return;
+    perform("Granting dashboard access…",async()=>{const result=await rpc("owner_assign_team_member",{p_email:email,p_access_level:role,p_label:label});$("teamForm").reset();return result});
+  });
+  $("loginForm").addEventListener("submit",async event=>{
+    event.preventDefault();$("loginError").textContent="";const button=$("loginButton");button.disabled=true;button.innerHTML='<span class="spinner"></span>Signing in';
+    try{const data=await authRequest("/auth/v1/token?grant_type=password",{email:$("email").value.trim(),password:$("password").value});setSession(data);$("password").value="";await loadSnapshot(false)}catch(error){setSession(null);$("loginError").textContent=error.message}finally{button.disabled=false;button.textContent="Sign in securely"}
+  });
+  $("refreshButton").addEventListener("click",()=>perform("Refreshing…",async()=>({message:"Dashboard refreshed."})));
+  $("logoutButton").addEventListener("click",signOut);
+
+  (async function start(){
+    try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null")}catch(_e){setSession(null)}
+    if(session){try{await loadSnapshot(false)}catch(_e){setSession(null)}}
+  })();
+  </script>
+</body>
+</html>
