@@ -1071,6 +1071,44 @@ body.corporate-open .corporate-screen,.corporate-screen:target{ display:block; }
 .corporate-email-fallback a{ color:var(--gold-2); }
 footer .footer-corporate{ display:inline-block; margin:11px 0 8px; color:var(--gold-2); font-weight:800; text-decoration:none; }
 
+/* ---------------------- referral-partner invitation ---------------------- */
+.referral-partner-card{
+  margin:34px 0 0; padding:clamp(20px,4vw,32px); border:1px solid rgba(242,207,131,.34);
+  border-radius:24px; background:linear-gradient(145deg,rgba(73,35,39,.82),rgba(28,14,19,.96));
+  box-shadow:0 18px 48px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.035);
+}
+.referral-partner-card .partner-kicker{ margin:0 0 7px; color:var(--gold-2); font-size:10px; font-weight:850; letter-spacing:1.5px; text-transform:uppercase; }
+.referral-partner-card h2{ margin:0; font:600 clamp(23px,4vw,32px)/1.2 Georgia,Cambria,"Times New Roman",serif; }
+.referral-partner-card>p{ margin:10px 0 0; max-width:70ch; color:var(--cream-2); font-size:13px; line-height:1.65; }
+.partner-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.partner-actions a,.partner-application summary{
+  display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 16px;
+  border:1px solid rgba(242,207,131,.5); border-radius:999px; color:var(--gold-2);
+  background:rgba(24,12,16,.6); font-size:12px; font-weight:850; text-decoration:none; cursor:pointer;
+}
+.partner-application{ margin-top:18px; }
+.partner-application summary{ width:max-content; list-style:none; }
+.partner-application summary::-webkit-details-marker{ display:none; }
+.partner-application[open] summary{ background:var(--gold); color:#28130f; }
+.partner-form{ display:grid; gap:14px; margin-top:18px; padding-top:18px; border-top:1px solid rgba(242,207,131,.18); }
+.partner-form-grid{ display:grid; gap:14px; }
+.partner-field label,.partner-delivery legend{ display:block; margin-bottom:6px; color:var(--cream-2); font-size:11px; font-weight:850; letter-spacing:.6px; text-transform:uppercase; }
+.partner-field input,.partner-field textarea{
+  width:100%; border:1px solid rgba(242,207,131,.22); border-radius:13px; background:rgba(24,12,18,.8);
+  color:var(--cream); padding:12px 13px; font:inherit; font-size:14px;
+}
+.partner-field textarea{ min-height:92px; resize:vertical; }
+.partner-field input:focus,.partner-field textarea:focus{ outline:3px solid rgba(242,207,131,.2); border-color:var(--gold); }
+.partner-delivery{ margin:0; padding:14px; border:1px solid rgba(242,207,131,.18); border-radius:14px; }
+.partner-check{ display:flex; gap:10px; align-items:flex-start; color:var(--cream-2); font-size:13px; line-height:1.5; }
+.partner-check input{ width:19px; height:19px; margin:1px 0 0; accent-color:var(--gold); }
+.partner-submit{ width:auto; justify-self:start; min-height:46px; margin:0; padding:10px 20px; }
+.partner-result{ margin:0; padding:13px 14px; border:1px solid rgba(242,207,131,.24); border-radius:13px; color:var(--cream-2); font-size:13px; line-height:1.55; }
+.partner-result.success{ border-color:rgba(143,210,154,.5); color:var(--ok); }
+.partner-result.error{ border-color:rgba(223,149,136,.5); color:var(--gone); }
+.partner-small{ margin:0; color:var(--cream-3); font-size:11px; line-height:1.55; }
+@media(min-width:700px){ .partner-form-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } .partner-field.full,.partner-delivery{ grid-column:1/-1; } }
+
 @media(min-width:700px){
   .corporate-teaser{ grid-template-columns:minmax(0,.92fr) minmax(310px,1.08fr); align-items:center; gap:clamp(24px,4vw,44px); }
   .concept-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
@@ -1319,6 +1357,39 @@ footer .footer-corporate{ display:inline-block; margin:11px 0 8px; color:var(--g
         <p class="future-disclosure">Development preview only — its current products, prices, payments and delivery information are not Chocolate Trail's present offer. No launch date is promised.</p>
       </div>
     </div>
+  </aside>
+
+  <aside class="referral-partner-card" aria-labelledby="referralPartnerTitle">
+    <p class="partner-kicker">Share the trail</p>
+    <h2 id="referralPartnerTitle">Become a Chocolate Trail referral partner</h2>
+    <p>Recommend chocolates through your own code, choose how an approved benefit pool is shared,
+       and follow your results from a private dashboard. Applications are reviewed by our team.</p>
+    <div class="partner-actions">
+      <a href="admin.html">Referral partner dashboard</a>
+    </div>
+    <details class="partner-application" id="referralApplication">
+      <summary>Apply as a referral partner</summary>
+      <form class="partner-form" id="referralApplicationForm" novalidate>
+        <div class="partner-form-grid">
+          <div class="partner-field"><label for="referralName">Your name</label><input id="referralName" name="name" maxlength="120" autocomplete="name" required></div>
+          <div class="partner-field"><label for="referralEmail">Email</label><input id="referralEmail" name="email" type="email" maxlength="254" autocomplete="email" required></div>
+          <div class="partner-field"><label for="referralPhone">Phone</label><input id="referralPhone" name="phone" type="tel" maxlength="25" autocomplete="tel" placeholder="017… or +880…" required></div>
+          <div class="partner-field"><label for="referralArea">Your area</label><input id="referralArea" name="area" maxlength="200" autocomplete="address-level2" required></div>
+          <div class="partner-field full"><label for="referralHeard">How did you hear about Chocolate Trail?</label><textarea id="referralHeard" name="heard_about" maxlength="500" required></textarea></div>
+          <div class="partner-field full"><label for="referralBy">Who referred you? (optional)</label><input id="referralBy" name="referred_by" maxlength="254" placeholder="Name or email"></div>
+          <fieldset class="partner-delivery">
+            <legend>Optional local delivery role</legend>
+            <label class="partner-check"><input id="referralDeliveryWilling" name="delivery_willing" type="checkbox"><span>I may deliver orders placed with my code in approved nearby areas.</span></label>
+            <div class="partner-field" id="referralDeliveryAreasWrap" hidden><label for="referralDeliveryAreas">Areas you can cover</label><input id="referralDeliveryAreas" name="delivery_areas" maxlength="500" placeholder="Example: Mirpur DOHS and nearby"></div>
+          </fieldset>
+          <div class="partner-field full"><label for="referralNote">Anything else? (optional)</label><textarea id="referralNote" name="note" maxlength="1000"></textarea></div>
+          <div class="corporate-hp" aria-hidden="true"><label for="referralWebsite">Website</label><input id="referralWebsite" name="website" tabindex="-1" autocomplete="off"></div>
+        </div>
+        <button class="btn-order partner-submit" id="referralSubmit" type="submit">Send application</button>
+        <p class="partner-small">Submitting does not create an account or activate a coupon. If approved, Chocolate Trail will send a secure invitation.</p>
+        <p class="partner-result" id="referralResult" role="status" aria-live="polite" hidden></p>
+      </form>
+    </details>
   </aside>
 
   <footer>
@@ -1819,6 +1890,9 @@ const CONFIG = {
   // Optional public business email. Leave blank to hide the email fallback.
   BUSINESS_EMAIL: "",
 
+  // Public referral applications are independent of catalog and order loading.
+  REFERRAL_APPLICATION_TIMEOUT_MS: 15000,
+
   CORPORATE_TIMEOUT_MS: 12000,
 
   // Last-resort wait for each same-token order confirmation attempt.
@@ -2232,6 +2306,75 @@ function supabaseRpcUrl(functionName){
 function supabaseRequestHeaders(){
   const key = supabasePublishableKey();
   return {"Content-Type":"application/json","apikey":key,"Authorization":"Bearer " + key};
+}
+
+async function submitReferralApplication(payload){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(),CONFIG.REFERRAL_APPLICATION_TIMEOUT_MS);
+  try{
+    const response = await fetch(supabaseRpcUrl("submit_referrer_application"),{
+      method:"POST",headers:supabaseRequestHeaders(),body:JSON.stringify({p_request:payload}),signal:controller.signal
+    });
+    if(!response.ok) throw new Error("APPLICATION_UNAVAILABLE");
+    const value = await response.json();
+    if(!value || typeof value!=="object") throw new Error("APPLICATION_UNAVAILABLE");
+    return value;
+  } finally { clearTimeout(timer); }
+}
+
+function initializeReferralApplication(){
+  const form=$("referralApplicationForm");
+  const willing=$("referralDeliveryWilling");
+  const areasWrap=$("referralDeliveryAreasWrap");
+  const areas=$("referralDeliveryAreas");
+  const result=$("referralResult");
+  const submit=$("referralSubmit");
+  if(!form||!willing||!areasWrap||!areas||!result||!submit) return;
+
+  const syncDelivery=()=>{
+    areasWrap.hidden=!willing.checked;
+    areas.required=willing.checked;
+    if(!willing.checked) areas.value="";
+  };
+  willing.addEventListener("change",syncDelivery);
+  syncDelivery();
+
+  form.addEventListener("submit",async event=>{
+    event.preventDefault();
+    result.hidden=true;result.className="partner-result";
+    if(!form.reportValidity()) return;
+    const data=new FormData(form);
+    const payload={
+      action:"referrer_application",
+      name:String(data.get("name")||"").trim(),
+      email:String(data.get("email")||"").trim(),
+      phone:String(data.get("phone")||"").trim(),
+      area:String(data.get("area")||"").trim(),
+      heard_about:String(data.get("heard_about")||"").trim(),
+      referred_by:String(data.get("referred_by")||"").trim(),
+      delivery_willing:willing.checked,
+      delivery_areas:String(data.get("delivery_areas")||"").trim(),
+      note:String(data.get("note")||"").trim(),
+      website:String(data.get("website")||"")
+    };
+    submit.disabled=true;submit.textContent="Sending…";
+    try{
+      const response=await submitReferralApplication(payload);
+      if(!response.ok) throw new Error(response.error||"APPLICATION_UNAVAILABLE");
+      result.className="partner-result success";
+      result.textContent=response.application_id
+        ? `${response.message} Reference: ${response.application_id}`
+        : response.message;
+      result.hidden=false;
+      form.reset();syncDelivery();
+    }catch(error){
+      result.className="partner-result error";
+      result.textContent=error&&error.name==="AbortError"
+        ? "The application took too long to send. Please try once more."
+        : "The application could not be sent right now. Please contact Chocolate Trail.";
+      result.hidden=false;
+    }finally{ submit.disabled=false;submit.textContent="Send application"; }
+  });
 }
 
 function catalogRequestUrl(){ return supabaseRpcUrl("public_catalog"); }
@@ -3702,6 +3845,7 @@ if (CONFIG.SUPABASE_URL === "SUPABASE_URL" ||
 }
 refresh();
 ctInitializeHistory();
+initializeReferralApplication();
 bootPublicData(prefilledCoupon);
 </script>
 </body>
