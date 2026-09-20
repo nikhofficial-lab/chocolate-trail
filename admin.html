@@ -62,6 +62,7 @@
         <button class="tab active operations-tab" data-tab="overview" type="button">Overview</button>
         <button class="tab operations-tab" data-tab="stock" type="button">Stock</button>
         <button class="tab operations-tab" data-tab="orders" type="button">Orders</button>
+        <button class="tab operations-tab" data-tab="wishlist" type="button">Wishlist</button>
         <button class="tab hidden" id="wholesaleTab" data-tab="wholesale" type="button">General store orders</button>
         <button class="tab operations-tab" data-tab="campaigns" type="button">Campaigns</button>
         <button class="tab operations-tab" data-tab="coupons" type="button">Coupons</button>
@@ -91,6 +92,10 @@
 
       <section class="tab-page hidden" data-page="orders">
         <div class="panel danger-zone"><div class="panel-head"><div><h2>Recent orders</h2><p>Cancellation restores every line item and reverses one coupon use atomically. A paid referral reward must be manually resolved first.</p></div></div><div id="ordersList"></div></div>
+      </section>
+
+      <section class="tab-page hidden" data-page="wishlist">
+        <div class="panel"><div class="panel-head"><div><h2>Requested products</h2><p>Customers request one product at a time. Review the link and weight, then email the expected price before marking Price sent.</p></div></div><div id="wishlistList"></div></div>
       </section>
 
       <section class="tab-page hidden" data-page="wholesale">
@@ -187,7 +192,21 @@
             <div class="actions span2"><button class="btn primary" type="submit">Save my profile</button></div>
           </form>
         </div>
-        <div class="panel"><div class="panel-head"><div><h2>My codes</h2><p>You may pause/reactivate, rename, or redistribute your fixed benefit pool. Customer discount must stay at least 1%.</p></div></div><div id="myCouponsList"></div></div>
+        <div class="panel" id="myCouponFormPanel"><div class="panel-head"><div><h2 id="myCouponFormTitle">Create my coupon</h2><p>Create more than one code when useful. New codes start active and can be paused whenever you choose.</p></div></div>
+          <form id="myCouponForm" class="form-grid">
+            <input id="myCouponMode" type="hidden" value="create">
+            <div><label for="myCouponCode">Coupon code</label><input class="input code" id="myCouponCode" maxlength="32" placeholder="MY-CODE" required></div>
+            <div><label for="myCouponMaxUses">Maximum uses</label><input class="input" id="myCouponMaxUses" type="number" min="1" max="1000000" step="1" value="100" required></div>
+            <div><label for="myCustomerPercent">Customer discount % (minimum 1)</label><input class="input" id="myCustomerPercent" type="number" min="1" max="20" step="0.01" value="12" required></div>
+            <div><label for="myRewardPercent">My reward %</label><input class="input" id="myRewardPercent" type="number" min="0" max="19" step="0.01" value="0" required></div>
+            <div><label for="myCouponStart">Starts (Dhaka time)</label><input class="input my-coupon-time" id="myCouponStart" type="datetime-local"></div>
+            <div><label for="myCouponEnd">Ends (Dhaka time)</label><input class="input my-coupon-time" id="myCouponEnd" type="datetime-local"></div>
+            <label class="check span2"><input id="myCouponPermanent" type="checkbox" checked> No expiry — keep this code permanent</label>
+            <div class="notice span2" id="myCouponLimitText">Your combined customer discount and reward may total up to 12%. The customer share must be at least 1%; your reward may be 0%.</div>
+            <div class="actions span2"><button class="btn primary" type="submit">Save my coupon</button><button class="btn hidden" id="cancelMyCouponEdit" type="button">Cancel edit</button></div>
+          </form>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h2>My codes</h2><p>Edit details, rename, pause or reactivate any code assigned to you. Historical orders keep their recorded code and reward.</p></div></div><div id="myCouponsList"></div></div>
       </section>
 
       <section class="tab-page hidden" data-page="my-delivery">
@@ -220,6 +239,7 @@
             <article class="card"><h3>🎉 Campaigns</h3><p>Create or edit the full draft, save it paused, review every price, then activate the schedule. Pausing never changes orders.</p></article>
             <article class="card"><h3>🎟️ Coupons</h3><p>Total pool is customer discount plus reward, never above 20%. Editing pauses the code. Renaming invalidates the old code immediately.</p></article>
             <article class="card"><h3>🤝 Partners</h3><p>Review the application, approve, assign a coupon, choose delivery access, then send the secure invitation.</p></article>
+            <article class="card"><h3>⭐ Wishlist</h3><p>Review the requested product, link, unit weight and quantity. Email the expected price, record a private note, then mark Price sent.</p></article>
           </div>
           <div class="notice guard"><strong>Never change:</strong> project URL, publishable key, database policies, secret/service-role keys, order rows, or technical IDs. Use only the buttons and forms in this page.</div>
         </div>
@@ -245,6 +265,7 @@
   let wholesaleSnapshot=null;
   let referralSupervisorSnapshot=null;
   let referrerSnapshot=null;
+  let wishlistSnapshot=null;
   let busy=false;
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[ch]);
@@ -279,10 +300,14 @@
       COUPON_LIMIT_REACHED:"This coupon has reached its use limit.",
       COUPON_EXPIRED:"This coupon has expired. Edit its dates before activation.",
       COUPON_ADMINISTRATIVELY_LOCKED:"This coupon is locked for manager review.",
-      SPLIT_MUST_EQUAL_FIXED_POOL:"Customer discount plus reward must exactly equal this code's fixed benefit pool.",
+      SPLIT_MUST_EQUAL_FIXED_POOL:"Check the customer discount and reward percentages.",
       RENAME_TWINBIT_BEFORE_CHANGING_SPLIT:"Rename TWINBIT first. Its existing special rule is preserved for historical compatibility.",
       OWNER_APPROVAL_REQUIRED_ABOVE_15_PERCENT:"A manager cannot assign a benefit pool above 15% to their own referral profile. Ask the owner.",
       REFERRER_AUTHORIZATION_REQUIRED:"This action is not allowed for your referral profile.",
+      COUPON_NOT_ASSIGNED_TO_YOU:"This coupon is not currently assigned to your referral profile.",
+      INVALID_SELF_SERVICE_COUPON:"Check the code, percentages, dates and maximum uses. Your combined percentage must stay within your approved limit.",
+      INVALID_REFERRER_COUPON_LIMIT:"Enter a referral coupon limit from 1% through 20%.",
+      COUPON_LIMIT_BELOW_EXISTING_POOL:"Lower the partner's existing coupon percentages first, then lower their limit.",
       REFERRAL_MANAGER_AUTHORIZATION_REQUIRED:"Only an owner or manager can use this referral-management action.",
       INVALID_NEW_COUPON_CODE:"Use 3–32 uppercase letters, numbers or single hyphens for the new code.",
       INVALID_COUPON_ASSIGNMENT:"Choose a current coupon and referral partner.",
@@ -322,7 +347,9 @@
       WHOLESALE_ORDER_CANCELLED:"That general-store order is already cancelled.",
       WHOLESALE_PAYMENT_MUST_BE_RESET_BEFORE_CANCELLATION:"Record the paid amount as ৳0 only after any refund is resolved, then cancel the order.",
       INVALID_WHOLESALE_CANCELLATION:"Enter a clear cancellation reason and choose the correct stock action.",
-      WHOLESALE_ITEMS_MISSING:"This general-store order has no item lines. Stop and inspect it."
+      WHOLESALE_ITEMS_MISSING:"This general-store order has no item lines. Stop and inspect it.",
+      INVALID_WISHLIST_UPDATE:"Choose a valid wishlist status and keep the private note within 1,000 characters.",
+      WISHLIST_REQUEST_NOT_FOUND:"That wishlist request no longer exists. Refresh the dashboard."
     };
     return known[key]||key||"The request could not be completed.";
   };
@@ -358,7 +385,7 @@
     return data;
   }
   async function signOut(){
-    const token=session?.access_token;setSession(null);snapshot=null;accessInfo=null;teamSnapshot=null;wholesaleSnapshot=null;referralSupervisorSnapshot=null;referrerSnapshot=null;
+    const token=session?.access_token;setSession(null);snapshot=null;accessInfo=null;teamSnapshot=null;wholesaleSnapshot=null;referralSupervisorSnapshot=null;referrerSnapshot=null;wishlistSnapshot=null;
     if(token){try{await authRequest("/auth/v1/logout",null,token)}catch(_e){}}
     $("appView").classList.add("hidden");$("passwordView").classList.add("hidden");$("loginView").classList.remove("hidden");$("password").value="";
   }
@@ -383,7 +410,8 @@
     jobs.push(accessInfo.can_manage_wholesale?rpc("owner_wholesale_snapshot"):Promise.resolve(null));
     jobs.push(accessInfo.can_manage_referrals?rpc("referral_supervisor_snapshot"):Promise.resolve(null));
     jobs.push(accessInfo.is_referrer?rpc("referrer_snapshot"):Promise.resolve(null));
-    [snapshot,teamSnapshot,wholesaleSnapshot,referralSupervisorSnapshot,referrerSnapshot]=await Promise.all(jobs);
+    jobs.push(accessInfo.can_view_operations?rpc("wishlist_supervisor_snapshot"):Promise.resolve(null));
+    [snapshot,teamSnapshot,wholesaleSnapshot,referralSupervisorSnapshot,referrerSnapshot,wishlistSnapshot]=await Promise.all(jobs);
     renderAll();
     if(showMessage)toast("Dashboard refreshed.");
   }
@@ -418,7 +446,7 @@
     $("myDeliveryTab").classList.toggle("hidden",!accessInfo.is_referrer);
     $("couponFormPanel").classList.toggle("hidden",!accessInfo.can_manage_operations);
     $("campaignFormPanel").classList.toggle("hidden",!accessInfo.can_manage_operations);
-    renderStock();renderOrders();renderWholesale();renderCampaigns();renderCoupons();renderLedger();renderAudit();renderTeam();renderApplications();renderPartners();renderMyReferral();renderMyDelivery();
+    renderStock();renderOrders();renderWishlist();renderWholesale();renderCampaigns();renderCoupons();renderLedger();renderAudit();renderTeam();renderApplications();renderPartners();renderMyReferral();renderMyDelivery();
     const activeTab=document.querySelector(".tab.active");
     if(!activeTab||activeTab.classList.contains("hidden")){
       const firstVisible=[...document.querySelectorAll(".tab")].find(tab=>!tab.classList.contains("hidden"));
@@ -443,6 +471,20 @@
       <div class="price">Final payable ${money(o.final_payable)}</div><p>${o.coupon_code?'Coupon '+esc(o.coupon_code):'No coupon'}${o.campaign_title?' · '+esc(o.campaign_title):''}</p>
       ${o.order_status==='RECEIVED'&&accessInfo.can_manage_operations?`<button class="btn danger small" data-action="cancel-order" data-id="${esc(o.order_id)}">Cancel safely</button>`:o.order_status==='CANCELLED'?`<p class="bad">Cancelled: ${esc(o.cancellation_reason||'No reason saved')}</p>`:'<span class="pill gold">Read only</span>'}
     </article>`).join("")+'</div>';
+  }
+  function renderWishlist(){
+    const requests=wishlistSnapshot?.requests||[];
+    if(!requests.length){$("wishlistList").innerHTML='<div class="empty">No wishlist product requests have been received yet.</div>';return}
+    const statuses=["NEW","REVIEWING","PRICE_SENT","DECLINED","CLOSED"];
+    $("wishlistList").innerHTML='<div class="cards">'+requests.map(w=>`<article class="card">
+      <div class="actions" style="justify-content:space-between"><h3>${esc(w.product_name)}</h3><span class="pill ${w.status==='PRICE_SENT'||w.status==='CLOSED'?'on':w.status==='DECLINED'?'off':'gold'}">${esc(w.status.replace('_',' '))}</span></div>
+      <p class="code">${esc(w.request_id)} · ${dhakaDate(w.created_at)}</p>
+      <p><strong>${esc(w.customer_name)}</strong> · ${esc(w.email)} · ${esc(w.phone)}</p>
+      <p>Approximate unit weight: <strong>${esc(w.approximate_weight)}</strong> · Desired quantity: <strong>${esc(w.desired_quantity)}</strong></p>
+      ${w.product_url?`<p><a class="link" href="${esc(w.product_url)}" target="_blank" rel="noopener noreferrer">Open submitted product link ↗</a></p>`:''}
+      ${w.note?`<p>Customer note: ${esc(w.note)}</p>`:''}
+      ${accessInfo.can_manage_operations?`<div class="form-grid"><div><label for="wishlist-status-${esc(w.request_id)}">Review status</label><select id="wishlist-status-${esc(w.request_id)}">${statuses.map(s=>`<option value="${s}" ${s===w.status?'selected':''}>${s.replace('_',' ')}</option>`).join('')}</select></div><div><label for="wishlist-note-${esc(w.request_id)}">Private note / expected price record</label><textarea class="input" id="wishlist-note-${esc(w.request_id)}" maxlength="1000">${esc(w.admin_note||'')}</textarea></div></div><div class="actions"><button class="btn small primary" data-action="save-wishlist" data-id="${esc(w.request_id)}">Save review</button></div>`:`<p>${w.admin_note?'Private review note: '+esc(w.admin_note):'No private review note.'}</p><span class="pill gold">Read only</span>`}
+    </article>`).join('')+'</div>';
   }
   function renderWholesale(){
     if(!accessInfo?.can_manage_wholesale||!wholesaleSnapshot){
@@ -560,7 +602,7 @@
   function renderPartners(){
     if(!accessInfo?.can_manage_referrals){$("partnersList").innerHTML="";$("assignmentsList").innerHTML="";return}
     const profiles=referralSupervisorSnapshot?.profiles||[];
-    $("partnersList").innerHTML=profiles.length?'<div class="cards">'+profiles.map(p=>`<article class="card"><div class="actions" style="justify-content:space-between"><h3>${esc(p.display_name)}</h3><span class="pill ${p.active?'on':'off'}">${p.active?'ACTIVE':'PAUSED'}</span></div><p>${esc(p.email)} · ${esc(p.phone)}</p><p>${esc(p.area)}</p><p>Account ${p.account_linked?'linked':'invitation not accepted'} · Delivery ${p.delivery_approved?'approved: '+esc(p.delivery_areas):'not approved'}</p><p>Codes: ${(p.assigned_coupons||[]).length?p.assigned_coupons.map(c=>esc(c.coupon_code)).join(', '):'none'}</p><div class="actions"><button class="btn small ${p.active?'danger':'safe'}" data-action="toggle-partner" data-id="${esc(p.profile_id)}" data-active="${p.active}" data-delivery="${p.delivery_approved}" data-areas="${esc(p.delivery_areas)}">${p.active?'Pause partner':'Reactivate partner'}</button><button class="btn small" data-action="delivery-partner" data-id="${esc(p.profile_id)}" data-active="${p.active}" data-delivery="${p.delivery_approved}" data-areas="${esc(p.delivery_areas)}">${p.delivery_approved?'Edit delivery approval':'Approve delivery'}</button></div></article>`).join("")+'</div>':'<div class="empty">No approved referral partners yet.</div>';
+    $("partnersList").innerHTML=profiles.length?'<div class="cards">'+profiles.map(p=>`<article class="card"><div class="actions" style="justify-content:space-between"><h3>${esc(p.display_name)}</h3><span class="pill ${p.active?'on':'off'}">${p.active?'ACTIVE':'PAUSED'}</span></div><p>${esc(p.email)} · ${esc(p.phone)}</p><p>${esc(p.area)}</p><p>Account ${p.account_linked?'linked':'invitation not accepted'} · Delivery ${p.delivery_approved?'approved: '+esc(p.delivery_areas):'not approved'}</p><p><strong>Coupon ceiling: ${esc(p.coupon_pool_limit_percent)}%</strong> · Codes: ${(p.assigned_coupons||[]).length?p.assigned_coupons.map(c=>esc(c.coupon_code)).join(', '):'none'}</p>${accessInfo.access_level==='OWNER'?`<div class="actions"><input class="input number" id="partner-cap-${esc(p.profile_id)}" type="number" min="1" max="20" step="0.01" value="${esc(p.coupon_pool_limit_percent)}" aria-label="Coupon ceiling for ${esc(p.display_name)}"><button class="btn small" data-action="set-referrer-cap" data-id="${esc(p.profile_id)}">Save coupon ceiling</button></div>`:''}<div class="actions"><button class="btn small ${p.active?'danger':'safe'}" data-action="toggle-partner" data-id="${esc(p.profile_id)}" data-active="${p.active}" data-delivery="${p.delivery_approved}" data-areas="${esc(p.delivery_areas)}">${p.active?'Pause partner':'Reactivate partner'}</button><button class="btn small" data-action="delivery-partner" data-id="${esc(p.profile_id)}" data-active="${p.active}" data-delivery="${p.delivery_approved}" data-areas="${esc(p.delivery_areas)}">${p.delivery_approved?'Edit delivery approval':'Approve delivery'}</button></div></article>`).join("")+'</div>':'<div class="empty">No approved referral partners yet.</div>';
 
     const profileOptions=profiles.filter(p=>p.active).map(p=>`<option value="${esc(p.profile_id)}">${esc(p.display_name)} — ${esc(p.email)}</option>`).join("");
     const coupons=referralSupervisorSnapshot?.coupons||[];
@@ -572,8 +614,11 @@
     const stats=referrerSnapshot.statistics||{};
     $("myReferralStats").innerHTML=`<div class="metric"><span>Orders using my codes</span><strong>${stats.orders||0}</strong></div><div class="metric"><span>Sales total</span><strong>${money(stats.sales_total)}</strong></div><div class="metric"><span>Pending reward</span><strong>${money(stats.pending_reward)}</strong></div><div class="metric"><span>Paid reward</span><strong>${money(stats.paid_reward)}</strong></div>`;
     const p=referrerSnapshot.profile||{};$("myReferrerName").value=p.display_name||"";$("myReferrerPhone").value=p.phone||"";$("myReferrerArea").value=p.area||"";$("myReferrerDeliveryAreas").value=p.delivery_areas||"";$("myReferrerDeliveryAreas").disabled=!p.delivery_approved;
+    const cap=Number(p.coupon_pool_limit_percent||12);$("myCouponLimitText").textContent=`Your approved combined coupon ceiling is ${cap}%. Customer discount must be at least 1%; your reward may be 0%.`;
+    $("myCustomerPercent").max=String(cap);$("myRewardPercent").max=String(Math.max(0,cap-1));
+    if($("myCouponMode").value==="create")toggleMyPermanent();
     const coupons=referrerSnapshot.coupons||[];
-    $("myCouponsList").innerHTML=coupons.length?'<div class="cards">'+coupons.map(c=>`<article class="card"><div class="actions" style="justify-content:space-between"><h3 class="code">${esc(c.coupon_code)}</h3><span class="pill ${c.active?'on':'off'}">${c.active?'ACTIVE':'PAUSED'}</span></div><p><strong>${c.benefit_pool_percent}% fixed pool:</strong> ${c.customer_discount_percent}% customer + ${c.referrer_reward_percent}% reward</p><p>Uses ${c.uses} / ${c.max_uses} · ${c.valid_from?dhakaDate(c.valid_from)+' → '+dhakaDate(c.valid_until):'Permanent'}</p>${c.admin_locked?'<p class="bad">Manager lock: self-service changes are paused.</p>':''}<div class="actions"><button class="btn small" data-action="my-split-coupon" data-id="${esc(c.coupon_code)}" data-pool="${c.benefit_pool_percent}">Change split</button><button class="btn small" data-action="my-rename-coupon" data-id="${esc(c.coupon_code)}">Rename code</button><button class="btn small ${c.active?'danger':'safe'}" data-action="my-toggle-coupon" data-id="${esc(c.coupon_code)}" data-active="${c.active}">${c.active?'Pause':'Reactivate'}</button></div></article>`).join("")+'</div>':'<div class="empty">No coupon is assigned to your profile yet.</div>';
+    $("myCouponsList").innerHTML=coupons.length?'<div class="cards">'+coupons.map(c=>`<article class="card"><div class="actions" style="justify-content:space-between"><h3 class="code">${esc(c.coupon_code)}</h3><span class="pill ${c.active?'on':'off'}">${c.active?'ACTIVE':'PAUSED'}</span></div><p><strong>${c.benefit_pool_percent}% combined:</strong> ${c.customer_discount_percent}% customer + ${c.referrer_reward_percent}% reward</p><p>Uses ${c.uses} / ${c.max_uses} · ${c.valid_from?dhakaDate(c.valid_from)+' → '+dhakaDate(c.valid_until):'Permanent'}</p>${c.admin_locked?'<p class="bad">Manager lock: commercial self-service changes are paused.</p>':''}<div class="actions"><button class="btn small" data-action="edit-my-coupon" data-id="${esc(c.coupon_code)}" ${c.admin_locked?'disabled':''}>Edit details</button><button class="btn small" data-action="my-split-coupon" data-id="${esc(c.coupon_code)}" ${c.admin_locked?'disabled':''}>Quick percentages</button><button class="btn small" data-action="my-rename-coupon" data-id="${esc(c.coupon_code)}" ${c.admin_locked?'disabled':''}>Rename code</button><button class="btn small ${c.active?'danger':'safe'}" data-action="my-toggle-coupon" data-id="${esc(c.coupon_code)}" data-active="${c.active}">${c.active?'Pause':'Reactivate'}</button></div></article>`).join("")+'</div>':'<div class="empty">You have no coupon yet. Use Create my coupon above.</div>';
   }
 
   function renderMyDelivery(){
@@ -590,6 +635,15 @@
     $("couponMode").value="update";$("couponCode").value=c.coupon_code;$("couponCode").readOnly=true;$("referrerName").value=c.referrer_display_name||"";$("customerPercent").value=c.customer_discount_percent;$("rewardPercent").value=c.referrer_reward_percent;$("maxUses").value=c.max_uses;$("contactNote").value=c.private_contact_note||"";$("couponNotes").value=c.owner_notes||"";$("couponPermanent").checked=!c.valid_from;$("couponStart").value=dhakaInput(c.valid_from);$("couponEnd").value=dhakaInput(c.valid_until);$("couponFormTitle").textContent="Edit "+c.coupon_code;$("cancelCouponEdit").classList.remove("hidden");togglePermanent();$("couponForm").scrollIntoView({behavior:"smooth",block:"start"});
   }
   function togglePermanent(){const permanent=$("couponPermanent").checked;document.querySelectorAll(".coupon-time").forEach(el=>{el.disabled=permanent;if(permanent)el.value=""})}
+  function toggleMyPermanent(){const permanent=$("myCouponPermanent").checked;document.querySelectorAll(".my-coupon-time").forEach(el=>{el.disabled=permanent;if(permanent)el.value=""})}
+  function resetMyCouponForm(){
+    const cap=Number(referrerSnapshot?.profile?.coupon_pool_limit_percent||12);
+    $("myCouponForm").reset();$("myCouponMode").value="create";$("myCouponCode").readOnly=false;$("myCouponMaxUses").value="100";$("myCustomerPercent").value=String(Math.min(12,cap));$("myRewardPercent").value="0";$("myCouponPermanent").checked=true;$("myCouponFormTitle").textContent="Create my coupon";$("cancelMyCouponEdit").classList.add("hidden");toggleMyPermanent();
+  }
+  function editMyCoupon(code){
+    const c=(referrerSnapshot?.coupons||[]).find(x=>x.coupon_code===code);if(!c)return;
+    $("myCouponMode").value="update";$("myCouponCode").value=c.coupon_code;$("myCouponCode").readOnly=true;$("myCouponMaxUses").value=c.max_uses;$("myCustomerPercent").value=c.customer_discount_percent;$("myRewardPercent").value=c.referrer_reward_percent;$("myCouponPermanent").checked=!c.valid_from;$("myCouponStart").value=dhakaInput(c.valid_from);$("myCouponEnd").value=dhakaInput(c.valid_until);$("myCouponFormTitle").textContent="Edit "+c.coupon_code;$("cancelMyCouponEdit").classList.remove("hidden");toggleMyPermanent();$("myCouponFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  }
   function toggleOrdering(){
     const next=!snapshot.ordering_enabled;
     if(confirm(next?"Resume new customer orders now?":"Pause new customer orders now? Existing orders stay unchanged."))perform(next?"Resuming orders…":"Pausing orders…",()=>rpc("owner_set_ordering",{p_enabled:next}));
@@ -631,14 +685,16 @@
     }else if(action==="toggle-coupon"){
       const active=button.dataset.active==="true";if(confirm(`${active?'Pause':'Activate'} coupon ${id}?`))perform("Saving coupon status…",()=>rpc("set_referral_coupon_active",{p_coupon_code:id,p_active:!active}));
     }else if(action==="edit-coupon"){editCoupon(id)
+    }else if(action==="edit-my-coupon"){editMyCoupon(id)
     }else if(action==="rename-coupon"||action==="my-rename-coupon"){
       const next=prompt(`Enter the new code for ${id}. The old code becomes invalid immediately; historical orders stay unchanged.`,id);if(next===null)return;
       if(confirm(`Change ${id} to ${next.trim().toUpperCase()} now?`))perform("Changing coupon code…",()=>rpc("change_referral_coupon_code",{p_current_code:id,p_new_code:next.trim()}));
     }else if(action==="split-coupon"||action==="my-split-coupon"){
-      const coupon=(action==="my-split-coupon"?referrerSnapshot?.coupons:referralSupervisorSnapshot?.coupons)?.find(c=>c.coupon_code===id);const pool=Number(coupon?.benefit_pool_percent??button.dataset.pool);
-      const customerText=prompt(`Fixed pool: ${pool}%. Enter customer discount (minimum 1%).`,String(coupon?.customer_discount_percent??1));if(customerText===null)return;
-      const customer=Number(customerText),reward=Number((pool-customer).toFixed(4));if(!Number.isFinite(customer)||customer<1||reward<0){toast("The customer share must be at least 1% and cannot exceed the fixed pool.",true);return}
-      if(confirm(`Save ${customer}% customer + ${reward}% reward = ${pool}% for future orders?`))perform("Updating benefit split…",()=>rpc("update_referral_coupon_split",{p_coupon_code:id,p_customer_discount_percent:customer,p_referrer_reward_percent:reward}));
+      const own=action==="my-split-coupon";const coupon=(own?referrerSnapshot?.coupons:referralSupervisorSnapshot?.coupons)?.find(c=>c.coupon_code===id);const cap=own?Number(referrerSnapshot?.profile?.coupon_pool_limit_percent||12):20;
+      const customerText=prompt(`Enter customer discount (minimum 1%, combined ceiling ${cap}%).`,String(coupon?.customer_discount_percent??1));if(customerText===null)return;
+      const rewardText=prompt(`Enter referrer reward (0% is allowed; combined ceiling ${cap}%).`,String(coupon?.referrer_reward_percent??0));if(rewardText===null)return;
+      const customer=Number(customerText),reward=Number(rewardText);if(!Number.isFinite(customer)||!Number.isFinite(reward)||customer<1||reward<0||customer+reward>cap){toast(`Customer discount must be at least 1%, reward may be 0%, and the combined total cannot exceed ${cap}%.`,true);return}
+      if(confirm(`Save ${customer}% customer + ${reward}% reward = ${customer+reward}% for future orders?`))perform("Updating coupon percentages…",()=>rpc("update_referral_coupon_split",{p_coupon_code:id,p_customer_discount_percent:customer,p_referrer_reward_percent:reward}));
     }else if(action==="my-toggle-coupon"){
       const active=button.dataset.active==="true";if(confirm(`${active?'Pause':'Reactivate'} your code ${id}?`))perform("Saving coupon status…",()=>rpc("set_referral_coupon_active",{p_coupon_code:id,p_active:!active}));
     }else if(action==="lock-coupon"){
@@ -654,12 +710,18 @@
       if(action==="toggle-partner"){nextActive=!active;note=nextActive?"Referral partner reactivated":"Referral partner paused"}
       else{nextDelivery=!nextDelivery;if(nextDelivery){const entered=prompt("Approved delivery areas:",areas);if(entered===null)return;areas=entered.trim()}else areas="";note=nextDelivery?"Delivery role approved":"Delivery role removed"}
       if(confirm("Save this referral-partner access change?"))perform("Saving partner access…",()=>rpc("manage_referrer_profile",{p_profile_id:id,p_active:nextActive,p_delivery_approved:nextDelivery,p_delivery_areas:areas,p_note:note}));
+    }else if(action==="set-referrer-cap"){
+      const limit=Number($("partner-cap-"+id).value);if(!Number.isFinite(limit)||limit<1||limit>20){toast("Enter a coupon ceiling from 1% through 20%.",true);return}
+      if(confirm(`Set this partner's combined coupon ceiling to ${limit}%? Existing coupons are not changed.`))perform("Saving coupon ceiling…",()=>rpc("set_referrer_coupon_limit",{p_profile_id:id,p_limit_percent:limit}));
     }else if(action==="assign-coupon"){
       const profile=$("assign-profile-"+id).value,delivery=$("assign-delivery-"+id).checked;if(!profile){toast("Choose a referral partner first.",true);return}
       if(confirm(`Assign ${id} to the selected partner for future orders${delivery?' with delivery-order access':''}?`))perform("Saving coupon assignment…",()=>rpc("assign_referral_coupon",{p_coupon_code:id,p_profile_id:profile,p_delivery_access:delivery,p_assignment_note:"Assigned from Supervisor"}));
     }else if(action==="delivery-status"){
       const status=button.dataset.status;const note=prompt(`Optional note for ${status.replace('_',' ').toLowerCase()}:`,"");if(note===null)return;
       if(confirm(`Mark ${id} as ${status.replace('_',' ')}?`))perform("Updating delivery status…",()=>rpc("set_referral_delivery_status",{p_order_id:id,p_status:status,p_note:note.trim()}));
+    }else if(action==="save-wishlist"){
+      const status=$("wishlist-status-"+id).value,note=$("wishlist-note-"+id).value.trim();
+      if(confirm(`Save ${id} as ${status.replace('_',' ')}?`))perform("Saving wishlist review…",()=>rpc("update_wishlist_request",{p_request_id:id,p_status:status,p_admin_note:note}));
     }else if(action==="save-team"||action==="toggle-team"){
       const role=$("team-role-"+id).value,label=$("team-label-"+id).value.trim();
       const current=button.dataset.active==="true";
@@ -721,6 +783,19 @@
     const payload={p_coupon_code:$("couponCode").value,p_referrer_display_name:$("referrerName").value,p_private_contact_note:$("contactNote").value,p_customer_discount_percent:customer,p_referrer_reward_percent:reward,p_valid_from:permanent?null:dhakaIso(start),p_valid_until:permanent?null:dhakaIso(end),p_max_uses:Number($("maxUses").value),p_owner_notes:$("couponNotes").value};
     const mode=$("couponMode").value;if(!confirm(mode==="create"?"Create this code paused?":"Save these changes and pause the code automatically?"))return;
     perform("Saving coupon…",async()=>{const result=await rpc(mode==="create"?"owner_create_coupon":"owner_update_coupon",payload);resetCouponForm();return result});
+  });
+  $("myCouponPermanent").addEventListener("change",toggleMyPermanent);
+  $("cancelMyCouponEdit").addEventListener("click",resetMyCouponForm);
+  $("myCouponForm").addEventListener("submit",event=>{
+    event.preventDefault();
+    const permanent=$("myCouponPermanent").checked,start=$("myCouponStart").value,end=$("myCouponEnd").value;
+    if(!permanent&&(!start||!end)){toast("Choose both coupon times or select No expiry.",true);return}
+    const cap=Number(referrerSnapshot?.profile?.coupon_pool_limit_percent||12),customer=Number($("myCustomerPercent").value),reward=Number($("myRewardPercent").value),maxUses=Number($("myCouponMaxUses").value);
+    if(!Number.isFinite(customer)||!Number.isFinite(reward)||customer<1||reward<0||customer+reward>cap){toast(`Customer discount must be at least 1%, reward may be 0%, and the combined total cannot exceed ${cap}%.`,true);return}
+    if(!Number.isInteger(maxUses)||maxUses<1||maxUses>1000000){toast("Enter a whole maximum-use number from 1 through 1,000,000.",true);return}
+    const mode=$("myCouponMode").value,payload={p_coupon_code:$("myCouponCode").value,p_customer_discount_percent:customer,p_referrer_reward_percent:reward,p_valid_from:permanent?null:dhakaIso(start),p_valid_until:permanent?null:dhakaIso(end),p_max_uses:maxUses};
+    if(!confirm(mode==="create"?"Create and activate this coupon now?":"Save these coupon details for future orders?"))return;
+    perform("Saving your coupon…",async()=>{const result=await rpc(mode==="create"?"create_referrer_coupon":"update_own_referral_coupon",payload);resetMyCouponForm();return result});
   });
   $("referrerProfileForm").addEventListener("submit",event=>{
     event.preventDefault();
