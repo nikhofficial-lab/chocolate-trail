@@ -1119,8 +1119,20 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
 .partner-field textarea{ min-height:92px; resize:vertical; }
 .partner-field input:focus,.partner-field textarea:focus{ outline:3px solid rgba(242,207,131,.2); border-color:var(--gold); }
 .partner-delivery{ margin:0; padding:14px; border:1px solid rgba(242,207,131,.18); border-radius:14px; }
-.partner-check{ display:flex; gap:10px; align-items:flex-start; color:var(--cream-2); font-size:13px; line-height:1.5; }
-.partner-check input{ width:19px; height:19px; margin:1px 0 0; accent-color:var(--gold); }
+.partner-check{ position:relative; display:flex; gap:10px; align-items:flex-start; color:var(--cream-2); font-size:13px; line-height:1.5; cursor:pointer; }
+.partner-check input{ position:absolute; top:1px; left:0; width:22px; height:22px; margin:0; padding:0; opacity:0; }
+.partner-check-indicator{
+  display:grid; place-items:center; flex:0 0 22px; width:22px; height:22px; margin-top:1px;
+  border:2px solid var(--gold); border-radius:50%; background:rgba(242,207,131,.06);
+  box-shadow:0 0 0 3px rgba(242,207,131,.08);
+}
+.partner-check input:checked + .partner-check-indicator{
+  background:var(--gold); box-shadow:0 0 0 4px rgba(242,207,131,.25);
+}
+.partner-check input:checked + .partner-check-indicator::after{
+  content:"✓"; color:#28130f; font-size:15px; font-weight:900; line-height:1;
+}
+.partner-check input:focus-visible + .partner-check-indicator{ outline:3px solid var(--cream); outline-offset:3px; }
 .partner-submit{ width:auto; justify-self:start; min-height:46px; margin:0; padding:10px 20px; }
 .partner-result{ margin:0; padding:13px 14px; border:1px solid rgba(242,207,131,.24); border-radius:13px; color:var(--cream-2); font-size:13px; line-height:1.55; }
 .partner-result.success{ border-color:rgba(143,210,154,.5); color:var(--ok); }
@@ -1406,7 +1418,7 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
           <div class="partner-field full"><label for="referralBy">Who referred you? (optional)</label><input id="referralBy" name="referred_by" maxlength="254" placeholder="Name or email"></div>
           <fieldset class="partner-delivery">
             <legend>Optional local delivery role</legend>
-            <label class="partner-check"><input id="referralDeliveryWilling" name="delivery_willing" type="checkbox"><span>I may deliver orders placed with my code in approved nearby areas.</span></label>
+            <label class="partner-check"><input id="referralDeliveryWilling" name="delivery_willing" type="checkbox"><span class="partner-check-indicator" aria-hidden="true"></span><span>I may deliver orders placed with my code in approved nearby areas.</span></label>
             <div class="partner-field" id="referralDeliveryAreasWrap" hidden><label for="referralDeliveryAreas">Areas you can cover</label><input id="referralDeliveryAreas" name="delivery_areas" maxlength="500" placeholder="Example: Mirpur DOHS and nearby"></div>
           </fieldset>
           <div class="partner-field full"><label for="referralNote">Anything else? (optional)</label><textarea id="referralNote" name="note" maxlength="1000"></textarea></div>

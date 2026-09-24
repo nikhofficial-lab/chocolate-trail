@@ -354,7 +354,7 @@
     return known[key]||key||"The request could not be completed.";
   };
   function setSession(value){session=value;if(value)sessionStorage.setItem(SESSION_KEY,JSON.stringify(value));else sessionStorage.removeItem(SESSION_KEY)}
-  function toast(message,failed=false){const el=$("toast");el.textContent=message;el.className="toast"+(failed?" fail":"");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),4300)}
+  function toast(message,failed=false){const el=$("toast");el.textContent=message;el.className="toast"+(failed?" fail":"");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),failed?8000:4300)}
   function setBusy(value,label="Working…"){busy=value;document.querySelectorAll("button").forEach(btn=>{if(btn.id!=="logoutButton")btn.disabled=value});if(value)toast(label)}
 
   async function authRequest(path,body,token="",method="POST"){
@@ -381,7 +381,11 @@
     const response=await fetch(CONFIG.INVITE_FUNCTION_URL,{method:"POST",headers:{"apikey":CONFIG.SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+session.access_token,"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({application_id:applicationId})});
     if(response.status===401&&!retried){await refreshSession();return inviteReferralPartner(applicationId,true)}
     let data={};try{data=await response.json()}catch(_e){}
-    if(!response.ok||!data.ok)throw new Error(errorText(data.message||data.error||"Invitation could not be sent."));
+    if(!response.ok||!data.ok){
+      if(response.status===429||data.error==="INVITATION_RATE_LIMITED")throw new Error("Supabase has temporarily limited secure invitations. This invitation was not sent. Other Auth emails may share the project email limit. Try again later.");
+      if(data.error==="INVITATION_NOT_SENT")throw new Error("The secure invitation could not be sent. Check the approved email and try again later.");
+      throw new Error(errorText(data));
+    }
     return data;
   }
   async function signOut(){
