@@ -1198,6 +1198,17 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
 .recovery-actions .btn-wa{ border:0; cursor:pointer; font-family:inherit; }
 .done.is-failure{ padding-top:34px; }
 .done.is-failure .big{ font-size:46px; }
+.catalog-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:0 0 16px}
+.catalog-tools label{margin:0;flex:1 1 180px}.catalog-tools input[type="search"],.catalog-tools select,#deliveryArea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--base-2);color:var(--cream);font:inherit}
+.catalog-tools .catalog-check{display:flex;align-items:center;gap:8px;flex:0 1 auto;padding:12px 0}
+.catalog-check input,.quote-consent input{width:20px;height:20px;accent-color:var(--gold)}
+.filter-note{font-size:13px;color:var(--cream-3);margin:0 0 14px}.shop-link{background:var(--gold)!important;color:var(--base)!important}
+.quote-panel{padding:16px;margin:18px 0;border:1px solid var(--line);border-radius:16px;background:var(--base-2)}
+.quote-panel p{margin:8px 0;font-size:14px;line-height:1.6}.quote-consent{display:flex;gap:10px;align-items:flex-start;text-transform:none;letter-spacing:normal;font-size:14px;line-height:1.6}
+.quote-consent input{flex:none;margin-top:3px}.quote-panel.is-error{border-color:#a95353}.tracking-screen{z-index:82}.tracking-result{margin:20px 0;padding:18px;border:1px solid var(--line);border-radius:16px}
+.quote-consent input:disabled + .partner-check-indicator{opacity:.45}
+#quoteBreakdown .tline{gap:16px;align-items:flex-start}#quoteBreakdown .tline > span:last-child{text-align:right}
+.receipt-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0}.private-link-note{font-size:13px;color:var(--cream-3);line-height:1.6}
 @media(min-width:700px){ .recovery-actions{ grid-template-columns:1fr 1fr; } }
 </style>
 </head>
@@ -1244,6 +1255,7 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
         <span>Limited weekly stock</span>
       </div>
       <div class="hero-actions">
+        <a class="corporate-link shop-link" href="#chocolates">Shop this week's stock ↓</a>
         <a class="corporate-link" href="#corporateView" data-corporate-open>Explore corporate gifting</a>
         <a class="corporate-link" href="#wishlistView" data-wishlist-open>Request another chocolate</a>
       </div>
@@ -1345,6 +1357,13 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
     <p class="promotion-time" id="promotionTime"></p>
   </section>
 
+  <div class="catalog-tools" role="search" aria-label="Find chocolates">
+    <label for="catalogSearch">Search chocolates<input id="catalogSearch" type="search" maxlength="120" placeholder="Name or brand" autocomplete="off"></label>
+    <label for="catalogSort">Sort<select id="catalogSort"><option value="featured">Featured order</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name</option></select></label>
+    <label class="catalog-check partner-check" for="catalogAvailable"><input id="catalogAvailable" type="checkbox"><span class="partner-check-indicator" aria-hidden="true"></span><span>Available only</span></label>
+    <button class="btn-ghost" id="catalogClear" type="button">Clear filters</button>
+  </div>
+  <p class="filter-note" id="catalogFilterStatus" role="status" aria-live="polite"></p>
   <div class="grid" id="grid" aria-busy="true"></div>
 
   <aside class="wishlist-teaser" aria-labelledby="wishlistTeaserTitle">
@@ -1435,6 +1454,7 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
     <span class="b">a tiny pilot by Anik &amp; Saptak</span><br>
     <a class="footer-corporate" href="#wishlistView" data-wishlist-open>Request another chocolate</a> ·
     <a class="footer-corporate" href="#corporateView" data-corporate-open>Corporate Gifting &amp; Bulk Orders</a><br>
+    <a class="footer-corporate" href="#orderStatusView" data-tracking-open>Check a private order status</a><br>
     Order now · pay when it reaches you · Dhaka only
   </footer>
 </div>
@@ -1684,6 +1704,25 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
   </div>
 </section>
 
+<section class="screen tracking-screen" id="orderStatusView" role="dialog" aria-modal="true" aria-labelledby="trackingTitle" hidden>
+  <div class="stop">
+    <button class="btn-back" id="trackingBack" type="button" aria-label="Back to chocolates">←</button>
+    <button class="overlay-brand" type="button" data-home><span class="mark" aria-hidden="true">▣</span><span>Chocolate Trail</span></button>
+    <h2>Order status</h2>
+  </div>
+  <div class="wishlist-shell">
+    <h1 id="trackingTitle">Your private order summary</h1>
+    <p>Use the private link in your receipt, or enter its order reference and access code. No account is needed.</p>
+    <form id="trackingForm" novalidate>
+      <label for="trackingOrderId">Order reference</label><input id="trackingOrderId" maxlength="120" autocomplete="off" required>
+      <label for="trackingToken">Private access code</label><input id="trackingToken" type="password" maxlength="64" autocomplete="off" required>
+      <button class="btn-submit" id="trackingSubmit" type="submit">Check order status</button>
+    </form>
+    <div class="tracking-result" id="trackingResult" role="status" aria-live="polite" hidden></div>
+    <p class="private-link-note">Keep the link and access code private. Anyone holding them can view this order summary.</p>
+  </div>
+</section>
+
 <div id="cartBar">
   <div class="inner">
     <div class="cinfo">
@@ -1713,15 +1752,20 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
           <span>Campaign display subtotal</span><span class="v" id="tCampaign">৳0</span>
         </div>
         <div class="tline"><span>Delivery</span><span class="v" id="tShip">Free</span></div>
-        <div class="tline grand"><span>Final payable</span><span class="v" id="tGrand">Confirmed by server</span></div>
+        <div class="tline grand"><span>Product payable</span><span class="v" id="tGrand">Check final price</span></div>
         <div class="roundnote courier" id="shipNote" hidden>+ courier charge, paid to the rider</div>
       </div>
-      <p class="summary-authority">Display prices help you review the basket. Coupon benefit,
-         eligibility, discount, cash rounding and the amount actually payable are calculated only
-         by Chocolate Trail's server after a submission is accepted.</p>
+      <p class="summary-authority">Choose your delivery area and apply any coupon to check the exact product total before ordering. A price check does not reserve stock.</p>
     </div>
     <button class="btn-ghost summary-add-more" id="btnAddMore" type="button">＋ Add more products</button>
 
+    <label for="deliveryArea">Your delivery area</label>
+    <select id="deliveryArea" required>
+      <option value="">Choose an area</option>
+      <option value="mirpur-dohs">Mirpur DOHS &amp; nearby</option>
+      <option value="central-dhaka">Motijheel, Malibag, Khilgaon, Basabo &amp; nearby</option>
+      <option value="other">Another area in Dhaka</option>
+    </select>
     <label id="deliveryLabel">How should we get it to you?</label>
     <div class="dopts" id="dopts">
       <label class="dopt on" data-mode="free">
@@ -1751,11 +1795,18 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
       <label for="fCoupon">Coupon code <span class="opt">(if you have one)</span></label>
       <div class="coupon">
         <input id="fCoupon" type="text" placeholder="Enter code" autocapitalize="characters"
-               autocomplete="off" spellcheck="false" maxlength="20">
+               autocomplete="off" spellcheck="false" maxlength="32">
         <button type="button" id="btnCoupon">Apply</button>
       </div>
     </div>
     <div class="cmsg" id="couponMsg" role="status" aria-live="polite"></div>
+
+    <div class="quote-panel" id="quotePanel">
+      <p id="quoteMessage" role="status" aria-live="polite">Choose an area to check your product total.</p>
+      <div id="quoteBreakdown" hidden></div>
+      <button class="btn-ghost" id="btnQuote" type="button">Check final price</button>
+      <label class="quote-consent partner-check" for="quoteAccepted"><input id="quoteAccepted" type="checkbox" disabled><span class="partner-check-indicator" aria-hidden="true"></span><span>I agree to the checked product total. Any courier charge is separate and will be confirmed.</span></label>
+    </div>
 
     <form id="orderForm" novalidate>
       <label for="fName">Your name</label>
@@ -1799,6 +1850,12 @@ body.wishlist-open .wishlist-screen,.wishlist-screen:target{ display:block; }
       <div class="oid" id="doneId" hidden></div>
 
       <div class="panel recap" id="recap"></div>
+      <div id="receiptPanel" hidden>
+        <div class="receipt-actions"><button class="btn-ghost" id="copyReceipt" type="button">Copy receipt</button><button class="btn-ghost" id="downloadReceipt" type="button">Download receipt</button></div>
+        <a class="corporate-link" id="receiptStatusLink" target="_blank" rel="noopener noreferrer" hidden>Open private order status</a>
+        <p class="private-link-note">Keep your receipt link private. Its holder can view your order summary.</p>
+        <p id="receiptMessage" role="status" aria-live="polite"></p>
+      </div>
 
       <div id="waPanel" hidden>
         <h3>Manual recovery — no server order is confirmed</h3>
@@ -2453,8 +2510,8 @@ function initializeReferralApplication(){
     }catch(error){
       result.className="partner-result error";
       result.textContent=error&&error.name==="AbortError"
-        ? "The application took too long to send. Please try once more."
-        : "The application could not be sent right now. Please contact Chocolate Trail.";
+        ? "We could not confirm whether your application was received. Please contact Chocolate Trail before submitting it again."
+        : "We could not confirm your application. Please contact Chocolate Trail before submitting it again.";
       result.hidden=false;
     }finally{ submit.disabled=false;submit.textContent="Send application"; }
   });
@@ -2687,7 +2744,17 @@ function renderCatalog(){
     return;
   }
 
-  $("grid").innerHTML = PRODUCTS.map((p, index) => {
+  const query = $("catalogSearch").value.trim().toLocaleLowerCase();
+  const available = $("catalogAvailable").checked;
+  const visible = PRODUCTS.filter(p => (!query || [p.name,p.weight,p.desc,p.bn || ""].join(" ").toLocaleLowerCase().includes(query)) &&
+    (!available || (p.stockConfirmed === true && p.stock > 0)));
+  const sort = $("catalogSort").value;
+  if (sort === "price-low") visible.sort((a,b)=>a.displayPrice-b.displayPrice || a.name.localeCompare(b.name));
+  if (sort === "price-high") visible.sort((a,b)=>b.displayPrice-a.displayPrice || a.name.localeCompare(b.name));
+  if (sort === "name") visible.sort((a,b)=>a.name.localeCompare(b.name));
+  $("catalogFilterStatus").textContent = visible.length + " of " + PRODUCTS.length + " chocolates shown. Your basket stays unchanged.";
+  if (!visible.length) { $("grid").innerHTML = '<p class="catalog-empty">No chocolates match these filters. Clear the filters to browse all products.</p>'; return; }
+  $("grid").innerHTML = visible.map((p, index) => {
     const q = cart[p.id] || 0;
     const unconfirmed = p.stockConfirmed !== true;
     const out = !unconfirmed && p.stock <= 0;
@@ -2767,7 +2834,7 @@ function refresh(){
   $("cartBar").classList.toggle("show", n > 0);
   $("btnCheckout").disabled = n === 0 || !cartReviewAllowed();
   $("btnCheckout").textContent = cartReviewAllowed() ? "Review order →" : "Availability required";
-  $("btnSubmit").disabled = orderSubmitting || n === 0 || !orderingAllowed();
+  $("btnSubmit").disabled = orderSubmitting || n === 0 || !orderingAllowed() || !quoteReadyToSubmit();
   $("btnSubmit").textContent = orderSubmitting ? "Securing your order…" :
     orderingAllowed() ? "Place order · Pay on delivery" : "Ordering currently paused";
   saveCart();
@@ -2801,7 +2868,7 @@ $("grid").addEventListener("click", (ev) => {
 
 /* ------------------------------ screens ------------------------------ */
 const CT_HISTORY_MARKER = "chocolateTrailRouteV1";
-const CT_ROUTES = new Set(["catalog","checkout","corporate","wishlist","order-result"]);
+const CT_ROUTES = new Set(["catalog","checkout","corporate","wishlist","order-result","tracking"]);
 let ctCurrentRoute = "catalog";
 let ctRouteRendered = false;
 let ctOpenerSequence = 0;
@@ -2813,6 +2880,7 @@ function ctRouteUrl(route){
   if (route === "wishlist") return ctBaseUrl() + "#wishlistView";
   if (route === "checkout") return ctBaseUrl() + "#checkout";
   if (route === "order-result") return ctBaseUrl() + "#orderResult";
+  if (route === "tracking") return trackingRouteHash ? ctBaseUrl() + trackingRouteHash : ctBaseUrl() + "#orderStatusView";
   return ctBaseUrl();
 }
 function ctValidState(state){
@@ -2840,6 +2908,37 @@ function ctCatalogHeading(){
 function ctCanReviewOrder(){
   return cartCount() > 0 && cartReviewAllowed();
 }
+const CT_DIALOGS = {
+  checkout:$("checkout"),corporate:$("corporateView"),
+  wishlist:$("wishlistView"),"order-result":$("thanks"),tracking:$("orderStatusView")
+};
+function ctSetBackgroundInert(modalOpen){
+  document.querySelectorAll("body > .topbar,body > .wrap,body > #cartBar")
+    .forEach(element=>element.toggleAttribute("inert",modalOpen));
+}
+document.addEventListener("keydown",event=>{
+  const dialog=CT_DIALOGS[ctCurrentRoute];
+  if(!dialog||dialog.hidden)return;
+  if(event.key==="Escape"){
+    event.preventDefault();
+    const sending=ctCurrentRoute==="corporate"?corporateSubmitting:
+      ctCurrentRoute==="wishlist"?wishlistSubmitting:orderSubmitting;
+    if(!sending)ctReturnToCatalog();
+    return;
+  }
+  if(event.key!=="Tab")return;
+  const focusable=[...dialog.querySelectorAll(
+    "a[href],button:not(:disabled),input:not(:disabled):not([type='hidden']),textarea:not(:disabled),select:not(:disabled),[tabindex]"
+  )].filter(element=>element.tabIndex>=0&&element.getClientRects().length&&
+    getComputedStyle(element).visibility!=="hidden"&&!element.closest("[inert]"));
+  if(!focusable.length){event.preventDefault();dialog.tabIndex=-1;dialog.focus();return}
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(event.shiftKey&&(document.activeElement===first||!dialog.contains(document.activeElement))){
+    event.preventDefault();last.focus();
+  }else if(!event.shiftKey&&(document.activeElement===last||!dialog.contains(document.activeElement))){
+    event.preventDefault();first.focus();
+  }
+});
 function ctRenderRoute(nextState,options={}){
   let state = ctValidState(nextState) ? nextState : ctState("catalog",{catalogScrollY:window.scrollY});
   if (state.route === "checkout" && !ctCanReviewOrder()) {
@@ -2865,9 +2964,11 @@ function ctRenderRoute(nextState,options={}){
   $("thanks").hidden = !resultOpen;
   $("corporateView").hidden = !corporateOpen;
   $("wishlistView").hidden = !wishlistOpen;
+  $("orderStatusView").hidden = state.route !== "tracking";
   document.body.classList.toggle("corporate-open",corporateOpen);
   document.body.classList.toggle("wishlist-open",wishlistOpen);
   document.body.style.overflow = state.route === "catalog" ? "" : "hidden";
+  ctSetBackgroundInert(state.route !== "catalog");
 
   if (routeChanged && checkoutOpen) {
     drawSummary();
@@ -2883,13 +2984,16 @@ function ctRenderRoute(nextState,options={}){
     $("wishlistView").scrollTop = 0;
   }
   if (routeChanged && resultOpen) $("thanks").scrollTop = 0;
-  if (options.initial === true) return;
+  if (routeChanged && state.route === "tracking" && $("trackingOrderId").value && $("trackingToken").value) lookupOrderStatus();
+  if (options.initial === true && state.route === "catalog") return;
 
   setTimeout(() => {
+    if (ctCurrentRoute !== state.route) return;
     if (state.route === "checkout") $("btnBack").focus();
     else if (state.route === "corporate") $("corporateBack").focus();
     else if (state.route === "wishlist") $("wishlistBack").focus();
     else if (state.route === "order-result") $("doneTitle").focus();
+    else if (state.route === "tracking") $("trackingBack").focus();
     else {
       window.scrollTo({top:homeRequested?0:Math.max(0,state.catalogScrollY || 0),behavior:"auto"});
       const returnTarget = state.focusId ? document.getElementById(state.focusId) : null;
@@ -2960,6 +3064,13 @@ function ctGoHome(){
 }
 function ctInitializeHistory(){
   const existing = ctValidState(history.state) ? history.state : null;
+  if (location.hash === "#orderStatusView" || /^#track=/.test(location.hash)) {
+    readTrackingHash();
+    const state = ctState("tracking",{catalogScrollY:0});
+    history.replaceState(state,"",ctRouteUrl("tracking"));
+    ctRenderRoute(state,{initial:true});
+    return;
+  }
   if (location.hash === "#corporateView") {
     if (existing && existing.route === "corporate") {
       ctRenderRoute(existing,{initial:true});
@@ -2998,6 +3109,10 @@ function ctInitializeHistory(){
 
 window.addEventListener("popstate",event => {
   let state = ctValidState(event.state) ? event.state : null;
+  if (location.hash === "#orderStatusView" || /^#track=/.test(location.hash)) {
+    readTrackingHash();
+    state = ctState("tracking",{catalogScrollY:window.scrollY});
+  }
   if (!state && location.hash === "#corporateView") {
     state = ctState("corporate",{catalogScrollY:window.scrollY,hasCatalogPredecessor:true});
     history.replaceState(state,"",ctRouteUrl("corporate"));
@@ -3033,7 +3148,7 @@ function drawSummary(){
   $("tSub").textContent = taka(t.regular);
   $("tCampaignRow").hidden = !catalogRuntime.promotion;
   $("tCampaign").textContent = taka(t.display);
-  $("tGrand").textContent = "Confirmed by server";
+  syncQuote();
 
   $("tShip").textContent  = delivery === "free" ? "Free" : "At actual";
   $("tShip").style.color  = delivery === "free" ? "var(--ok)" : "var(--warn)";
@@ -3071,6 +3186,7 @@ $("sumRows").addEventListener("click", (ev) => {
 /* delivery picker */
 $("dopts").addEventListener("click", (ev) => {
   const opt = ev.target.closest(".dopt"); if (!opt) return;
+  if (opt.querySelector('input[type="radio"]').disabled) return;
   delivery = opt.dataset.mode;
   document.querySelectorAll(".dopt").forEach(d => d.classList.toggle("on", d === opt));
   opt.querySelector('input[type="radio"]').checked = true;
@@ -3243,8 +3359,9 @@ function validateOrderForm(){
     ok = false;
   }
   if (!ok) return null;
+  if (!$("deliveryArea").value) { $("deliveryArea").focus(); return null; }
   return {
-    name,phone,address,delivery,note,
+    name,phone,address,delivery,note,delivery_area:$("deliveryArea").value,
     items:basket.map(line => ({product_id:line.id,quantity:line.qty})),
     coupon_code:visibleCouponCode === "" ? "" : coupon.code
   };
@@ -3252,7 +3369,8 @@ function validateOrderForm(){
 
 /* --------------------- authoritative v4 order boundary --------------------- */
 const ORDER_REQUEST_FIELDS = [
-  "action","client_request_token","name","phone","address","delivery","note","items","coupon_code"
+  "action","client_request_token","name","phone","address","delivery","note","items","coupon_code",
+  "delivery_area","quote_fingerprint","status_token"
 ];
 const ORDER_RESPONSE_FIELDS = [
   "ok","test","action","status","idempotent_retry","order_id","lines","pricing","message"
@@ -3269,6 +3387,7 @@ const ORDER_PRICING_FIELDS = [
 const ORDER_FAILURE_FIELDS = ["ok","test","action","error","message"];
 const ORDER_MAX_RESPONSE_QUANTITY = 100000;
 const ORDER_FAILURE_STATES = {
+  quote_changed:{title:"Please review the updated price",message:"The checked price or delivery terms changed. No order was created. Check the final price again and accept it before placing the order."},
   ordering_disabled:{title:"Ordering is currently paused",message:"Chocolate Trail is not accepting ordinary orders right now. No order was created."},
   invalid_input:{title:"Please review the order details",message:"One or more fields or basket details were not accepted. Nothing was submitted as an order."},
   coupon_conflict:{title:"Coupon not available for this order",message:"The submitted coupon is invalid or cannot be combined with the current public benefit. No order was created."},
@@ -3299,6 +3418,13 @@ function validateOrderResponse(value){
       value.lines.length < 1 || value.lines.length > CATALOG_MAX_PRODUCTS || !exactOwnKeys(value.pricing,ORDER_PRICING_FIELDS)) {
     throw orderFailure("MALFORMED_RESPONSE");
   }
+  return {...value,...validateOrderPricing(value.lines,value.pricing)};
+}
+
+function validateOrderPricing(lineValues,priceValue){
+  const value = {lines:lineValues,pricing:priceValue};
+  if (!Array.isArray(value.lines) || value.lines.length < 1 || value.lines.length > CATALOG_MAX_PRODUCTS ||
+      !exactOwnKeys(value.pricing,ORDER_PRICING_FIELDS)) throw orderFailure("MALFORMED_RESPONSE");
   const ids = new Set();
   let units = 0,regularSum = 0,displaySum = 0;
   const lines = value.lines.map(line => {
@@ -3336,7 +3462,7 @@ function validateOrderResponse(value){
       pricing.saving_vs_regular !== pricing.regular_subtotal - pricing.actual_payable) {
     throw orderFailure("MALFORMED_RESPONSE");
   }
-  return {...value,lines,pricing:{...pricing,campaign:pricing.campaign ? {...pricing.campaign} : null}};
+  return {lines,pricing:{...pricing,campaign:pricing.campaign ? {...pricing.campaign} : null}};
 }
 
 function validateOrderFailureResponse(value){
@@ -3349,8 +3475,9 @@ function validateOrderFailureResponse(value){
 }
 
 function orderUiStateForCode(code){
+  if (code === "QUOTE_CHANGED") return "quote_changed";
   if (code === "ORDERING_DISABLED") return "ordering_disabled";
-  if (["INVALID_REQUEST","PRODUCT_INVALID"].includes(code)) return "invalid_input";
+  if (["INVALID_REQUEST","PRODUCT_INVALID","INVALID_DELIVERY_AREA"].includes(code)) return "invalid_input";
   if (["COUPON_INVALID","BENEFIT_CONFLICT"].includes(code)) return "coupon_conflict";
   if (["SOLD_OUT","OVER_STOCK","STOCK_UNCONFIRMED"].includes(code)) return "changed_stock";
   if (code === "IDEMPOTENCY_CONFLICT") return "idempotency_conflict";
@@ -3390,12 +3517,14 @@ function generateOrderToken(){
 function buildOrderPayload(fields){
   const signature = JSON.stringify(fields);
   if (!currentOrderAttempt || currentOrderAttempt.signature !== signature){
-    currentOrderAttempt = {signature,token:generateOrderToken()};
+    const bytes = new Uint8Array(32); window.crypto.getRandomValues(bytes);
+    currentOrderAttempt = {signature,token:generateOrderToken(),statusToken:Array.from(bytes,v=>v.toString(16).padStart(2,"0")).join("")};
   }
   return {
     action:"order",client_request_token:currentOrderAttempt.token,
     name:fields.name,phone:fields.phone,address:fields.address,delivery:fields.delivery,
-    note:fields.note,items:fields.items.map(item => ({...item})),coupon_code:fields.coupon_code
+    note:fields.note,items:fields.items.map(item => ({...item})),coupon_code:fields.coupon_code,
+    delivery_area:fields.delivery_area,quote_fingerprint:quoteState.data.quote_fingerprint,status_token:currentOrderAttempt.statusToken
   };
 }
 
@@ -3476,6 +3605,7 @@ $("orderForm").addEventListener("submit", async (ev) => {
   $("orderStatus").hidden = true;
   try{
     if (!(await ensureVisibleCouponReady())) return;
+    if (!quoteReadyToSubmit()) { renderQuoteUI(); $("quotePanel").scrollIntoView({block:"center"}); return; }
     const fields = validateOrderForm();
     if (!fields){
       const first = document.querySelector(".err.show");
@@ -3543,6 +3673,8 @@ function showAuthoritativeOrder(rawResponse){
        </div>`;
   $("waPanel").hidden = true;
   $("btnRetryOrder").hidden = true;
+  prepareOrderReceipt(response,currentOrderAttempt?.statusToken || unresolvedOrder?.status_token);
+  unresolvedOrder = null;
   pendingRecovery = null;
   lastOrderFailureState = "";
   currentOrderAttempt = null;
@@ -3552,6 +3684,9 @@ function showAuthoritativeOrder(rawResponse){
 }
 
 function showOrderFailure(state,request){
+  $("receiptPanel").hidden = true;
+  if (["timeout","offline","malformed","unavailable"].includes(state) && request && exactOwnKeys(request,ORDER_REQUEST_FIELDS)) unresolvedOrder = JSON.parse(JSON.stringify(request));
+  if (state === "quote_changed") { invalidateQuote(); currentOrderAttempt = null; }
   const safe = ORDER_FAILURE_STATES[state] || ORDER_FAILURE_STATES.unavailable;
   pendingRecovery = request && Array.isArray(request.items) ? request : null;
   lastOrderFailureState = state;
@@ -3588,9 +3723,7 @@ $("btnCopy").addEventListener("click", async () => {
 });
 
 $("btnRetryOrder").addEventListener("click",() => {
-  if (!pendingRecovery) return;
-  ctReplaceRoute("checkout");
-  $("orderForm").requestSubmit();
+  retryPendingOrder();
 });
 
 $("btnAgain").addEventListener("click", () => {
@@ -3673,21 +3806,6 @@ document.querySelectorAll("[data-corporate-close]").forEach(link => {
     event.preventDefault();
     ctReturnToCatalog();
   });
-});
-
-$("corporateView").addEventListener("keydown",event => {
-  if (!document.body.classList.contains("corporate-open")) return;
-  if (event.key === "Escape") {
-    event.preventDefault(); ctReturnToCatalog(); return;
-  }
-  if (event.key !== "Tab") return;
-  const focusable = [...$("corporateView").querySelectorAll(
-    "a[href],button:not([disabled]),input:not([disabled]):not([tabindex='-1']),textarea:not([disabled]),select:not([disabled])"
-  )].filter(element => !element.hidden && element.getClientRects().length);
-  if (!focusable.length) return;
-  const first = focusable[0], last = focusable[focusable.length - 1];
-  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 });
 
 function corporateSafeText(value,minimum,maximum){
@@ -3956,17 +4074,6 @@ document.querySelectorAll("[data-wishlist-open]").forEach(link=>link.addEventLis
 document.querySelectorAll("[data-wishlist-close]").forEach(link=>link.addEventListener("click",event=>{
   event.preventDefault();ctReturnToCatalog();
 }));
-$("wishlistView").addEventListener("keydown",event=>{
-  if(!document.body.classList.contains("wishlist-open"))return;
-  if(event.key==="Escape"){event.preventDefault();ctReturnToCatalog();return}
-  if(event.key!=="Tab")return;
-  const focusable=[...$("wishlistView").querySelectorAll("a[href],button:not([disabled]),input:not([disabled]):not([tabindex='-1']),textarea:not([disabled])")].filter(element=>!element.hidden&&element.getClientRects().length);
-  if(!focusable.length)return;
-  const first=focusable[0],last=focusable[focusable.length-1];
-  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
-  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
-});
-
 function clearWishlistErrors(){
   Object.values(WISHLIST_FIELD_ERRORS).forEach(id=>{$(id).hidden=true;$(id).textContent=""});
   $("wishlistForm").querySelectorAll("[aria-invalid]").forEach(field=>field.removeAttribute("aria-invalid"));
@@ -4017,10 +4124,217 @@ $("wishlistForm").addEventListener("submit",async event=>{
   setWishlistBusy(true);$("wishlistResult").hidden=true;
   try{
     const data=await submitWishlistRequest(checked.payload);$("wishlistForm").reset();clearWishlistErrors();$("wishlistForm").hidden=true;showWishlistResult("success","Wishlist request received",data.message,data.request_id);
-  }catch(error){showWishlistResult("error",error.message==="TIMEOUT"?"The request timed out":"Wishlist request unavailable",error.message==="TIMEOUT"?"Nothing is confirmed. Please retry when your connection is stable.":"Nothing was recorded. Review the form and try again later.")}
+  }catch(error){showWishlistResult("error",error.message==="TIMEOUT"?"The request timed out":"Wishlist request unavailable","We could not confirm whether your request was received. Keep these details and contact Chocolate Trail before submitting it again.")}
   finally{setWishlistBusy(false)}
 });
 $("wishlistAnother").addEventListener("click",()=>{$("wishlistForm").reset();clearWishlistErrors();$("wishlistResult").hidden=true;$("wishlistForm").hidden=false;prepareWishlistForm();$("wishlistName").focus()});
+
+/* ------------------ checked pricing, discovery and receipts ------------------ */
+let quoteState = {signature:"",status:"idle",data:null,message:""};
+let quoteSequence = 0, quoteController = null, quoteTimer = null;
+let unresolvedOrder = null, receiptText = "", trackingRouteHash = "";
+let trackingSequence = 0;
+const FULFILMENT_LABELS = {RECEIVED:"Received",CONFIRMED:"Confirmed",READY:"Ready for delivery",DISPATCHED:"Out for delivery",DELIVERED:"Delivered",DELIVERY_FAILED:"Delivery needs follow-up",RETURN_PENDING:"Return requested",RETURNED:"Returned",CANCELLED:"Cancelled"};
+function quoteContext(){
+  return {action:"quote",items:lines().map(l=>({product_id:l.id,quantity:l.qty})),
+    coupon_code:coupon?.code || "",delivery,delivery_area:$("deliveryArea").value};
+}
+function quoteSignature(){
+  return JSON.stringify({request:quoteContext(),visibleCoupon:$("fCoupon").value.trim().toUpperCase(),
+    prices:lines().map(l=>[l.id,l.regularUnit,l.displayUnit]),promotion:catalogRuntime.promotion});
+}
+function quoteReadyToSubmit(){
+  return !unresolvedOrder && quoteState.status === "ready" && quoteState.signature === quoteSignature() && $("quoteAccepted").checked;
+}
+function invalidateQuote(){
+  clearTimeout(quoteTimer); quoteTimer = null; ++quoteSequence;
+  if (quoteController) quoteController.abort();
+  quoteController = null;
+  quoteState = {signature:"",status:"idle",data:null,message:""};
+  $("quoteAccepted").checked = false;
+}
+function quoteEligible(){
+  const visible = $("fCoupon").value.trim().toUpperCase();
+  return cartCount()>0 && orderingAllowed() && !!$("deliveryArea").value && (!visible || visible === coupon?.code) &&
+    !(delivery === "free" && $("deliveryArea").value === "other");
+}
+function syncQuote(){
+  const signature = quoteSignature();
+  if (quoteState.signature !== signature) {
+    invalidateQuote(); quoteState.signature = signature;
+    if (quoteEligible() && !orderSubmitting && !unresolvedOrder && !$("checkout").hidden) {
+      quoteState.status = "scheduled";
+      quoteTimer = setTimeout(()=>checkFinalPrice(),300);
+    }
+  } else if (quoteState.status === "idle" && quoteEligible() && !$("checkout").hidden && !orderSubmitting && !unresolvedOrder) {
+    quoteState.status = "scheduled"; quoteTimer = setTimeout(()=>checkFinalPrice(),300);
+  }
+  renderQuoteUI();
+}
+function renderQuoteUI(){
+  const ready = quoteState.status === "ready" && quoteState.signature === quoteSignature() && !unresolvedOrder;
+  const p = ready ? quoteState.data.pricing : null;
+  $("quoteAccepted").disabled = !ready || orderSubmitting;
+  if (!ready) $("quoteAccepted").checked = false;
+  $("btnQuote").disabled = orderSubmitting || quoteState.status === "loading" || (!unresolvedOrder && !quoteEligible());
+  $("btnQuote").textContent = unresolvedOrder ? "Check previous order" : quoteState.status === "loading" ? "Checking price…" : "Check final price";
+  $("quoteMessage").textContent = unresolvedOrder ? "The previous order is still unconfirmed. Check that same order before starting another." :
+    ready ? "Checked product total: " + taka(p.actual_payable) + ". This check does not reserve stock." :
+    quoteState.status === "loading" || quoteState.status === "scheduled" ? "Checking the current price and delivery terms…" :
+    quoteState.message || (!$("deliveryArea").value ? "Choose an area to check your product total." : "Apply or clear any coupon, then check the final price.");
+  $("quoteBreakdown").hidden = !ready;
+  $("quoteBreakdown").innerHTML = ready ?
+    '<div class="tline"><span>Benefit</span><span>' + esc(p.applied_benefit) + '</span></div>' +
+    '<div class="tline"><span>Before rounding</span><span>' + taka(p.payable_before_rounding) + '</span></div>' +
+    '<div class="tline"><span>Cash rounding</span><span>+' + taka(p.rounding_addition) + '</span></div>' +
+    '<div class="tline save"><span>Your actual saving</span><span>' + taka(p.saving_vs_regular) + '</span></div>' +
+    '<p>' + esc(quoteState.data.delivery.charge_note) + ' ' + esc(quoteState.data.delivery.timing_note) + '</p>' : "";
+  $("tGrand").textContent = ready ? taka(p.actual_payable) : "Check final price";
+  $("btnSubmit").disabled = orderSubmitting || !orderingAllowed() || !quoteReadyToSubmit();
+}
+function validateQuoteResponse(value){
+  if (!exactOwnKeys(value,["ok","test","action","lines","pricing","delivery","quote_fingerprint","quoted_at"]) ||
+      value.ok!==true || value.test!==false || value.action!=="quote" ||
+      !/^[a-f0-9]{64}$/.test(value.quote_fingerprint) || !Number.isFinite(Date.parse(value.quoted_at)) ||
+      !exactOwnKeys(value.delivery,["mode","area","area_label","charge","charge_included","charge_note","timing_note"])) throw orderFailure("MALFORMED_RESPONSE");
+  const d=value.delivery, context=quoteContext();
+  if (d.mode!==context.delivery || d.area!==context.delivery_area || !boundedText(d.area_label,200) ||
+      !boundedText(d.charge_note,500) || !boundedText(d.timing_note,500) || d.charge_included!==(d.mode==="free") ||
+      (d.mode==="free" ? d.charge!==0 : d.charge!==null)) throw orderFailure("MALFORMED_RESPONSE");
+  const result={...value,...validateOrderPricing(value.lines,value.pricing)};
+  const wanted=new Map(context.items.map(i=>[i.product_id,i.quantity]));
+  if(result.lines.length!==wanted.size || result.lines.some(l=>wanted.get(l.product_id)!==l.quantity)) throw orderFailure("MALFORMED_RESPONSE");
+  return result;
+}
+async function checkFinalPrice(){
+  if (unresolvedOrder) { await retryPendingOrder(); return; }
+  if (!quoteEligible() || orderSubmitting) { renderQuoteUI(); return; }
+  clearTimeout(quoteTimer);
+  if(quoteController) quoteController.abort();
+  const sequence=++quoteSequence, signature=quoteSignature(), controller=new AbortController();
+  quoteController=controller; quoteState={signature,status:"loading",data:null,message:""};
+  $("quoteAccepted").checked=false; renderQuoteUI();
+  const timer=setTimeout(()=>controller.abort(),CONFIG.ORDER_TIMEOUT_MS);
+  try{
+    const response=await fetch(supabaseRpcUrl("quote_order"),{method:"POST",headers:supabaseRequestHeaders(),
+      body:JSON.stringify({p_request:quoteContext()}),signal:controller.signal,credentials:"omit",referrerPolicy:"no-referrer",cache:"no-store"});
+    if(!response.ok) throw orderFailure("ORDER_UNAVAILABLE");
+    const raw=await response.json();
+    if(raw?.ok===false){
+      if(!exactOwnKeys(raw,ORDER_FAILURE_FIELDS)||raw.action!=="quote"||raw.test!==false) throw orderFailure("MALFORMED_RESPONSE");
+      throw orderFailure(raw.error);
+    }
+    const data=validateQuoteResponse(raw);
+    if(sequence!==quoteSequence || signature!==quoteSignature())return;
+    quoteState={signature,status:"ready",data,message:""};
+  }catch(error){
+    if(sequence!==quoteSequence || signature!==quoteSignature())return;
+    const known=ORDER_FAILURE_STATES[orderUiStateForCode(error?.orderCode)];
+    quoteState={signature,status:"error",data:null,message:error?.orderCode==="MALFORMED_RESPONSE" ?
+      "The price response could not be verified. No order was placed. Check the final price again." :
+      ["ORDER_UNAVAILABLE",undefined].includes(error?.orderCode) || error?.name==="AbortError" ?
+        "The final price could not be checked. Try again later. No order has been placed." :
+        (known?.message || "The price response could not be verified. Try checking again.")};
+  }finally{
+    clearTimeout(timer);
+    if(sequence===quoteSequence){quoteController=null;renderQuoteUI();}
+  }
+}
+async function retryPendingOrder(){
+  const payload=unresolvedOrder || pendingRecovery;
+  if(orderSubmitting || !payload || !exactOwnKeys(payload,ORDER_REQUEST_FIELDS)) return;
+  orderSubmitting=true; refresh();
+  $("btnRetryOrder").disabled=true;
+  try{
+    const response=await submitOrderWithOneAutomaticReconciliation(payload);
+    if(response.ok) showAuthoritativeOrder(response);
+    else { unresolvedOrder=null; showOrderFailure(orderUiStateForCode(response.error),payload); }
+  }catch(error){showOrderFailure(orderUiStateForCode(error?.orderCode),payload);}
+  finally{orderSubmitting=false;$("btnRetryOrder").disabled=false;refresh();}
+}
+function privateStatusUrl(orderId,token){
+  if(!/^CTO-\d{8}-[A-F0-9]{32}$/.test(orderId)||!/^[a-f0-9]{64}$/.test(token||""))return "";
+  const url=new URL(location.href);url.search="";url.hash="track="+orderId+"."+token;return url.href;
+}
+function prepareOrderReceipt(response,token){
+  const url=privateStatusUrl(response.order_id,token),p=response.pricing;
+  receiptText="Chocolate Trail — order received\nOrder: "+response.order_id+"\n\n"+
+    response.lines.map(l=>l.name+" ("+l.weight+") × "+l.quantity+" — "+taka(l.display_line_total)).join("\n")+
+    "\n\nProduct payable: "+taka(p.actual_payable)+"\nActual saving: "+taka(p.saving_vs_regular)+
+    "\n"+p.applied_benefit+"\nPay on delivery. Courier charge, if applicable, is separate. Delivery timing will be confirmed."+
+    (url?"\n\nPrivate order status (keep private):\n"+url:"");
+  $("receiptPanel").hidden=false;$("receiptMessage").textContent="";
+  $("receiptStatusLink").hidden=!url;
+  if(url)$("receiptStatusLink").href=url;else $("receiptStatusLink").removeAttribute("href");
+}
+function downloadCustomerText(text,name){
+  const url=URL.createObjectURL(new Blob([text],{type:"text/plain;charset=utf-8"})),a=document.createElement("a");
+  a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function readTrackingHash(){
+  const match=location.hash.match(/^#track=(CTO-\d{8}-[A-F0-9]{32})\.([a-f0-9]{64})$/);
+  trackingRouteHash=match?location.hash:"";
+  if(match){$("trackingOrderId").value=match[1];$("trackingToken").value=match[2];}
+}
+function validStatusResponse(d){
+  if(!exactOwnKeys(d,["ok","order_id","created_at","updated_at","fulfilment_status","product_payable","amount_collected","amount_refunded","collection_due","refund_due","delivery","lines"]) ||
+    d.ok!==true || !/^CTO-\d{8}-[A-F0-9]{32}$/.test(d.order_id) || !FULFILMENT_LABELS[d.fulfilment_status] ||
+    !moneyValue(d.product_payable) || !moneyValue(d.amount_refunded) || !moneyValue(d.refund_due) ||
+    !(d.amount_collected===null||moneyValue(d.amount_collected)) || !(d.collection_due===null||moneyValue(d.collection_due)) ||
+    !Number.isFinite(Date.parse(d.created_at)) || !Number.isFinite(Date.parse(d.updated_at)) ||
+    !Array.isArray(d.lines) || !d.lines.length || d.lines.length>CATALOG_MAX_PRODUCTS) return false;
+  if(d.lines.some(l=>!exactOwnKeys(l,["name","weight","quantity","line_total"]) || !boundedText(l.name,200) || !boundedText(l.weight,40) ||
+    !Number.isSafeInteger(l.quantity) || l.quantity<1 || l.quantity>ORDER_MAX_RESPONSE_QUANTITY || !moneyValue(l.line_total)))return false;
+  const legacy=exactOwnKeys(d.delivery,["mode","timing_note"]);
+  if(!legacy&&!exactOwnKeys(d.delivery,["mode","area","area_label","charge","charge_included","charge_note","timing_note"]))return false;
+  return ["free","courier"].includes(d.delivery.mode)&&boundedText(d.delivery.timing_note,500)&&
+    (legacy || (boundedText(d.delivery.charge_note,500) && boundedText(d.delivery.area_label,200)));
+}
+async function lookupOrderStatus(){
+  const id=$("trackingOrderId").value.trim(),token=$("trackingToken").value.trim(),seq=++trackingSequence;
+  const result=$("trackingResult");result.hidden=false;result.textContent="Checking order status…";
+  if(!/^CTO-\d{8}-[A-F0-9]{32}$/.test(id)||!/^[a-f0-9]{64}$/.test(token)){result.textContent="Enter the order ID and private access code from your receipt link.";return;}
+  $("trackingSubmit").disabled=true;
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),CONFIG.ORDER_TIMEOUT_MS);
+  try{
+    const response=await fetch(supabaseRpcUrl("order_status"),{method:"POST",headers:supabaseRequestHeaders(),
+      body:JSON.stringify({p_order_id:id,p_access_token:token}),signal:controller.signal,credentials:"omit",cache:"no-store",referrerPolicy:"no-referrer"});
+    if(!response.ok)throw new Error("UNAVAILABLE");
+    const d=await response.json();
+    if(seq!==trackingSequence)return;
+    if(d?.ok===false&&exactOwnKeys(d,["ok","error"])&&d.error==="STATUS_NOT_FOUND"){result.textContent="This private link is unavailable. Check the code or contact Chocolate Trail for a new link.";return;}
+    if(!validStatusResponse(d)||d.order_id!==id)throw new Error("MALFORMED");
+    result.innerHTML='<h3>'+esc(FULFILMENT_LABELS[d.fulfilment_status])+'</h3><p>'+esc(d.order_id)+'</p>'+
+      '<p>Last update: '+esc(new Date(d.updated_at).toLocaleString("en-GB",{timeZone:"Asia/Dhaka"}))+'</p>'+
+      d.lines.map(l=>'<p>'+esc(l.name)+' · '+esc(l.weight)+' × '+l.quantity+' — '+taka(l.line_total)+'</p>').join("")+
+      '<p>Product payable: '+taka(d.product_payable)+'</p><p>Recorded collection: '+(d.amount_collected===null?'Not yet confirmed':taka(d.amount_collected))+
+      ' · Recorded refunds: '+taka(d.amount_refunded)+'</p><p>Collection due: '+(d.collection_due===null?'Not yet confirmed':taka(d.collection_due))+
+      ' · Refund due: '+taka(d.refund_due)+'</p><p>'+esc(d.delivery.charge_note||"")+' '+esc(d.delivery.timing_note)+'</p>';
+  }catch(_error){if(seq===trackingSequence)result.textContent="Order status could not be loaded. Try again later or contact Chocolate Trail.";}
+  finally{clearTimeout(timer);if(seq===trackingSequence)$("trackingSubmit").disabled=false;}
+}
+$("catalogSearch").addEventListener("input",renderCatalog);
+$("catalogSort").addEventListener("change",renderCatalog);
+$("catalogAvailable").addEventListener("change",renderCatalog);
+$("catalogClear").addEventListener("click",()=>{$("catalogSearch").value="";$("catalogSort").value="featured";$("catalogAvailable").checked=false;renderCatalog();$("catalogSearch").focus();});
+$("deliveryArea").addEventListener("change",()=>{
+  const radio=document.querySelector('input[name="delivery"][value="free"]');radio.disabled=$("deliveryArea").value==="other";
+  if(radio.disabled && delivery==="free")delivery="courier";
+  document.querySelectorAll(".dopt").forEach(d=>{d.querySelector("input").checked=d.dataset.mode===delivery;d.classList.toggle("on",d.dataset.mode===delivery);});
+  drawSummary();
+});
+$("btnQuote").addEventListener("click",()=>checkFinalPrice());
+$("quoteAccepted").addEventListener("change",renderQuoteUI);
+$("fCoupon").addEventListener("input",()=>syncQuote());
+$("trackingForm").addEventListener("submit",event=>{event.preventDefault();lookupOrderStatus();});
+$("trackingBack").addEventListener("click",ctReturnToCatalog);
+document.querySelectorAll("[data-tracking-open]").forEach(a=>a.addEventListener("click",event=>{event.preventDefault();ctOpenRoute("tracking",a);}));
+$("copyReceipt").addEventListener("click",async()=>{
+  if(!receiptText)return;
+  try{await navigator.clipboard.writeText(receiptText);$("receiptMessage").textContent="Receipt copied. Keep the status link private.";}
+  catch(_error){$("receiptMessage").textContent="Copy is unavailable. Use Download receipt to save it.";}
+});
+$("downloadReceipt").addEventListener("click",()=>{if(receiptText)downloadCustomerText(receiptText,"chocolate-trail-receipt.txt");});
 
 /* ------------------------------- boot ------------------------------- */
 /* Cart cleanup waits until a fully accepted fresh/stale/emergency source is
