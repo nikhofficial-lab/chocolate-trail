@@ -25,6 +25,9 @@
     .toast{position:fixed;right:18px;bottom:18px;max-width:min(420px,calc(100% - 36px));padding:13px 16px;border-radius:13px;background:#17331f;border:1px solid #3c8150;color:#c7f5d2;box-shadow:var(--shadow);z-index:30}.toast.fail{background:#421e22;border-color:#9e4b52;color:#ffd0d0}.spinner{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}
     .empty{text-align:center;color:var(--muted);padding:24px}.foot{margin-top:26px;color:var(--muted);font-size:.8rem;text-align:center}
     .history-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:12px 0}.history-filters label{flex:1 1 155px;margin:0}.history-filters .actions{margin-bottom:1px}.history-count{margin:12px 0;color:var(--muted)}.detail-section{border-top:1px solid var(--line);padding-top:12px;margin-top:18px}.private-link-output{overflow-wrap:anywhere}.card h3,.card p,.code{overflow-wrap:anywhere}.detail-lines{display:grid;gap:8px}.detail-lines label{margin:0}.detail-lines .input{max-width:240px}
+    .order-quick{margin:18px 0}.order-quick .btn{min-height:46px}.order-options>summary{cursor:pointer;color:var(--gold);font-weight:800;padding:8px 0}.order-options[open]>summary{margin-bottom:12px}.order-quick .muted{font-size:.88rem}.order-facts{margin:10px 0}.order-options label{overflow-wrap:anywhere}.order-options .detail-lines .input{display:block;max-width:240px}
+    #orderDetail{scroll-margin-top:78px}#orderDetail .panel-head>h2{min-width:0;overflow-wrap:anywhere}
+    .order-progress{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}.order-progress>.card{min-width:0}.order-progress h3{color:var(--gold)}.order-progress .actions{margin-top:12px}.order-progress .pill{margin:7px 0}.order-progress p{overflow-wrap:anywhere}@media(max-width:640px){.order-progress{grid-template-columns:1fr}}
     @media(max-width:820px){.status-grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.form-grid,.subgrid{grid-template-columns:1fr}.span2{grid-column:auto}.topbar{align-items:flex-start}.shell{width:min(100% - 18px,1180px)}.panel{padding:15px;border-radius:16px}}
   </style>
 </head>
@@ -997,7 +1000,9 @@
       INVALID_ORDER_COSTS:"Enter every confirmed unit cost and each direct expense. Blank means unknown, so it cannot be saved as zero.",
       INVALID_HISTORY_FILTER:"Check the search and date range. The from date must be on or before the through date.",
       PRIMARY_OWNER_AUTHORIZATION_REQUIRED:"Only the primary owner can record costs and referral settlement.",
-      INVALID_INVENTORY_ALERT_RULE:"Check the whole-number stock threshold, best-before date and notice period."
+      INVALID_INVENTORY_ALERT_RULE:"Check the whole-number stock threshold, best-before date and notice period.",
+      INVALID_COMPLETION_REQUEST:"Choose delivery, full cash received, or both.",
+      COMPLETION_REQUIRES_REVIEW:"This order has a return, cancellation or refund. Open More options to review it."
       ,PHYSICAL_RETURN_REQUIRED:"This order has left for delivery. Record a physical return after inspection instead of cancelling."
       ,PAYMENT_NOT_RECORDED:"First check and record the actual collected and refunded cash, including a confirmed zero when appropriate."
       ,PAYMENT_REFUND_REQUIRED:"Resolve and record the customer's refund before cancelling."
@@ -1035,7 +1040,7 @@
       Promise.all(kinds.map(async kind=>[kind,checkHistoryPage(await rpc("owner_history_page",historyPayload(kind)),kind)]))
     ]);
     if(summary?.ok!==true||inventory?.ok!==true||!Array.isArray(inventory.products)||detail&&(detail.ok!==true||!detail.order))throw new Error("The business records could not be verified. Refresh again.");
-    return {available:true,pages:Object.fromEntries(pages),summary,inventory,detail:detail?.order||null};
+    return {available:true,simpleCompletion:capabilities.simple_order_completion===true,pages:Object.fromEntries(pages),summary,inventory,detail:detail?.order||null};
   }
   async function businessRead(label,work){
     if(busy)return;setBusy(true,label);
@@ -1101,32 +1106,62 @@
   function numberField(id,label,value,extra=""){
     return '<label for="'+id+'">'+esc(label)+'<input class="input" id="'+id+'" type="number" min="0" max="1000000" step="0.01" value="'+esc(value??"")+'" '+extra+'></label>';
   }
+  function simpleCompletionState(o){
+    return {eligible:o.order_status==="RECEIVED"&&["RECEIVED","CONFIRMED","READY","DISPATCHED","DELIVERY_FAILED","DELIVERED"].includes(o.fulfilment_status)&&Number(o.amount_refunded)===0,
+      delivered:o.fulfilment_status==="DELIVERED",cash:o.amount_collected!==null&&Number(o.amount_collected)===Number(o.final_payable)};
+  }
+  function deliveryChoices(o){
+    const choices=[...(nextFulfilment[o.fulfilment_status]||[])];
+    const state=simpleCompletionState(o);
+    if(businessState.simpleCompletion&&state.eligible&&!state.delivered&&!choices.includes("DELIVERED"))choices.push("DELIVERED");
+    return choices;
+  }
+  function renderOrderProgress(o,can){
+    const s=simpleCompletionState(o),choices=deliveryChoices(o);
+    const cashLabel=Number(o.amount_refunded)>0?"Refund recorded":o.amount_collected===null?"Not confirmed":s.cash?"Cash received":Number(o.amount_collected)===0?"Not received":"Partially received";
+    return '<div class="order-progress"><section class="card" aria-labelledby="orderDeliveryHeading"><h3 id="orderDeliveryHeading">Delivery</h3>'+
+      '<p class="pill '+(s.delivered?'on':'gold')+'" id="orderDeliveryCurrent">'+esc(fulfilmentLabels[o.fulfilment_status]||o.fulfilment_status)+'</p>'+
+      (can&&choices.length?'<label for="opNext">Update delivery</label><select id="opNext"><option value="">Choose an update</option>'+
+        choices.map(status=>'<option value="'+status+'">'+esc(fulfilmentLabels[status])+'</option>').join("")+'</select>'+
+        '<div class="actions"><button class="btn" data-business-action="fulfilment" id="saveDeliveryButton" disabled>Save delivery</button></div>':
+        '<p class="muted">'+(can?'No further delivery update here.':'Read-only access.')+'</p>')+
+      '<p class="muted">Delivery updates leave the cash record unchanged.</p></section>'+
+      '<section class="card" aria-labelledby="orderPaymentHeading"><h3 id="orderPaymentHeading">Payment</h3><p class="pill '+(s.cash&&Number(o.amount_refunded)===0?'on':'gold')+'" id="orderCashCurrent">'+esc(cashLabel)+'</p>'+
+      '<p>Cash collected: '+(o.amount_collected===null?'Not confirmed':money(o.amount_collected))+'</p>'+
+      (Number(o.amount_refunded)>0?'<p>Refunded: '+money(o.amount_refunded)+'</p>':'')+
+      (can&&s.eligible&&businessState.simpleCompletion&&!s.cash?'<div class="actions"><button class="btn primary" data-business-action="simple-cash">Cash received</button></div><p class="muted">Confirms the full product payment of '+money(o.final_payable)+'.</p>':
+        !can?'<p class="muted">Read-only access.</p>':!s.cash?'<p class="muted">Use More options to record partial cash, refunds or corrections.</p>':'')+
+      '<p class="muted">Cash updates leave delivery status unchanged.</p></section></div>';
+  }
   function renderOrderDetail(){
     const o=businessState.detail,host=$("orderDetail");host.classList.toggle("hidden",!o);if(!o)return;
-    const can=accessInfo.can_manage_operations,owner=accessInfo.access_level==="OWNER",next=nextFulfilment[o.fulfilment_status]||[];
+    const can=accessInfo.can_manage_operations,owner=accessInfo.access_level==="OWNER";
+    const moreOpen=(host.dataset.orderId===o.order_id&&$("orderMoreActions")?.open)||!businessState.simpleCompletion;
+    host.dataset.orderId=o.order_id;
     host.innerHTML='<div class="panel-head"><h2 tabindex="-1" id="orderDetailTitle">'+esc(o.order_id)+'</h2><button class="btn small" data-business-action="close-order">Close details</button></div>'+
-      '<p><strong>'+esc(fulfilmentLabels[o.fulfilment_status])+'</strong> · Last update '+dhakaDate(o.updated_at)+'</p><p>'+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+esc(o.address)+'</p><p>'+esc(o.note)+'</p>'+
+      '<p>Last update '+dhakaDate(o.updated_at)+'</p><p>'+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+esc(o.address)+'</p><p>'+esc(o.note)+'</p>'+
       '<ul class="items">'+o.items.map(i=>'<li>'+esc(i.name)+' '+esc(i.weight)+' × '+i.quantity+' — '+money(i.line_total)+'</li>').join("")+'</ul>'+
-      '<p class="price">Product payable '+money(o.final_payable)+'</p><p>Collected '+(o.amount_collected===null?'Not confirmed':money(o.amount_collected))+' · Refunded '+money(o.amount_refunded)+'</p>'+
+      '<p class="price">Product payable '+money(o.final_payable)+'</p>'+
+      renderOrderProgress(o,can)+
+      '<details class="order-options detail-section" id="orderMoreActions" '+(moreOpen?'open':'')+'><summary>More options</summary>'+
       '<p>'+esc(o.delivery_terms?.area_label||"Area to be confirmed")+' · '+esc(o.delivery_terms?.charge_note||"Delivery terms to be confirmed")+' '+esc(o.delivery_terms?.timing_note||"")+'</p>'+
       (o.reward?'<p>Referral reward '+money(o.reward.amount)+' · '+esc(o.reward.status)+'</p>':'')+
       (o.return_disposition?'<p>Return disposition: '+esc(o.return_disposition)+'</p>':'')+(o.cancellation_reason?'<p>Cancellation reason: '+esc(o.cancellation_reason)+'</p>':'')+
       '<div class="actions"><button class="btn" data-business-action="packing-slip">Download packing slip</button>'+
       (can?'<button class="btn" data-business-action="status-link">Create / replace private status link</button>':'')+'</div><div id="privateLinkOutput" class="private-link-output"></div>'+
-      (can?'<div class="detail-section"><label for="opNote">Note for this change (required)<textarea class="input" id="opNote" minlength="3" maxlength="500" placeholder="What actually happened?"></textarea></label></div>'+
-      (next.length?'<div class="detail-section"><h3>Fulfilment</h3><label>Next status<select id="opNext">'+next.map(s=>'<option value="'+s+'">'+esc(fulfilmentLabels[s])+'</option>').join("")+'</select></label><button class="btn" data-business-action="fulfilment">Record status</button></div>':'')+
+      (can?'<div class="detail-section"><label for="opNote">Note for the detailed changes below<textarea class="input" id="opNote" minlength="3" maxlength="500" placeholder="Reason for a partial payment, refund, return or other change"></textarea></label></div>'+
       '<div class="detail-section"><h3>Actual product cash and refunds</h3><p class="muted">Enter cumulative amounts after money changes hands. Leave an unknown historical collection blank until checked. Courier payments to the rider are separate.</p><div class="form-grid">'+
       numberField("opCollected","Total product cash collected",o.amount_collected)+numberField("opRefunded","Total refunded to customer",o.amount_refunded)+'</div><label class="check"><input type="checkbox" id="opCashConfirmed"> I checked these actual cumulative amounts</label><button class="btn" data-business-action="payment">Record cash / refund</button></div>'+
       (["RECEIVED","CONFIRMED","READY"].includes(o.fulfilment_status)?'<div class="detail-section"><h3>Cancel before dispatch</h3><p>Any collected cash must already be refunded. Stock and one coupon use reverse once.</p><button class="btn danger" data-action="cancel-order" data-id="'+esc(o.order_id)+'">Cancel safely</button></div>':'')+
       (o.fulfilment_status==="RETURN_PENDING"?'<div class="detail-section"><h3>Physical whole-order return</h3><p>Mixed or partial returns need separate review; do not mark every item saleable unless that is true.</p><label>Condition of every returned item<select id="opSaleable"><option value="">Choose after inspection</option><option value="saleable">Every item is saleable — restore stock</option><option value="unsaleable">Not saleable — do not restore stock</option></select></label><label class="check"><input id="opReturnReceived" type="checkbox"> Every item has been physically received and checked</label><button class="btn danger" data-business-action="return">Record whole-order return</button></div>':'')+
-      (owner?'<div class="detail-section"><h3>Actual cost snapshots — owner only</h3><p>Enter confirmed costs for this order. Enter 0 only when the expense really was zero. Catalog prices and other orders are unaffected.</p><div class="detail-lines">'+
+      (owner?'<div class="detail-section"><h3>Costs (optional, owner only)</h3><p>These are optional for delivery and cash received. Enter actual costs only when you want to complete cost reporting.</p><div class="detail-lines">'+
         o.items.map((i,n)=>numberField("opCost"+n,i.name+" — landed unit cost",i.unit_cost_snapshot)).join("")+'</div><div class="form-grid">'+
         numberField("opPackaging","Packaging",o.packaging_cost)+numberField("opDeliveryCost","Delivery paid by Chocolate Trail",o.delivery_subsidy)+numberField("opOtherCost","Other direct cost",o.other_direct_cost)+
         '</div><button class="btn" data-business-action="costs">Record actual costs</button></div>':'')+
       (owner&&o.reward&&["EARNED","PAID"].includes(o.reward.status)?'<div class="detail-section"><h3>Manual referral '+(o.reward.status==="PAID"?'settlement reversal':'settlement')+'</h3><p>This only records an action already completed outside this page. It does not send or recover money.</p>'+
         (o.reward.status!=="PAID"?'<label>Payment method<input id="opRewardMethod" class="input" maxlength="80"></label>':'')+
         '<label>Payment / recovery reference<input id="opRewardReference" class="input" maxlength="200"></label><label class="check"><input id="opRewardConfirmed" type="checkbox"> '+(o.reward.status==="PAID"?'The reward funds were actually recovered':'The earned reward was actually paid')+'</label>'+
-        '<button class="btn" data-business-action="'+(o.reward.status==="PAID"?'settlement-reversal':'settlement')+'">Record '+(o.reward.status==="PAID"?'manual recovery':'payment already made')+'</button></div>':''):'<p class="notice">Read-only access. Changes are unavailable.</p>');
+        '<button class="btn" data-business-action="'+(o.reward.status==="PAID"?'settlement-reversal':'settlement')+'">Record '+(o.reward.status==="PAID"?'manual recovery':'payment already made')+'</button></div>':''):'<p class="notice">Read-only access. Changes are unavailable.</p>')+'</details>';
     renderPrivateLink();
   }
   function renderPrivateLink(){
@@ -1149,10 +1184,11 @@
   async function openOrder(id){
     await businessRead("Loading order…",async()=>{
       $("orderDetail").classList.add("hidden");
+      $("orderDetail").dataset.orderId="";
       const data=await rpc("owner_order_detail",{p_order_id:id});
       if(data?.ok!==true||data.order?.order_id!==id)throw new Error("The order could not be verified.");
       selectedOrderId=id;businessState.detail=data.order;privateLinkOutput=null;showTab("orders");renderOrderDetail();
-      $("orderDetail").scrollIntoView({block:"start"});$("orderDetailTitle").focus();
+      $("orderDetail").scrollIntoView({block:"start",behavior:"instant"});$("orderDetailTitle").focus({preventScroll:true});
     });
   }
   async function navigateHistory(kind,next){
@@ -1217,6 +1253,23 @@
     }
     if(action==="copy-status-link"){try{await navigator.clipboard.writeText(privateLinkOutput.url);toast("Private link copied. Share only with this customer.");}catch(_error){toast("Copy is unavailable. Select the displayed link to copy it.",true);}return;}
     if(!accessInfo.can_manage_operations)return;
+    if(action==="fulfilment"){
+      if(actionReview){toast("Refresh and check the previous save before making another change.",true);return;}
+      const status=$("opNext")?.value;
+      if(!deliveryChoices(o).includes(status))return;
+      const direct=status==="DELIVERED"&&businessState.simpleCompletion&&simpleCompletionState(o).eligible;
+      if(confirm(o.order_id+"\nRecord delivery as "+fulfilmentLabels[status]+"? The cash record stays unchanged."))await perform("Saving delivery…",()=>direct?
+        rpc("record_order_completion",{p_order_id:o.order_id,p_expected_version:o.operations_version,p_delivered:true,p_cash_received:false}):
+        rpc("set_order_fulfilment",{p_order_id:o.order_id,p_expected_version:o.operations_version,p_status:status,p_note:"Delivery status recorded in Supervisor: "+fulfilmentLabels[status]+"."}));
+      return;
+    }
+    if(action==="simple-cash"){
+      if(actionReview){toast("Refresh and check the previous save before making another change.",true);return;}
+      const s=simpleCompletionState(o);if(!businessState.simpleCompletion||!s.eligible||s.cash)return;
+      if(confirm(o.order_id+"\nConfirm the full product payment of "+money(o.final_payable)+" has been received in total? Delivery status stays unchanged."))await perform("Saving cash received…",()=>rpc("record_order_completion",{
+        p_order_id:o.order_id,p_expected_version:o.operations_version,p_delivered:false,p_cash_received:true}));
+      return;
+    }
     if(action==="status-link"){
       if(!confirm("Create a new private status link? Any previous link for this order will stop working."))return;
       await perform("Creating private status link…",async()=>{
@@ -1228,8 +1281,7 @@
     }
     const note=operationNote(),base={p_order_id:o.order_id,p_expected_version:o.operations_version,p_note:note};
     let name,payload,label;
-    if(action==="fulfilment"){name="set_order_fulfilment";payload={...base,p_status:$("opNext").value};label="Record status as "+fulfilmentLabels[payload.p_status]+"? This does not record cash.";}
-    else if(action==="payment"){
+    if(action==="payment"){
       if(!$("opCashConfirmed").checked)throw new Error("Confirm that you checked the actual collected and refunded cash.");
       name="record_order_payment";payload={...base,p_collected:actualNumber("opCollected"),p_refunded:actualNumber("opRefunded")};
       label="Record cumulative collection "+money(payload.p_collected)+" and refunds "+money(payload.p_refunded)+"? No money will be sent.";
@@ -1252,6 +1304,9 @@
   document.addEventListener("click",event=>{
     const button=event.target.closest("[data-business-action]");if(!button||button.disabled||busy||!businessState.available)return;
     handleBusinessAction(button.dataset.businessAction,button).catch(error=>toast(error.message,true));
+  });
+  document.addEventListener("change",event=>{
+    if(event.target.id==="opNext")$("saveDeliveryButton").disabled=busy||!event.target.value;
   });
   document.addEventListener("submit",event=>{
     const form=event.target;
