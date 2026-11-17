@@ -28,6 +28,29 @@
     .order-quick{margin:18px 0}.order-quick .btn{min-height:46px}.order-options>summary{cursor:pointer;color:var(--gold);font-weight:800;padding:8px 0}.order-options[open]>summary{margin-bottom:12px}.order-quick .muted{font-size:.88rem}.order-facts{margin:10px 0}.order-options label{overflow-wrap:anywhere}.order-options .detail-lines .input{display:block;max-width:240px}
     #orderDetail{scroll-margin-top:78px}#orderDetail .panel-head>h2{min-width:0;overflow-wrap:anywhere}
     .order-progress{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}.order-progress>.card{min-width:0}.order-progress h3{color:var(--gold)}.order-progress .actions{margin-top:12px}.order-progress .pill{margin:7px 0}.order-progress p{overflow-wrap:anywhere}@media(max-width:640px){.order-progress{grid-template-columns:1fr}}
+    .order-edit{margin:16px 0}.order-edit-line{display:grid;grid-template-columns:minmax(0,1fr) 82px auto;gap:10px;align-items:end;padding:12px 0;border-bottom:1px solid var(--line)}.order-edit-name{min-width:0;overflow-wrap:anywhere}.order-edit-quantity{margin:0}.order-edit .btn{min-height:44px}.order-edit-quote{margin:14px 0;overflow-wrap:anywhere}#orderEditHeading{scroll-margin-top:78px}
+    #parcelQueueTitle{scroll-margin-top:78px}#parcelQueueList{margin:16px 0}.parcel-queue-entry .form-grid{align-items:start}.parcel-queue-entry textarea{min-height:64px}
+    .parcel-sheet{max-width:190mm;margin:16px auto 0;color:#211713;font:10pt/1.3 Arial,"Nirmala UI",sans-serif;overflow-wrap:anywhere;scroll-margin-top:78px}
+    .parcel-slip{background:#fff;border:1px solid #75665d;border-top:2.5px solid #3e281e;padding:2.5mm 3mm;min-height:61mm;break-inside:avoid}
+    .parcel-slip+.parcel-slip{margin-top:3mm}.parcel-slip h2,.parcel-slip h3,.parcel-slip p,.parcel-slip ul{margin:0;color:inherit}
+    .parcel-slip-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:1mm 3mm;padding-bottom:1.5mm;border-bottom:1px solid #9e8e83}
+    .parcel-slip-head h2{font-size:13pt;line-height:1.15}.parcel-order-id{font-family:Consolas,monospace;font-size:8.5pt}
+    .parcel-slip-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:3mm;padding:1.5mm 0}
+    .parcel-slip h3{font-size:8.5pt;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1mm}
+    .parcel-slip address,.parcel-notes{font-style:normal;white-space:pre-wrap}.parcel-recipient{font-size:12pt}.parcel-slip p+p{margin-top:1mm}
+    .parcel-collection{border-left:1px solid #9e8e83;padding-left:3mm}.parcel-payable{font-size:11.5pt;line-height:1.16}.parcel-amount{font-weight:700}
+    .parcel-pack{padding:1.5mm 0;border-top:1px solid #9e8e83}.parcel-items{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7mm 3mm;padding:0}.parcel-items li{break-inside:avoid}
+    .parcel-item-price{color:#51433c}.parcel-item-price del{margin-right:.45em}.parcel-item-price strong{color:#211713}
+    .parcel-delivery{padding-top:1.5mm;border-top:1px dashed #9e8e83}
+    .parcel-handover{border:1px solid #9e8e83;border-radius:1.5mm;margin-top:1.5mm;padding:1mm 2mm;white-space:pre-wrap}
+    @media screen and (max-width:550px){.parcel-slip-grid,.parcel-items{grid-template-columns:1fr}.parcel-collection{border-left:0;border-top:1px solid #9e8e83;padding:2mm 0 0}}
+    @page parcel {size:A4 portrait;margin:10mm}
+    @media print{
+      body.printing-parcels{margin:0;background:#fff;color:#111}
+      body.printing-parcels> :not(main),body.printing-parcels .shell> :not(#appView),body.printing-parcels #appView> :not(#parcelQueuePage),body.printing-parcels #parcelQueuePage> :not(#parcelPreview){display:none!important}
+      body.printing-parcels .shell{width:auto;max-width:none;margin:0;padding:0}
+      body.printing-parcels .parcel-sheet{page:parcel;max-width:none;margin:0;color:#111}
+    }
     @media(max-width:820px){.status-grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.form-grid,.subgrid{grid-template-columns:1fr}.span2{grid-column:auto}.topbar{align-items:flex-start}.shell{width:min(100% - 18px,1180px)}.panel{padding:15px;border-radius:16px}}
   </style>
 </head>
@@ -72,6 +95,7 @@
         <button class="tab active operations-tab" data-tab="overview" type="button">Overview</button>
         <button class="tab operations-tab" data-tab="stock" type="button">Stock</button>
         <button class="tab operations-tab" data-tab="orders" type="button">Orders</button>
+        <button class="tab operations-tab hidden" id="parcelQueueTab" data-tab="print-queue" type="button">Print queue</button>
         <button class="tab operations-tab" data-tab="reports" type="button">Reports</button>
         <button class="tab operations-tab" data-tab="inventory" type="button">Inventory alerts</button>
         <button class="tab operations-tab" data-tab="wishlist" type="button">Wishlist</button>
@@ -105,6 +129,19 @@
       <section class="tab-page hidden" data-page="orders">
         <div class="panel"><div class="panel-head"><div><h2>Customer orders</h2><p>Search the full history. Confirm cash and physical returns separately from delivery status.</p></div></div><div id="ordersHistoryTools"></div><div id="ordersList"></div></div>
         <div id="orderDetail" class="panel hidden" aria-live="polite"></div>
+      </section>
+      <section class="tab-page hidden" id="parcelQueuePage" data-page="print-queue" aria-labelledby="parcelQueueTitle">
+        <div class="panel">
+          <div class="panel-head"><div><h2 id="parcelQueueTitle" tabindex="-1">Parcel print queue</h2><p>Queue orders, add any delivery instructions, then print the slips together on A4. This queue is saved in this tab.</p></div><button class="btn small" type="button" data-business-action="back-to-orders">Back to orders</button></div>
+          <div id="parcelQueueList"></div>
+          <div class="actions">
+            <button class="btn" id="previewParcelsButton" type="button" data-business-action="preview-parcels" disabled>Preview slips</button>
+            <button class="btn primary" id="printParcelsButton" type="button" data-business-action="print-parcels" disabled>Print A4 / Save as PDF</button>
+            <button class="btn small" id="clearParcelsButton" type="button" data-business-action="clear-parcels" disabled>Clear queue</button>
+          </div>
+          <p class="muted" id="parcelPreviewStatus" role="status" aria-live="polite"></p>
+        </div>
+        <div id="parcelPreview" class="parcel-sheet hidden"></div>
       </section>
       <section class="tab-page hidden" data-page="reports">
         <div class="panel"><h2>Customer-order reports</h2><p class="muted">Full database totals for orders created in the selected Dhaka dates. General-store supplies remain in their separate section.</p>
@@ -281,6 +318,12 @@
     REQUEST_TIMEOUT_MS:30000
   };
   const SESSION_KEY="ct_admin_session_v1";
+  const PARCEL_QUEUE_KEY="ct_admin_parcel_queue_v1:";
+  const PARCEL_ORDER_ID=/^CTO-[0-9]{8}-[A-F0-9]{32}$/;
+  const PARCEL_ITEMS_PER_SLIP=16;
+  const parcelQueue=new Map();
+  let parcelQueueAccount=null;
+  let parcelPreviousTitle=null;
   let session=null;
   let identityEpoch=0;
   let snapshot=null;
@@ -294,7 +337,7 @@
   let busyButtonStates=new Map();
   let actionReview=null;
   let actionNoticeMessage="";
-  const READ_ONLY_RPCS=new Set(["owner_access","owner_snapshot","owner_team_snapshot","owner_wholesale_snapshot","referral_supervisor_snapshot","referrer_snapshot","wishlist_supervisor_snapshot","site_capabilities","owner_history_page","owner_order_detail","operations_summary","inventory_alerts"]);
+  const READ_ONLY_RPCS=new Set(["owner_access","owner_snapshot","owner_team_snapshot","owner_wholesale_snapshot","referral_supervisor_snapshot","referrer_snapshot","wishlist_supervisor_snapshot","site_capabilities","owner_history_page","owner_order_detail","operations_summary","inventory_alerts","quote_order_amendment"]);
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[ch]);
   const money=value=>"৳"+Number(value||0).toLocaleString("en-BD",{maximumFractionDigits:2});
@@ -381,7 +424,14 @@
     };
     return known[key]||key||"The request could not be completed.";
   };
-  function setSession(value){if(!value||(session?.user?.id&&value.user?.id&&session.user.id!==value.user.id))++identityEpoch;session=value;if(value)sessionStorage.setItem(SESSION_KEY,JSON.stringify(value));else sessionStorage.removeItem(SESSION_KEY)}
+  function setSession(value){
+    if(!value||(session?.user?.id&&value.user?.id&&session.user.id!==value.user.id)){
+      ++identityEpoch;
+      resetParcelQueue();
+    }
+    session=value;
+    if(value)sessionStorage.setItem(SESSION_KEY,JSON.stringify(value));else sessionStorage.removeItem(SESSION_KEY);
+  }
   function toast(message,failed=false){const el=$("toast");el.textContent=message;el.className="toast"+(failed?" fail":"");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),failed?8000:4300)}
   function renderActionNotice(){
     $("actionNotice").classList.toggle("hidden",!actionNoticeMessage);
@@ -394,6 +444,7 @@
   }
   function setBusy(value,label="Working…"){
     busy=value;
+    document.querySelectorAll("#orderEditArea input,#orderEditArea select,#parcelQueueList input,#parcelQueueList textarea").forEach(control=>{control.disabled=value});
     if(value){
       busyButtonStates=new Map([...document.querySelectorAll("button")].filter(btn=>btn.id!=="logoutButton").map(btn=>[btn,btn.disabled]));
       busyButtonStates.forEach((_disabled,btn)=>{btn.disabled=true});
@@ -401,6 +452,7 @@
     }else{
       busyButtonStates.forEach((disabled,btn)=>{if(btn.isConnected)btn.disabled=disabled});
       busyButtonStates.clear();
+      updateParcelQueueButtons();
     }
     renderActionNotice();
   }
@@ -480,7 +532,7 @@
   }
   async function signOut(){
     const token=session?.access_token;setSession(null);snapshot=null;accessInfo=null;teamSnapshot=null;wholesaleSnapshot=null;referralSupervisorSnapshot=null;referrerSnapshot=null;wishlistSnapshot=null;
-    businessState={available:false,pages:{},detail:null};selectedOrderId="";privateLinkOutput=null;
+    businessState={available:false,pages:{},detail:null};selectedOrderId="";privateLinkOutput=null;orderEditState=null;
     setActionNotice("");
     $("appView").classList.add("hidden");$("passwordView").classList.add("hidden");$("loginView").classList.remove("hidden");$("password").value="";
     if(token){try{await authRequest("/auth/v1/logout",null,token)}catch(_e){}}
@@ -568,12 +620,14 @@
     $("teamTab").classList.toggle("hidden",!accessInfo.can_manage_team);
     $("wholesaleTab").classList.toggle("hidden",!accessInfo.can_manage_wholesale);
     document.querySelectorAll(".operations-tab").forEach(tab=>tab.classList.toggle("hidden",!accessInfo.can_view_operations||(tab.id==="auditTab"&&accessInfo.access_level==="VIEWER")));
+    $("parcelQueueTab").classList.toggle("hidden",!businessState.available);
     $("applicationsTab").classList.toggle("hidden",!accessInfo.can_manage_referrals);
     $("partnersTab").classList.toggle("hidden",!accessInfo.can_manage_referrals);
     $("myReferralTab").classList.toggle("hidden",!accessInfo.is_referrer);
     $("myDeliveryTab").classList.toggle("hidden",!accessInfo.is_referrer);
     $("couponFormPanel").classList.toggle("hidden",!accessInfo.can_manage_operations);
     $("campaignFormPanel").classList.toggle("hidden",!accessInfo.can_manage_operations);
+    restoreParcelQueue();clearParcelPreview();renderParcelQueue();
     renderStock();renderOrders();renderWishlist();renderWholesale();renderCampaigns();renderCoupons();renderLedger();renderAudit();renderTeam();renderApplications();renderPartners();renderMyReferral();renderMyDelivery();renderBusinessPanels();
     const activeTab=document.querySelector(".tab.active");
     if(!activeTab||activeTab.classList.contains("hidden")){
@@ -975,6 +1029,7 @@
   /* Ordinary-order operations and complete, paged history. No money is transferred here. */
   let businessState={available:false,pages:{},detail:null};
   let selectedOrderId="",privateLinkOutput=null;
+  let orderEditState=null;
   const historyFilters=Object.fromEntries(["orders","ledger","activity"].map(k=>[k,{query:"",status:"",from:"",to:"",anchor:null,cursors:[null],index:0}]));
   const reportFilters={from:"",to:""};
   const fulfilmentLabels={RECEIVED:"Received",CONFIRMED:"Confirmed",READY:"Ready",DISPATCHED:"Dispatched",DELIVERED:"Delivered",DELIVERY_FAILED:"Delivery failed",RETURN_PENDING:"Return pending",RETURNED:"Returned",CANCELLED:"Cancelled"};
@@ -983,6 +1038,16 @@
     const key=raw?.message||raw?.error;
     const messages={
       ORDER_STATE_CHANGED:"This order changed after you opened it. Refresh and review its current details before saving.",
+      INVALID_ORDER_EDIT:"Choose at least one product and a whole-number quantity for each item.",
+      ORDER_EDIT_REQUIRES_REVIEW:"Items can be edited before dispatch. Orders with delivery, return or refund history need separate review.",
+      ORDER_EDIT_REWARD_REQUIRES_REVIEW:"This order already has an earned or paid referral reward. Review that reward before changing its items.",
+      ORDER_EDIT_NO_ORIGINAL_COUPON:"This order has no original coupon to retain. Choose No coupon.",
+      ORDER_EDIT_COUPON_CAPACITY:"The original coupon's available uses have been taken since it was removed. Choose No coupon or review its usage limit.",
+      ORDER_EDIT_BELOW_COLLECTED:"The revised total is below the cash already recorded. Review the payment before changing this order.",
+      ORDER_EDIT_TOTAL_TOO_LARGE:"The revised order total is too large. Reduce the quantities.",
+      QUOTE_CHANGED:"The available prices or order terms changed. Preview the revised total again before saving.",
+      OVER_STOCK:"There is not enough stock for the extra quantity. Reduce it and preview again.",
+      STOCK_UNCONFIRMED:"Stock for an added quantity has not been confirmed. Check its stock before adding it.",
       FULFILMENT_TRANSITION_NOT_ALLOWED:"That status change is not allowed from the current order state. Refresh the order.",
       OPERATION_NOTE_REQUIRED:"Add a clear note of 3–500 characters for the record.",
       INVALID_ORDER_PAYMENT:"Enter actual cumulative product cash and refunds. Refunds cannot exceed collected cash.",
@@ -1040,7 +1105,7 @@
       Promise.all(kinds.map(async kind=>[kind,checkHistoryPage(await rpc("owner_history_page",historyPayload(kind)),kind)]))
     ]);
     if(summary?.ok!==true||inventory?.ok!==true||!Array.isArray(inventory.products)||detail&&(detail.ok!==true||!detail.order))throw new Error("The business records could not be verified. Refresh again.");
-    return {available:true,simpleCompletion:capabilities.simple_order_completion===true,pages:Object.fromEntries(pages),summary,inventory,detail:detail?.order||null};
+    return {available:true,simpleCompletion:capabilities.simple_order_completion===true,amendments:capabilities.order_amendments===true,pages:Object.fromEntries(pages),summary,inventory,detail:detail?.order||null};
   }
   async function businessRead(label,work){
     if(busy)return;setBusy(true,label);
@@ -1067,7 +1132,7 @@
     if(kind==="orders"){
       $("ordersList").innerHTML=page.items.length?'<div class="cards" style="margin-top:16px">'+page.items.map(o=>'<article class="card"><h3>'+esc(o.order_id)+'</h3><span class="pill gold">'+esc(fulfilmentLabels[o.fulfilment_status]||o.fulfilment_status)+'</span>'+
         '<p>'+dhakaDate(o.created_at)+' · '+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+esc(o.address)+'</p><p>'+o.items.map(i=>esc(i.name)+' × '+i.quantity).join(" · ")+'</p>'+
-        '<p class="price">Product payable '+money(o.final_payable)+'</p><p>Collected '+(o.amount_collected===null?'Not confirmed':money(o.amount_collected))+' · Refunded '+money(o.amount_refunded)+'</p>'+button(o.order_id)+'</article>').join("")+'</div>':'<div class="empty">No orders match these filters.</div>';
+        '<p class="price">Product payable '+money(o.final_payable)+'</p><p>Collected '+(o.amount_collected===null?'Not confirmed':money(o.amount_collected))+' · Refunded '+money(o.amount_refunded)+'</p><div class="actions">'+button(o.order_id)+parcelQueueButton(o.order_id)+'</div></article>').join("")+'</div>':'<div class="empty">No orders match these filters.</div>';
     }else if(kind==="ledger"){
       $("ledgerTable").innerHTML=page.items.length?'<div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Order</th><th>Coupon / partner</th><th>Reward</th><th>Status</th><th>Review</th></tr></thead><tbody>'+page.items.map(r=>'<tr><td>'+esc(r.order_id)+'</td><td>'+esc(r.coupon_code)+'<br>'+esc(r.referrer_name)+'</td><td>'+money(r.reward_amount)+'</td><td>'+esc(r.reward_status)+'</td><td>'+button(r.order_id)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="empty">No rewards match these filters.</div>';
     }else{
@@ -1135,6 +1200,7 @@
   }
   function renderOrderDetail(){
     const o=businessState.detail,host=$("orderDetail");host.classList.toggle("hidden",!o);if(!o)return;
+    if(orderEditState&&(orderEditState.orderId!==o.order_id||orderEditState.version!==o.operations_version))orderEditState=null;
     const can=accessInfo.can_manage_operations,owner=accessInfo.access_level==="OWNER";
     const moreOpen=(host.dataset.orderId===o.order_id&&$("orderMoreActions")?.open)||!businessState.simpleCompletion;
     host.dataset.orderId=o.order_id;
@@ -1142,12 +1208,15 @@
       '<p>Last update '+dhakaDate(o.updated_at)+'</p><p>'+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+esc(o.address)+'</p><p>'+esc(o.note)+'</p>'+
       '<ul class="items">'+o.items.map(i=>'<li>'+esc(i.name)+' '+esc(i.weight)+' × '+i.quantity+' — '+money(i.line_total)+'</li>').join("")+'</ul>'+
       '<p class="price">Product payable '+money(o.final_payable)+'</p>'+
+      '<p class="muted">Coupon '+esc(o.coupon_code||"None")+'</p>'+
+      '<div class="actions">'+parcelQueueButton(o.order_id)+'</div>'+
+      '<div id="orderEditArea"></div>'+
       renderOrderProgress(o,can)+
       '<details class="order-options detail-section" id="orderMoreActions" '+(moreOpen?'open':'')+'><summary>More options</summary>'+
       '<p>'+esc(o.delivery_terms?.area_label||"Area to be confirmed")+' · '+esc(o.delivery_terms?.charge_note||"Delivery terms to be confirmed")+' '+esc(o.delivery_terms?.timing_note||"")+'</p>'+
       (o.reward?'<p>Referral reward '+money(o.reward.amount)+' · '+esc(o.reward.status)+'</p>':'')+
       (o.return_disposition?'<p>Return disposition: '+esc(o.return_disposition)+'</p>':'')+(o.cancellation_reason?'<p>Cancellation reason: '+esc(o.cancellation_reason)+'</p>':'')+
-      '<div class="actions"><button class="btn" data-business-action="packing-slip">Download packing slip</button>'+
+      '<div class="actions"><button class="btn" data-business-action="packing-slip">Download slip as text</button>'+
       (can?'<button class="btn" data-business-action="status-link">Create / replace private status link</button>':'')+'</div><div id="privateLinkOutput" class="private-link-output"></div>'+
       (can?'<div class="detail-section"><label for="opNote">Note for the detailed changes below<textarea class="input" id="opNote" minlength="3" maxlength="500" placeholder="Reason for a partial payment, refund, return or other change"></textarea></label></div>'+
       '<div class="detail-section"><h3>Actual product cash and refunds</h3><p class="muted">Enter cumulative amounts after money changes hands. Leave an unknown historical collection blank until checked. Courier payments to the rider are separate.</p><div class="form-grid">'+
@@ -1162,7 +1231,80 @@
         (o.reward.status!=="PAID"?'<label>Payment method<input id="opRewardMethod" class="input" maxlength="80"></label>':'')+
         '<label>Payment / recovery reference<input id="opRewardReference" class="input" maxlength="200"></label><label class="check"><input id="opRewardConfirmed" type="checkbox"> '+(o.reward.status==="PAID"?'The reward funds were actually recovered':'The earned reward was actually paid')+'</label>'+
         '<button class="btn" data-business-action="'+(o.reward.status==="PAID"?'settlement-reversal':'settlement')+'">Record '+(o.reward.status==="PAID"?'manual recovery':'payment already made')+'</button></div>':''):'<p class="notice">Read-only access. Changes are unavailable.</p>')+'</details>';
-    renderPrivateLink();
+    renderPrivateLink();renderOrderEditArea();
+  }
+  function renderOrderEditArea(){
+    const o=businessState.detail,host=$("orderEditArea");
+    if(!host||!o||!accessInfo.can_manage_operations)return;
+    if(!businessState.amendments){
+      host.innerHTML='<p class="muted">Order editing will be available after the pending database update is enabled.</p>';return;
+    }
+    if(!o.amendment?.eligible){
+      host.innerHTML='<p class="muted">Items can be edited before dispatch. This order needs separate review to change its items.</p>';return;
+    }
+    if(!orderEditState){
+      host.innerHTML='<button class="btn" data-business-action="edit-order">Edit items / coupon</button>';return;
+    }
+    const draft=orderEditState,original=o.amendment.original_coupon_code;
+    const originalDiscount=(Number(o.amendment.original_discount_pct)*100).toLocaleString("en-BD",{maximumFractionDigits:4});
+    const available=snapshot.products.filter(p=>!draft.items.some(i=>i.product_id===p.product_id));
+    host.innerHTML='<section class="card order-edit" aria-labelledby="orderEditHeading"><h3 id="orderEditHeading" tabindex="-1">Edit order items</h3>'+
+      '<p>Existing item prices are kept. Added products use their current regular catalog price.</p>'+
+      draft.items.map(i=>'<div class="order-edit-line"><div class="order-edit-name"><strong>'+esc(i.name)+'</strong><br>'+esc(i.weight)+'</div>'+
+        '<label class="order-edit-quantity">Quantity<input class="input" type="number" min="1" max="100000" step="1" data-edit-quantity="'+esc(i.product_id)+'" value="'+esc(i.quantity)+'"></label>'+
+        '<button class="btn small danger" data-business-action="remove-edit-item" data-id="'+esc(i.product_id)+'">Remove</button></div>').join("")+
+      '<label for="editProduct">Add another product</label><select id="editProduct"><option value="">Choose a product</option>'+
+        available.map(p=>'<option value="'+esc(p.product_id)+'">'+esc(p.name)+' '+esc(p.weight)+' · '+money(p.sell_price)+' · stock '+p.stock+'</option>').join("")+'</select>'+
+      '<div class="actions"><button class="btn small" data-business-action="add-edit-item">Add product</button></div>'+
+      '<label for="editCouponMode">Coupon for the revised total</label><select id="editCouponMode">'+
+        (original?'<option value="ORIGINAL" '+(draft.couponMode==="ORIGINAL"?'selected':'')+'>'+(o.coupon_code?'Keep original coupon':'Use original coupon')+'</option>':'')+
+        '<option value="NONE" '+(draft.couponMode==="NONE"?'selected':'')+'>No coupon</option></select>'+
+      (original?'<p class="muted">'+esc(original)+' · '+originalDiscount+'% original discount. Applies to the whole revised order, even after expiry.</p>':'')+
+      '<div id="orderEditQuote" class="order-edit-quote" role="status" aria-live="polite"></div>'+
+      '<div class="actions"><button class="btn" data-business-action="preview-order-edit">Preview revised total</button>'+
+        '<button class="btn primary" id="saveOrderEdit" data-business-action="save-order-edit" disabled>Save order changes</button>'+
+        '<button class="btn" data-business-action="cancel-order-edit">Cancel editing</button></div></section>';
+    renderOrderEditQuote();
+  }
+  function orderEditPayload(){
+    const draft=orderEditState;
+    if(!draft||!draft.items.length||draft.items.some(i=>!Number.isSafeInteger(Number(i.quantity))||Number(i.quantity)<1||Number(i.quantity)>100000))
+      throw new Error("Keep at least one product and enter a whole-number quantity for each item.");
+    return {p_order_id:draft.orderId,p_expected_version:draft.version,
+      p_items:draft.items.map(i=>({product_id:i.product_id,quantity:Number(i.quantity)})).sort((a,b)=>a.product_id.localeCompare(b.product_id)),p_coupon_mode:draft.couponMode};
+  }
+  function renderOrderEditQuote(){
+    const host=$("orderEditQuote"),save=$("saveOrderEdit"),draft=orderEditState;
+    if(!host||!save||!draft)return;
+    save.disabled=busy||!draft.quote;
+    if(!draft.quote){host.textContent=draft.error||"Preview the revised total before saving.";return;}
+    const quote=draft.quote;
+    host.innerHTML='<p>Previous product total '+money(quote.previous_total)+'</p><p class="price">Revised product total '+money(quote.pricing.actual_payable)+'</p>'+
+      '<p>Actual saving after rounding '+money(quote.pricing.saving_vs_regular)+'</p><p>'+esc(quote.coupon_code?'Original coupon '+quote.coupon_code:'No coupon')+'</p>'+
+      (quote.amount_collected===null?'<p>Cash collection is unconfirmed.</p>':'<p>Cash already received '+money(quote.amount_collected)+' · still due '+money(quote.balance_due)+'</p>');
+  }
+  function invalidateOrderEditQuote(){
+    if(!orderEditState)return;
+    orderEditState.quote=null;orderEditState.error="";renderOrderEditQuote();
+  }
+  async function previewOrderEdit(){
+    const draft=orderEditState,payload=orderEditPayload(),signature=JSON.stringify(payload);
+    invalidateOrderEditQuote();setBusy(true,"Checking revised total…");
+    try{
+      const quote=await rpc("quote_order_amendment",payload);
+      if(orderEditState!==draft||JSON.stringify(orderEditPayload())!==signature)return;
+      const lines=Array.isArray(quote.lines)?quote.lines:[];
+      const matchingItems=lines.length===payload.p_items.length&&payload.p_items.every(i=>lines.some(line=>line.product_id===i.product_id&&line.quantity===i.quantity));
+      if(quote.ok!==true||quote.order_id!==draft.orderId||quote.operations_version!==draft.version||!matchingItems||
+        !/^[a-f0-9]{64}$/.test(quote.quote_fingerprint||"")||quote.pricing?.currency!=="BDT"||
+        !Number.isFinite(quote.pricing.actual_payable)||quote.pricing.actual_payable<0||
+        !Number.isFinite(quote.pricing.saving_vs_regular)||quote.previous_total!==businessState.detail.final_payable||
+        quote.coupon_code!==(draft.couponMode==="ORIGINAL"?businessState.detail.amendment.original_coupon_code:null)||
+        quote.amount_collected!==null&&(!Number.isFinite(quote.amount_collected)||!Number.isFinite(quote.balance_due)||quote.balance_due<0))
+        throw new Error("The revised total could not be verified. Preview it again before saving.");
+      draft.quote=quote;draft.payload=payload;
+    }catch(error){if(orderEditState===draft)draft.error=error.message;toast(error.message,true);}
+    finally{setBusy(false);renderOrderEditQuote();}
   }
   function renderPrivateLink(){
     const host=$("privateLinkOutput");if(!host)return;host.innerHTML="";
@@ -1171,6 +1313,203 @@
     const p=document.createElement("p");p.textContent="Keep this link private. Previous status links for this order no longer work. Copy it only when you intend to share it with this customer.";
     const button=document.createElement("button");button.className="btn small";button.dataset.businessAction="copy-status-link";button.textContent="Copy private status link";host.append(p,a,button);
   }
+  function restoreParcelQueue(){
+    const account=session?.user?.id||null;
+    if(parcelQueueAccount===account)return;
+    parcelQueue.clear();
+    parcelQueueAccount=account;
+    if(!account)return;
+    try{
+      const saved=JSON.parse(sessionStorage.getItem(PARCEL_QUEUE_KEY+account)||"[]");
+      for(const item of saved){
+        if(typeof item?.orderId!=="string"||!PARCEL_ORDER_ID.test(item.orderId))continue;
+        parcelQueue.set(item.orderId,{
+          method:String(item.method||"").slice(0,70),
+          notes:String(item.notes||"").slice(0,240),
+          specialNote:String(item.specialNote||"").slice(0,160)
+        });
+      }
+    }catch(_error){parcelQueue.clear();}
+  }
+  function saveParcelQueue(){
+    if(!parcelQueueAccount)return;
+    const drafts=[...parcelQueue].map(([orderId,{method,notes,specialNote}])=>({orderId,method,notes,specialNote}));
+    try{
+      const key=PARCEL_QUEUE_KEY+parcelQueueAccount;
+      if(drafts.length)sessionStorage.setItem(key,JSON.stringify(drafts));
+      else sessionStorage.removeItem(key);
+    }catch(_error){/* The current tab can still print from memory. */}
+  }
+  function resetParcelQueue(){
+    parcelQueue.clear();saveParcelQueue();parcelQueueAccount=null;
+    finishParcelPrinting();clearParcelPreview();renderParcelQueue();
+  }
+  function parcelQueueButton(orderId){
+    return '<button class="btn small" type="button" data-business-action="queue-parcel" data-id="'+esc(orderId)+'">'+
+      (parcelQueue.has(orderId)?'In print queue':'Add to print queue')+'</button>';
+  }
+  function updateParcelQueueButtons(){
+    const count=parcelQueue.size;
+    $("parcelQueueTab").textContent=count?"Print queue ("+count+")":"Print queue";
+    for(const id of ["previewParcelsButton","printParcelsButton","clearParcelsButton"]){
+      $(id).disabled=busy||!count||!businessState.available;
+    }
+    document.querySelectorAll('[data-business-action="queue-parcel"]').forEach(button=>{
+      button.textContent=parcelQueue.has(button.dataset.id)?"In print queue":"Add to print queue";
+    });
+  }
+  function renderParcelQueue(){
+    const orders=new Map((snapshot?.orders||[]).map(order=>[order.order_id,order.customer_name]));
+    for(const order of businessState.pages.orders?.items||[])orders.set(order.order_id,order.customer_name);
+    const detail=businessState.detail;
+    if(detail)orders.set(detail.order_id,detail.customer_name);
+    $("parcelQueueList").innerHTML=parcelQueue.size?'<div class="cards">'+[...parcelQueue].map(([orderId,draft])=>
+      '<article class="card parcel-queue-entry" data-queued-order="'+esc(orderId)+'"><div class="panel-head"><h3>'+
+      esc(orders.get(orderId)||"Queued order")+'</h3><button class="btn small" type="button" data-business-action="remove-parcel" data-id="'+esc(orderId)+'">Remove</button></div>'+
+      '<p class="code">'+esc(orderId)+'</p><div class="form-grid">'+
+      '<label>Delivery method or rider (optional)<input class="input" data-parcel-field="method" maxlength="70" placeholder="e.g. Cycle rider" value="'+esc(draft.method)+'"></label>'+
+      '<label>Delivery instructions (optional)<textarea class="input" data-parcel-field="notes" maxlength="240" placeholder="e.g. Call before arriving">'+esc(draft.notes)+'</textarea></label>'+
+      '<label class="span2">Special note for handover (optional)<input class="input" data-parcel-field="specialNote" maxlength="160" placeholder="e.g. The name you know them by" value="'+esc(draft.specialNote)+'"></label></div></article>'
+    ).join("")+'</div>':'<p class="empty">Use Add to print queue on an order to start.</p>';
+    updateParcelQueueButtons();
+  }
+  function clearParcelPreview(message=""){
+    const preview=$("parcelPreview");
+    preview.replaceChildren();preview.classList.add("hidden");
+    $("parcelPreviewStatus").textContent=message;
+  }
+  function finishParcelPrinting(){
+    document.body.classList.remove("printing-parcels");
+    if(parcelPreviousTitle!==null){document.title=parcelPreviousTitle;parcelPreviousTitle=null;}
+  }
+  function parcelCollection(order){
+    if(order.order_status==="CANCELLED"||["CANCELLED","RETURN_PENDING","RETURNED"].includes(order.fulfilment_status))return "Do not collect";
+    if(!Number.isFinite(order.amount_collected)||order.amount_refunded>0)return "Check payment";
+    const due=Math.round((order.final_payable-order.amount_collected)*100)/100;
+    return due>0?money(due):"Paid";
+  }
+  function allocateParcelPayable(linePrices, payable){
+    const scale=Number.isInteger(payable)&&linePrices.every(Number.isInteger)?1:100;
+    const weights=linePrices.map(price=>BigInt(Math.round(price*scale)));
+    const total=weights.reduce((sum,weight)=>sum+weight,0n);
+    const amount=BigInt(Math.round(payable*scale));
+    if(amount<0n||amount>total)return null;
+    if(total===0n)return weights.map(()=>0);
+    // Distribute the rounded payable proportionately, then give leftover currency units to the largest remainders.
+    const lines=weights.map(weight=>({price:Number(amount*weight/total),remainder:amount*weight%total}));
+    const outstanding=Number(amount)-lines.reduce((sum,line)=>sum+line.price,0);
+    const ranked=[...lines].sort((a,b)=>Number(b.remainder-a.remainder));
+    for(const line of ranked.slice(0,outstanding))line.price++;
+    return lines.map(line=>line.price/scale);
+  }
+  function parcelPricing(order){
+    const pricing=order.pricing||{};
+    const sum=prices=>prices.reduce((total,price)=>total+price,0);
+    const savedPrices=field=>{
+      const prices=order.items.map(item=>item[field]);
+      return prices.length&&prices.every(price=>Number.isFinite(price)&&price>=0)?prices:null;
+    };
+    const displayed=savedPrices("line_total");
+    const savedRegular=savedPrices("regular_line_total");
+    const subtotal=Number.isFinite(pricing.regular_subtotal)?pricing.regular_subtotal:
+      savedRegular?sum(savedRegular):displayed?sum(displayed):null;
+    const matches=(prices,target)=>prices!==null&&target!==null&&Math.abs(sum(prices)-target)<0.005;
+    const regular=savedRegular||(matches(displayed,subtotal)?displayed:null);
+    // Use the recorded pre-coupon basis to distinguish applied campaign prices from a campaign the order did not qualify for.
+    const beforeCoupon=Number.isFinite(pricing.payable_before_rounding)&&Number.isFinite(pricing.customer_discount_amount)?
+      pricing.payable_before_rounding+pricing.customer_discount_amount:null;
+    const applied=beforeCoupon===null?displayed||regular:
+      matches(displayed,beforeCoupon)?displayed:matches(regular,beforeCoupon)?regular:null;
+    const discounted=applied&&allocateParcelPayable(applied,order.final_payable);
+    const originals=regular||applied;
+    const items=discounted&&discounted.map((payable,index)=>({original:originals[index],payable}));
+    const discount=subtotal===null?null:Math.round((subtotal-order.final_payable)*100)/100;
+    return {subtotal,discount,items,campaignPrices:!!items&&!regular};
+  }
+  function parcelItemPrice(price,quantity){
+    const {original,payable}=price;
+    const display=(before,after)=>before>after?'<del>'+money(before)+'</del><strong>'+money(after)+'</strong>':money(after);
+    const each=quantity>1&&Math.round(original*100)%quantity===0&&Math.round(payable*100)%quantity===0;
+    const line=display(original,payable)+(quantity>1?' total':'');
+    return '<span class="parcel-item-price">'+(each?display(original/quantity,payable/quantity)+' each · ':'')+line+'</span>';
+  }
+  function renderParcelSlips(order,draft){
+    const parts=Math.max(1,Math.ceil(order.items.length/PARCEL_ITEMS_PER_SLIP));
+    const delivery=order.delivery_terms||{};
+    const fee=delivery.charge_note||(order.delivery==="free"?"Free delivery":"Courier charge confirmed separately");
+    const status=fulfilmentLabels[order.fulfilment_status]||order.fulfilment_status||order.order_status;
+    const phone=/^8801[0-9]{9}$/.test(order.phone)?"+"+order.phone:order.phone;
+    const prices=parcelPricing(order);
+    const header=part=>'<header class="parcel-slip-head"><h2>Chocolate Trail</h2><p><span class="parcel-order-id">'+esc(order.order_id)+'</span>'+
+      (status?' · '+esc(status):'')+(parts>1?' · Part '+(part+1)+' of '+parts:'')+'</p></header>';
+    const contact='<div class="parcel-slip-grid"><section><h3>Deliver to</h3><p><strong class="parcel-recipient">'+esc(order.customer_name)+'</strong></p>'+
+      '<p>'+esc(phone)+'</p><address>'+esc(order.address)+'</address>'+
+      (delivery.area_label&&delivery.area_label!=="Area to be confirmed"?'<p>'+esc(delivery.area_label)+'</p>':'')+'</section>'+
+      '<section class="parcel-collection">'+
+      (prices.subtotal===null?'':'<p>Subtotal before discounts '+money(prices.subtotal)+'</p>')+
+      (prices.discount>0?'<p>Discount &minus;'+money(prices.discount)+'</p>':'')+
+      '<p class="parcel-payable"><strong>'+((prices.discount>0||order.coupon_code)?'Payable after discount ':'Payable ')+money(order.final_payable)+'</strong></p>'+
+      '<p>Cash to collect <strong class="parcel-amount">'+esc(parcelCollection(order))+'</strong></p>'+
+      (order.coupon_code?'<p>Coupon '+esc(order.coupon_code)+'</p>':'')+
+      (order.campaign_title?'<p>Campaign '+esc(order.campaign_title)+'</p>':'')+'</section></div>';
+    const instructions='<section class="parcel-delivery"><p><strong>Delivery</strong> · '+esc(fee)+
+      (draft.method.trim()?' · <strong>'+esc(draft.method.trim())+'</strong>':'')+'</p>'+
+      (draft.notes.trim()?'<p class="parcel-notes">'+esc(draft.notes.trim())+'</p>':'')+'</section>';
+    const specialNote=(draft.specialNote||"").trim();
+    const handover=specialNote?'<aside class="parcel-handover"><strong>Special note</strong> · '+esc(specialNote)+'</aside>':'';
+    return Array.from({length:parts},(_,part)=>{
+      const first=part===0;
+      const start=part*PARCEL_ITEMS_PER_SLIP;
+      const items=order.items.slice(start,start+PARCEL_ITEMS_PER_SLIP);
+      const list=items.map((item,index)=>{
+        const linePrice=prices.items?.[start+index];
+        const price=linePrice?parcelItemPrice(linePrice,item.quantity):'';
+        return '<li><strong>'+esc(item.quantity)+' ×</strong> '+esc(item.name)+(item.weight?' · '+esc(item.weight):'')+(price?' · '+price:'')+'</li>';
+      }).join("");
+      return '<article class="parcel-slip">'+header(part)+(first?contact:'<p>Packing list continued for '+esc(order.customer_name)+'. See part 1 for delivery and collection.</p>')+
+        '<section class="parcel-pack"><h3>'+(first?'Items to pack':'More items')+'</h3>'+
+        (first&&prices.campaignPrices?'<p>Original item prices are unavailable. Saved campaign prices are shown.</p>':'')+
+        (first&&!prices.items?'<p>See the order totals for pricing.</p>':'')+
+        '<ul class="parcel-items">'+list+'</ul></section>'+
+        (first?instructions+handover:'')+'</article>';
+    }).join("");
+  }
+  async function prepareParcelSlips(printAfter){
+    if(!accessInfo?.can_view_operations||!parcelQueue.size)return;
+    const entries=[...parcelQueue];
+    const accountEpoch=identityEpoch;
+    clearParcelPreview("Loading the latest order details…");
+    setBusy(true,"Preparing parcel slips…");
+    try{
+      const orders=[];
+      for(let offset=0;offset<entries.length;offset+=5){
+        const batch=await Promise.all(entries.slice(offset,offset+5).map(async ([id])=>{
+          try{
+            const result=await rpc("owner_order_detail",{p_order_id:id}),order=result.order;
+            if(result.ok!==true||order?.order_id!==id||!Array.isArray(order.items)||!Number.isFinite(order.final_payable))throw new Error();
+            return order;
+          }catch(_error){throw new Error("Could not load order "+id+". Refresh or remove it from the queue and try again.");}
+        }));
+        orders.push(...batch);
+      }
+      if(identityEpoch!==accountEpoch||!session?.access_token)return;
+      const preview=$("parcelPreview");
+      preview.innerHTML=orders.map((order,index)=>renderParcelSlips(order,entries[index][1])).join("");
+      preview.classList.remove("hidden");
+      $("parcelPreviewStatus").textContent=orders.length+" "+(orders.length===1?"order":"orders")+" ready. Choose A4 and turn off browser headers and footers in the print dialog.";
+      if(printAfter){
+        if(parcelPreviousTitle===null)parcelPreviousTitle=document.title;
+        document.title="Chocolate Trail parcel slips";
+        document.body.classList.add("printing-parcels");
+        window.print();
+      }else{
+        preview.scrollIntoView({block:"start"});
+      }
+    }catch(error){
+      if(identityEpoch===accountEpoch){finishParcelPrinting();clearParcelPreview(error.message);toast(error.message,true);}
+    }finally{setBusy(false);}
+  }
+  window.addEventListener("afterprint",finishParcelPrinting);
   function actualNumber(id){
     const el=$(id),value=el.value.trim();
     if(value===""||!Number.isFinite(Number(value))||Number(value)<0||Number(value)>1000000)throw new Error("Enter each confirmed amount. Blank means unknown; enter 0 only after checking.");
@@ -1235,8 +1574,24 @@
   }
   async function handleBusinessAction(action,button){
     const o=businessState.detail,id=button.dataset.id,kind=button.dataset.kind;
+    if(action==="queue-parcel"){
+      if(!accessInfo.can_view_operations||!PARCEL_ORDER_ID.test(id))return;
+      if(parcelQueue.has(id)){showTab("print-queue");$("parcelQueueTitle").focus();return;}
+      parcelQueue.set(id,{method:"",notes:"",specialNote:""});
+      saveParcelQueue();clearParcelPreview();renderParcelQueue();
+      toast("Added to the print queue ("+parcelQueue.size+").");return;
+    }
+    if(action==="remove-parcel"||action==="clear-parcels"){
+      if(action==="clear-parcels"){
+        if(!confirm("Clear all orders and notes from the print queue?"))return;
+        parcelQueue.clear();
+      }else parcelQueue.delete(id);
+      saveParcelQueue();clearParcelPreview();renderParcelQueue();return;
+    }
+    if(action==="back-to-orders"){showTab("orders");document.querySelector('.tab[data-tab="orders"]').focus();return;}
+    if(action==="preview-parcels"||action==="print-parcels"){await prepareParcelSlips(action==="print-parcels");return;}
     if(action==="open-order"){await openOrder(id);return;}
-    if(action==="close-order"){selectedOrderId="";businessState.detail=null;privateLinkOutput=null;renderOrderDetail();return;}
+    if(action==="close-order"){selectedOrderId="";businessState.detail=null;privateLinkOutput=null;orderEditState=null;renderOrderDetail();return;}
     if(action==="next-page"||action==="previous-page"){await navigateHistory(kind,action==="next-page");return;}
     if(action==="export-history"){await exportHistory(kind);return;}
     if(action==="clear-history"){
@@ -1253,6 +1608,44 @@
     }
     if(action==="copy-status-link"){try{await navigator.clipboard.writeText(privateLinkOutput.url);toast("Private link copied. Share only with this customer.");}catch(_error){toast("Copy is unavailable. Select the displayed link to copy it.",true);}return;}
     if(!accessInfo.can_manage_operations)return;
+    if(action==="edit-order"){
+      if(!businessState.amendments||!o.amendment?.eligible)return;
+      orderEditState={orderId:o.order_id,version:o.operations_version,items:o.items.map(i=>({...i})),couponMode:o.coupon_code?"ORIGINAL":"NONE",quote:null};
+      renderOrderEditArea();$("orderEditHeading").focus();return;
+    }
+    if(action==="cancel-order-edit"){
+      orderEditState=null;renderOrderEditArea();$("orderEditArea").querySelector("button")?.focus();return;
+    }
+    if(action==="add-edit-item"){
+      const product=snapshot.products.find(p=>p.product_id===$("editProduct").value);
+      if(!product||!orderEditState)return;
+      orderEditState.items.push({product_id:product.product_id,name:product.name,weight:product.weight,quantity:1});
+      invalidateOrderEditQuote();renderOrderEditArea();return;
+    }
+    if(action==="remove-edit-item"){
+      if(!orderEditState)return;
+      orderEditState.items=orderEditState.items.filter(i=>i.product_id!==id);
+      invalidateOrderEditQuote();renderOrderEditArea();return;
+    }
+    if(action==="preview-order-edit"){await previewOrderEdit();return;}
+    if(action==="save-order-edit"){
+      if(actionReview){toast("Refresh and check the previous save before making another change.",true);return;}
+      const draft=orderEditState;
+      if(!draft?.quote||JSON.stringify(orderEditPayload())!==JSON.stringify(draft.payload))return;
+      const quote=draft.quote,payload={...draft.payload,p_quote_fingerprint:quote.quote_fingerprint};
+      if(!confirm(o.order_id+"\nUpdate these items and change the product total from "+money(o.final_payable)+" to "+money(quote.pricing.actual_payable)+"?\n"+
+        (quote.coupon_code?"Keep the originally accepted coupon "+quote.coupon_code+" on the revised total.":"Use no coupon on the revised total.")))return;
+      await perform("Saving order changes…",async()=>{
+        try{
+          const result=await rpc("amend_order",payload);
+          if(result.order_id!==o.order_id||!Number.isSafeInteger(result.operations_version))
+            throw requestIssue(true,"The order edit may have saved, but its reply could not be verified. Refresh and check the items and total.");
+          orderEditState=null;renderOrderEditArea();
+          return result;
+        }catch(error){invalidateOrderEditQuote();throw error;}
+      });
+      renderOrderEditQuote();return;
+    }
     if(action==="fulfilment"){
       if(actionReview){toast("Refresh and check the previous save before making another change.",true);return;}
       const status=$("opNext")?.value;
@@ -1307,6 +1700,23 @@
   });
   document.addEventListener("change",event=>{
     if(event.target.id==="opNext")$("saveDeliveryButton").disabled=busy||!event.target.value;
+    if(event.target.id==="editCouponMode"&&orderEditState){orderEditState.couponMode=event.target.value;invalidateOrderEditQuote();}
+  });
+  document.addEventListener("input",event=>{
+    const control=event.target,field=control.dataset.parcelField;
+    if(field==="method"||field==="notes"||field==="specialNote"){
+      const draft=parcelQueue.get(control.closest("[data-queued-order]")?.dataset.queuedOrder);
+      if(draft&&!busy){
+        draft[field]=control.value.slice(0,control.maxLength);
+        saveParcelQueue();
+        if(!$("parcelPreview").classList.contains("hidden"))clearParcelPreview("Slip details changed. Preview or print again.");
+      }
+      return;
+    }
+    const productId=event.target.dataset.editQuantity;
+    if(!productId||!orderEditState)return;
+    const item=orderEditState.items.find(i=>i.product_id===productId);
+    if(item){item.quantity=event.target.value;invalidateOrderEditQuote();}
   });
   document.addEventListener("submit",event=>{
     const form=event.target;
